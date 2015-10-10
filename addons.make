@@ -1,0 +1,6 @@
+ofxGui
+ofxXmlSettings
+ofxCv
+ofxMSACore
+ofxMSAFluid
+ofxMSAPhysics
