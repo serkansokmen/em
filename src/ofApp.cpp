@@ -4,7 +4,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
-    ofBackground(255);
+    ofBackground(0);
     ofSetVerticalSync(true);
     ofSetFrameRate(60);
     ofEnableSmoothing();
@@ -12,38 +12,28 @@ void ofApp::setup(){
     
     setupGui();
     
-    physics.verbose = true;			// dump activity to log
-    
-    // set world dimensions, not essential, but speeds up collision
+//    physics.verbose = true;			// dump activity to log
     physics.setWorldSize(ofVec2f(0, 0), ofVec2f(ofGetWidth(), ofGetHeight()));
     physics.setSectorCount(SECTOR_COUNT);
     physics.setDrag(0.97f);
+    physics.setTimeStep(10);
 //    physics.setDrag(1);
     physics.enableCollision();
-    
-    // init scene
-    physics.clear();
 }
 
 //--------------------------------------------------------------
 void ofApp::setupGui(){
     gui.setup();
-    gui.add(gravity.set("gravity", ofVec2f(0, 0.2), ofVec2f::zero(), ofVec2f(1, 1)));
+    gui.add(gravity.set("gravity", ofVec2f(0, 0.2), ofVec2f(-1, -1), ofVec2f(1, 1)));
     particleParams.setName("particles");
-    particleParams.add(node_min_radius.set("node min radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
-    particleParams.add(node_max_radius.set("node max radius", NODE_MAX_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
-    particleParams.add(min_mass.set("min mass", MIN_MASS, MIN_MASS, MAX_MASS));
-    particleParams.add(max_mass.set("max mass", MAX_MASS, MIN_MASS, MAX_MASS));
-    particleParams.add(min_bounce.set("min bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
-    particleParams.add(max_bounce.set("max bounce", MAX_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
-    particleParams.add(min_attraction.set("min attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
-    particleParams.add(max_attraction.set("max attraction", MAX_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
+    particleParams.add(node_radius.set("node radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
+    particleParams.add(mass.set("mass", MIN_MASS, MIN_MASS, MAX_MASS));
+    particleParams.add(bounce.set("bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
+    particleParams.add(attraction.set("attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
     
     springParams.setName("springs");
-    springParams.add(spring_min_strength.set("spring min strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
-    springParams.add(spring_max_strength.set("spring max strength", SPRING_MAX_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
-    springParams.add(spring_min_width.set("spring min width", SPRING_MIN_WIDTH, SPRING_MIN_WIDTH, SPRING_MAX_WIDTH));
-    springParams.add(spring_max_width.set("spring max width", SPRING_MAX_WIDTH, SPRING_MIN_WIDTH, SPRING_MAX_WIDTH));
+    springParams.add(spring_strength.set("spring strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
+    springParams.add(spring_length.set("spring length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
     
     gui.add(particleParams);
     gui.add(springParams);
@@ -65,11 +55,34 @@ void ofApp::setGravity(ofVec2f& g){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    // Draw springs
+    ofPushMatrix();
+    ofEnableDepthTest();
+    ofEnableAlphaBlending();
+    for(int i=0; i<physics.numberOfSprings(); i++){
+        auto s = (Spring2D *)physics.getSpring(i);
+        auto a = (Particle *)s->getOneEnd();
+        auto b = (Particle *)s->getTheOtherEnd();
+        ofVec2f vec = b->getPosition() - a->getPosition();
+        float dist = vec.normalize().length();
+        ofColor c;
+        c.r = ofLerp(a->color.r, b->color.r, dist);
+        c.g = ofLerp(a->color.g, b->color.g, dist);
+        c.b = ofLerp(a->color.b, b->color.b, dist);
+//        ofSetColor(c);
+        ofSetColor(ofColor::white, 100);
+        ofDrawLine(a->getPosition(), b->getPosition());
+    }
+    ofDisableAlphaBlending();
+    ofDisableDepthTest();
+    ofPopMatrix();
+    
+    // Draw particles
     ofPushMatrix();
     ofEnableDepthTest();
     for(int i=0; i<physics.numberOfParticles(); i++){
         auto p = (Particle *)physics.getParticle(i);
-        ofSetColor(p->color); // @TODO: set individual particle color
+        ofSetColor(p->color);
         ofSetCircleResolution(p->getRadius()*10);
         ofDrawCircle(p->getPosition(), p->getRadius());
     }
@@ -78,7 +91,7 @@ void ofApp::draw(){
     
     gui.draw();
     
-    ofSetColor(ofColor::black);
+    ofSetColor(ofColor::white);
     ofDrawBitmapString("Particles: " + ofToString(physics.numberOfParticles()), 400, 40);
     ofDrawBitmapString("Springs: " + ofToString(physics.numberOfSprings()), 400, 60);
     ofDrawBitmapString("Attractions: " + ofToString(physics.numberOfAttractions()), 400, 80);
@@ -101,53 +114,94 @@ void ofApp::keyPressed(int key){
         case 'l':
             gui.loadFromFile("settings.xml");
             break;
+        case 'f':
+            ofToggleFullscreen();
+            break;
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyReleased(int key){
-
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    makeParticleAtPosition(x, y);
+    if (!gui.getShape().inside(x, y)){
+        makeParticleAtPosition(x, y, ofColor::white);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    makeParticleAtPosition(x, y);
+    if (!gui.getShape().inside(x, y)){
+        makeParticleAtPosition(x, y, ofColor::white);
+    }
 }
 
 //--------------------------------------------------------------
-void ofApp::makeParticleAtPosition(float x, float y){
-    
-    float mass = ofRandom(min_mass, max_mass);
-    float bounce = ofRandom(min_bounce, max_bounce);
-    float radius	 = ofMap(mass, min_mass, max_mass, node_min_radius, node_max_radius);
-    auto a = new Particle;
-    
-    a->moveTo(ofVec2f(x, y));
-    a->color = ofColor(ofMap(radius, node_min_radius, node_max_radius, 0, 255));
-    
-    physics.addParticle(a);
-    
-    if (physics.numberOfParticles() > 1) {
-        auto b = physics.getParticle(physics.numberOfParticles() - 1);
-        physics.makeSpring(a, b, ofRandom(spring_min_strength, spring_max_strength), ofRandom(10, ofGetWidth()/2));
-        physics.makeAttraction(b, a, ofRandom(min_attraction, max_attraction));
+void ofApp::mouseReleased(int x, int y, int button){
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseEntered(int x, int y){
+}
+
+//--------------------------------------------------------------
+void ofApp::mouseExited(int x, int y){
+}
+
+//--------------------------------------------------------------
+void ofApp::windowResized(int w, int h){
+    physics.clearWorldSize();
+    physics.setWorldSize(ofVec2f(0, 0), ofVec2f(w, h));
+}
+
+//--------------------------------------------------------------
+void ofApp::gotMessage(ofMessage msg){
+}
+
+//--------------------------------------------------------------
+void ofApp::dragEvent(ofDragInfo info){
+    physics.clear();
+    if (info.files.size() > 0) {
+        ofImage img;
+        if (img.load(info.files[0])) {
+            makeParticlesFromImage(img);
+        }
     }
+}
+
+//--------------------------------------------------------------
+void ofApp::makeParticleAtPosition(float x, float y, ofColor c){
     
+    float radius	 = ofMap(mass, MIN_MASS, MAX_MASS, NODE_MIN_RADIUS, NODE_MAX_RADIUS);
+    
+    auto a = new Particle;
+    a->moveTo(ofVec2f(x, y));
+    a->color.set(c);
     a->setMass(mass)
     ->setBounce(bounce)
     ->setRadius(radius)
     ->enableCollision()
     ->makeFree();
+    
+    physics.addParticle(a);
+    
+    for (int i=0; i<physics.numberOfParticles(); i++) {
+        if (i > 0) {
+            
+            auto b = physics.getParticle(i-1);
+            float dist = a->getPosition().distance(b->getPosition());
+            if (dist > SPRING_MIN_LENGTH && dist < spring_length) {
+                float strength = dist*spring_strength*0.01;
+                physics.makeSpring(a, b, spring_strength, spring_length);
+            }
+        }
+    }
     
     a->release();
 }
@@ -166,12 +220,9 @@ void ofApp::makeParticlesFromImage(ofImage &img){
             ofVec2f pos(x, y);
             ofColor cur = img.getColor(x, y);
             float size = 1 - (cur.getBrightness() / 255);
-            float radius = size * 10.f;
+            float radius = size * node_radius;
             
-            if (cur.a > 5.f && radius >= 2.f && ofGetWindowRect().inside(pos)) {
-                
-                float mass = size * 10.f + min_mass;
-                float bounce = size * 0.1f + min_bounce;
+            if (ofGetWindowRect().inside(pos)) {
                 
                 auto a = new Particle;
                 a->color = ofColor(cur);
@@ -183,43 +234,17 @@ void ofApp::makeParticlesFromImage(ofImage &img){
                 
                 physics.addParticle(a);
                 
+                if (physics.numberOfParticles() > 1) {
+                    auto b = physics.getParticle(physics.numberOfParticles()-2);
+                    bool bAddSpring = ofRandom(-100, 100) > 0;
+                    if (bAddSpring) {
+                        physics.makeSpring(a, b, spring_strength, spring_length);
+                    }
+                    physics.makeAttraction(a, b, attraction);
+                }
+                
                 a->release();
             }
-        }
-    }
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseReleased(int x, int y, int button){
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseEntered(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::mouseExited(int x, int y){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::windowResized(int w, int h){
-    physics.setWorldSize(ofVec2f(0, 0), ofVec2f(w, h));
-}
-
-//--------------------------------------------------------------
-void ofApp::gotMessage(ofMessage msg){
-
-}
-
-//--------------------------------------------------------------
-void ofApp::dragEvent(ofDragInfo info){
-    physics.clear();
-    if (info.files.size() > 0) {
-        ofImage img;
-        if (img.load(info.files[0])) {
-            makeParticlesFromImage(img);
         }
     }
 }
