@@ -2,43 +2,56 @@
 
 #include "ofMain.h"
 #include "MSAPhysics2D.h"
+#include "MSAPhysics3D.h"
 #include "ofxGui.h"
+#include "ofxArcBall.h"
 
 #define NODE_MIN_RADIUS     1
 #define NODE_MAX_RADIUS     60
 
-#define MIN_MASS            1
+#define MIN_MASS            0.01
 #define MAX_MASS            500
+
+#define MIN_DISTANCE        0.1
+#define MAX_DISTANCE        500
 
 #define MIN_BOUNCE          0.0001
 #define MAX_BOUNCE          0.95
 
-#define MIN_ATTRACTION      -0.5
-#define MAX_ATTRACTION      0.5
+#define MIN_ATTRACTION      -0.005
+#define MAX_ATTRACTION      0.005
 
 #define	SPRING_MIN_STRENGTH		0.00000005
-#define SPRING_MAX_STRENGTH		0.0005
+#define SPRING_MAX_STRENGTH		0.000005
 #define	SPRING_MIN_LENGTH		0.1
-#define SPRING_MAX_LENGTH		1440
+#define SPRING_MAX_LENGTH		400
 #define SECTOR_COUNT            1
 
+//#define USE_3D
 
 using namespace msa::physics;
 
+#ifdef USE_3D
+class Particle : public Particle3D {
+public:
+    ofColor color;
+};
+#else
 class Particle : public Particle2D {
 public:
     ofColor color;
 };
+#endif
 
 
 class ofApp : public ofBaseApp {
-    
+
 public:
     void setup();
     void update();
     void draw();
     void exit();
-    
+
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -50,26 +63,41 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    
+
     void makeParticleAtPosition(float x, float y, ofColor c);
     void makeParticlesFromImage(ofImage &img);
-    
+
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
-    
+
     void setGravity(ofVec2f& g);
     void setupGui();
-    
+#ifdef USE_3D
+    World3D             physics;
+#else
     World2D             physics;
-    ofxPanel            gui;
+#endif
     
+    ofLight             pointLight;
+    ofMaterial          polyMat, springMat;
+    
+    ofxPanel            gui;
+
     ofParameterGroup    particleParams;
     ofParameterGroup    springParams;
-    
+
     ofParameter<ofVec2f> gravity;
-    
+
     ofVboMesh            polygonMesh;
     ofVboMesh            springMesh;
+    
+    ofxArcBall           arcball;
+    
+    ofParameter<ofPoint> lightPos;
+    ofParameter<float>   colorHue;
+    ofColor              lightColor;
+    ofColor              materialColor;
+    ofParameter<bool>    physicsPaused;
     
     ofParameter<double>  node_radius;
     ofParameter<double>  mass;
@@ -79,5 +107,6 @@ public:
     ofParameter<double>  spring_length;
     ofParameter<bool>    makeParticles;
     ofParameter<bool>    makeSprings;
+    ofParameter<bool>    drawUsingVboMesh;
     ofParameter<bool>    drawGui;
 };
