@@ -239,6 +239,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
+    arcball.startDrag();
 }
 
 //--------------------------------------------------------------
@@ -260,6 +261,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
+    arcball.stopDrag();
 }
 
 //--------------------------------------------------------------
