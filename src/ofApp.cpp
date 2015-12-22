@@ -17,13 +17,15 @@ void ofApp::setup(){
     physics.setSectorCount(SECTOR_COUNT);
     physics.setDrag(0.97f);
     physics.setTimeStep(10);
-//    physics.setDrag(1);
-    physics.enableCollision();
+    physics.setDrag(1);
+    physics.disableCollision();
 }
 
 //--------------------------------------------------------------
 void ofApp::setupGui(){
     gui.setup();
+    gui.add(makeParticles.set("Particles", true));
+    gui.add(makeSprings.set("Springs", true));
     gui.add(gravity.set("gravity", ofVec2f(0, 0.2), ofVec2f(-1, -1), ofVec2f(1, 1)));
     particleParams.setName("particles");
     particleParams.add(node_radius.set("node radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
@@ -37,6 +39,8 @@ void ofApp::setupGui(){
     
     gui.add(particleParams);
     gui.add(springParams);
+    gui.add(drawGui.set("GUI", true));
+    
     gui.minimizeAll();
     gui.loadFromFile("settings.xml");
     
@@ -46,8 +50,37 @@ void ofApp::setupGui(){
 //--------------------------------------------------------------
 void ofApp::update(){
     physics.update();
+    
+    polygonMesh.clear();
+    polygonMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+    for(int i=0; i<physics.numberOfParticles(); i++){
+        auto p = (Particle *)physics.getParticle(i);
+        polygonMesh.addVertex(p->getPosition());
+        polygonMesh.addColor(ofFloatColor(p->color.a/255, p->color.g/255, p->color.b/255));
+        polygonMesh.addIndex(i+1);
+    }
+    
+    springMesh.clear();
+    springMesh.setMode(OF_PRIMITIVE_LINES);
+    for(int i=0; i<physics.numberOfSprings(); i++){
+        auto s = (Spring2D *)physics.getSpring(i);
+        auto a = (Particle *)s->getOneEnd();
+        auto b = (Particle *)s->getTheOtherEnd();
+        ofVec2f vec = b->getPosition() - a->getPosition();
+        float dist = vec.normalize().length();
+        ofFloatColor c;
+        c.r = ofLerp(a->color.r, b->color.r, dist)/255;
+        c.g = ofLerp(a->color.g, b->color.g, dist)/255;
+        c.b = ofLerp(a->color.b, b->color.b, dist)/255;
+        springMesh.addVertex(a->getPosition());
+        springMesh.addVertex(b->getPosition());
+        polygonMesh.addColor(c);
+        polygonMesh.addColor(c);
+        polygonMesh.addIndex(i);
+    }
 }
 
+//--------------------------------------------------------------
 void ofApp::setGravity(ofVec2f& g){
     physics.setGravity(g);
 }
@@ -55,47 +88,18 @@ void ofApp::setGravity(ofVec2f& g){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    // Draw springs
     ofPushMatrix();
     ofEnableDepthTest();
     ofEnableAlphaBlending();
-    for(int i=0; i<physics.numberOfSprings(); i++){
-        auto s = (Spring2D *)physics.getSpring(i);
-        auto a = (Particle *)s->getOneEnd();
-        auto b = (Particle *)s->getTheOtherEnd();
-        ofVec2f vec = b->getPosition() - a->getPosition();
-        float dist = vec.normalize().length();
-        ofColor c;
-        c.r = ofLerp(a->color.r, b->color.r, dist);
-        c.g = ofLerp(a->color.g, b->color.g, dist);
-        c.b = ofLerp(a->color.b, b->color.b, dist);
-//        ofSetColor(c);
-        ofSetColor(ofColor::white, 100);
-        ofDrawLine(a->getPosition(), b->getPosition());
-    }
+    polygonMesh.draw();
+    springMesh.draw();
     ofDisableAlphaBlending();
     ofDisableDepthTest();
     ofPopMatrix();
     
-    // Draw particles
-    ofPushMatrix();
-    ofEnableDepthTest();
-    for(int i=0; i<physics.numberOfParticles(); i++){
-        auto p = (Particle *)physics.getParticle(i);
-        ofSetColor(p->color);
-        ofSetCircleResolution(p->getRadius()*10);
-        ofDrawCircle(p->getPosition(), p->getRadius());
+    if (drawGui) {
+        gui.draw();
     }
-    ofDisableDepthTest();
-    ofPopMatrix();
-    
-    gui.draw();
-    
-    ofSetColor(ofColor::white);
-    ofDrawBitmapString("Particles: " + ofToString(physics.numberOfParticles()), 400, 40);
-    ofDrawBitmapString("Springs: " + ofToString(physics.numberOfSprings()), 400, 60);
-    ofDrawBitmapString("Attractions: " + ofToString(physics.numberOfAttractions()), 400, 80);
-    ofDrawBitmapString("Constraints: " + ofToString(physics.numberOfConstraints()), 400, 100);
 }
 
 void ofApp::exit(){
@@ -117,6 +121,10 @@ void ofApp::keyPressed(int key){
         case 'f':
             ofToggleFullscreen();
             break;
+        case 'g':
+            drawGui = !drawGui;
+            break;
+            
     }
 }
 
@@ -130,15 +138,18 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (!gui.getShape().inside(x, y)){
-        makeParticleAtPosition(x, y, ofColor::white);
+    if (!drawGui || (drawGui && !gui.getShape().inside(x, y))){
+        mousePressed(x, y, button);
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     if (!gui.getShape().inside(x, y)){
-        makeParticleAtPosition(x, y, ofColor::white);
+        ofColor color(ofNormalize(mass, MIN_MASS, MAX_MASS)*255,
+                ofNormalize(node_radius, NODE_MIN_RADIUS, NODE_MAX_RADIUS)*255,
+                ofNormalize(bounce, MIN_BOUNCE, MAX_BOUNCE)*255);
+        makeParticleAtPosition(x, y, color);
     }
 }
 
@@ -169,7 +180,7 @@ void ofApp::dragEvent(ofDragInfo info){
     physics.clear();
     if (info.files.size() > 0) {
         ofImage img;
-        if (img.load(info.files[0])) {
+        if (img.load(info.files[0]) && makeParticles) {
             makeParticlesFromImage(img);
         }
     }
@@ -177,28 +188,24 @@ void ofApp::dragEvent(ofDragInfo info){
 
 //--------------------------------------------------------------
 void ofApp::makeParticleAtPosition(float x, float y, ofColor c){
-    
-    float radius	 = ofMap(mass, MIN_MASS, MAX_MASS, NODE_MIN_RADIUS, NODE_MAX_RADIUS);
-    
     auto a = new Particle;
     a->moveTo(ofVec2f(x, y));
     a->color.set(c);
     a->setMass(mass)
     ->setBounce(bounce)
-    ->setRadius(radius)
+    ->setRadius(node_radius)
     ->enableCollision()
     ->makeFree();
     
-    physics.addParticle(a);
+    if (makeParticles)
+        physics.addParticle(a);
     
-    for (int i=0; i<physics.numberOfParticles(); i++) {
-        if (i > 0) {
-            
-            auto b = physics.getParticle(i-1);
-            float dist = a->getPosition().distance(b->getPosition());
+    if (makeSprings) {
+        for (int i = 0; i < physics.numberOfParticles(); i++) {
+            float dist = physics.getParticle(i)->getPosition().distance(a->getPosition());
             if (dist > SPRING_MIN_LENGTH && dist < spring_length) {
-                float strength = dist*spring_strength*0.01;
-                physics.makeSpring(a, b, spring_strength, spring_length);
+                makeSpringBetweenParticles(a, physics.getParticle(i));
+                physics.makeAttraction(a, physics.getParticle(i), attraction);
             }
         }
     }
@@ -207,7 +214,16 @@ void ofApp::makeParticleAtPosition(float x, float y, ofColor c){
 }
 
 //--------------------------------------------------------------
+template <typename T>
+void ofApp::makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b) {
+    float dist = a->getPosition().distance(b->getPosition());
+    float strength = dist*spring_strength;
+    physics.makeSpring(a, b, spring_strength, spring_length);
+}
+
+//--------------------------------------------------------------
 void ofApp::makeParticlesFromImage(ofImage &img){
+    
     img.crop(0, 0, ofGetHeight(), ofGetHeight());
     
     int w = img.getWidth();
@@ -237,7 +253,7 @@ void ofApp::makeParticlesFromImage(ofImage &img){
                 if (physics.numberOfParticles() > 1) {
                     auto b = physics.getParticle(physics.numberOfParticles()-2);
                     bool bAddSpring = ofRandom(-100, 100) > 0;
-                    if (bAddSpring) {
+                    if (bAddSpring && makeSprings) {
                         physics.makeSpring(a, b, spring_strength, spring_length);
                     }
                     physics.makeAttraction(a, b, attraction);
