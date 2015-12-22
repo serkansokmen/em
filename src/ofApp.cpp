@@ -29,11 +29,9 @@ void ofApp::setup(){
     setupGui();
     
 //    physics.verbose = true;			// dump activity to log
-#ifdef USE_3D
-    physics.setWorldSize(ofVec3f(-ofGetWidth()/2, -ofGetHeight(), -ofGetWidth()/2), ofVec3f(ofGetWidth()/2, ofGetHeight(), ofGetWidth()/2));
-#else
-    physics.setWorldSize(ofVec2f(0, 0), ofVec2f(ofGetWidth(), ofGetHeight()));
-#endif
+
+    physics.setWorldSize(ofVec3f(-ofGetWidth()/2, -ofGetHeight(), -ofGetWidth()/2),
+                         ofVec3f(ofGetWidth()/2, ofGetHeight(), ofGetWidth()/2));
     physics.setSectorCount(SECTOR_COUNT);
     physics.setDrag(0.97f);
     physics.setTimeStep(60);
@@ -44,10 +42,14 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::setupGui(){
+    
+    ofParameterGroup    particleParams;
+    ofParameterGroup    springParams;
+    
     gui.setup();
     gui.add(makeParticles.set("Particles", true));
     gui.add(makeSprings.set("Springs", true));
-    gui.add(gravity.set("gravity", ofVec2f(0, 0.2), ofVec2f(-1, -1), ofVec2f(1, 1)));
+    gui.add(gravity.set("gravity", ofPoint(0, 0.2, 0), ofPoint(-1, -1, -1), ofPoint(1, 1, 1)));
     particleParams.setName("particles");
     particleParams.add(node_radius.set("node radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
     particleParams.add(mass.set("mass", MIN_MASS, MIN_MASS, MAX_MASS));
@@ -55,10 +57,14 @@ void ofApp::setupGui(){
     particleParams.add(attraction.set("attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
     
     springParams.setName("springs");
+    springParams.add(springCount.set("0"));
     springParams.add(spring_strength.set("spring strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
     springParams.add(spring_length.set("spring length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
     
-    gui.add(lightPos.set("Light position", ofPoint::zero(), ofVec3f(-ofGetWidth(), -ofGetHeight(), -ofGetWidth()), ofVec3f(ofGetWidth(), ofGetHeight(), ofGetWidth())));
+    gui.add(lightPos.set("Light position",
+                         ofPoint(0, 40, -40),
+                         ofPoint(-ofGetWidth()*2, -ofGetHeight()*2, -ofGetWidth()),
+                         ofPoint(ofGetWidth()*2, ofGetHeight()*2, ofGetWidth())));
     gui.add(colorHue.set("HUE", 100.f, 0.f, 255.f));
     
     gui.add(particleParams);
@@ -75,6 +81,8 @@ void ofApp::setupGui(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    
+    springCount.set(ofToString(physics.numberOfSprings()));
     
     lightColor.setHue(colorHue);
     pointLight.setPosition(lightPos);
@@ -101,9 +109,8 @@ void ofApp::update(){
         polygonMesh.clear();
         polygonMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
         for(int i=0; i<physics.numberOfParticles(); i++){
-            auto p = (Particle *)physics.getParticle(i);
+            auto p = physics.getParticle(i);
             polygonMesh.addVertex(p->getPosition());
-            polygonMesh.addColor(ofFloatColor(p->color.a/255, p->color.g/255, p->color.b/255));
             polygonMesh.addIndex(i);
         }
         
@@ -111,18 +118,18 @@ void ofApp::update(){
         springMesh.setMode(OF_PRIMITIVE_LINES);
         for(int i=0; i<physics.numberOfSprings(); i++){
             auto s = (Spring2D *)physics.getSpring(i);
-            auto a = (Particle *)s->getOneEnd();
-            auto b = (Particle *)s->getTheOtherEnd();
+            auto a = s->getOneEnd();
+            auto b = s->getTheOtherEnd();
             ofVec2f vec = b->getPosition() - a->getPosition();
             float dist = vec.normalize().length();
-            ofFloatColor c;
-            c.r = ofLerp(a->color.r, b->color.r, dist)/255;
-            c.g = ofLerp(a->color.g, b->color.g, dist)/255;
-            c.b = ofLerp(a->color.b, b->color.b, dist)/255;
+//            ofFloatColor c;
+//            c.r = ofLerp(a->color.r, b->color.r, dist)/255;
+//            c.g = ofLerp(a->color.g, b->color.g, dist)/255;
+//            c.b = ofLerp(a->color.b, b->color.b, dist)/255;
             springMesh.addVertex(a->getPosition());
             springMesh.addVertex(b->getPosition());
-            polygonMesh.addColor(c);
-            polygonMesh.addColor(c);
+//            polygonMesh.addColor(c);
+//            polygonMesh.addColor(c);
             polygonMesh.addIndex(i);
             if (i == physics.numberOfSprings() - 1) {
                 polygonMesh.addIndex(i);
@@ -135,7 +142,7 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
-void ofApp::setGravity(ofVec2f& g){
+void ofApp::setGravity(ofPoint& g){
     physics.setGravity(g);
 }
 
@@ -146,15 +153,17 @@ void ofApp::draw(){
     float height = ofGetHeight();
     
     ofPushMatrix();
-//    ofEnableDepthTest();
+    ofEnableDepthTest();
     ofEnableAlphaBlending();
     
-    arcball.begin();
+//    arcball.begin();
     
     if (drawUsingVboMesh) {
         ofEnableLighting();
         pointLight.enable();
-
+        
+        ofPushMatrix();
+//        ofTranslate(ofGetWidth()/2, 0, -ofGetWidth()/3);
         polyMat.begin();
         polygonMesh.drawFaces();
         polyMat.end();
@@ -162,38 +171,35 @@ void ofApp::draw(){
         springMat.begin();
         springMesh.draw();
         springMat.end();
-
+        
+        ofPopMatrix();
         ofDisableLighting();
     } else {
         // Draw springs
         for(int i=0; i<physics.numberOfSprings(); i++){
             auto s = (Spring2D *)physics.getSpring(i);
-            auto a = (Particle *)s->getOneEnd();
-            auto b = (Particle *)s->getTheOtherEnd();
+            auto a = s->getOneEnd();
+            auto b = s->getTheOtherEnd();
             ofVec2f vec = b->getPosition() - a->getPosition();
             float dist = vec.normalize().length();
-            ofColor c;
-            c.r = ofLerp(a->color.r, b->color.r, dist);
-            c.g = ofLerp(a->color.g, b->color.g, dist);
-            c.b = ofLerp(a->color.b, b->color.b, dist);
-            ofSetColor(c);
+            ofSetColor(255);
             ofDrawLine(a->getPosition(), b->getPosition());
         }
         
         // Draw particles
         for(int i=0; i<physics.numberOfParticles(); i++){
-            auto p = (Particle *)physics.getParticle(i);
-            ofSetColor(p->color);
+            auto p = physics.getParticle(i);
+            ofSetColor(200);
             ofSetCircleResolution(p->getRadius()*10);
             ofDrawCircle(p->getPosition(), p->getRadius());
         }
     }
     
     ofDisableAlphaBlending();
-//    ofDisableDepthTest();
+    ofDisableDepthTest();
     ofPopMatrix();
     
-    arcball.end();
+//    arcball.end();
     
     ofSetColor(ofColor::white);
     if (drawGui) {
@@ -226,7 +232,6 @@ void ofApp::keyPressed(int key){
             for(int i=0; i<physics.numberOfAttractions(); i++){
                 auto a = (Attraction2D *)physics.getAttraction(i);
                 a->kill();
-//                physics.makeAttraction(, <#ParticleT<ofVec2f> *b#>, <#float _strength#>);
             }
             break;
             
@@ -239,7 +244,7 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-    arcball.startDrag();
+//    arcball.startDrag();
 }
 
 //--------------------------------------------------------------
@@ -261,7 +266,7 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    arcball.stopDrag();
+//    arcball.stopDrag();
 }
 
 //--------------------------------------------------------------
@@ -295,14 +300,13 @@ void ofApp::dragEvent(ofDragInfo info){
 
 //--------------------------------------------------------------
 void ofApp::makeParticleAtPosition(float x, float y, ofColor c){
-    auto a = new Particle;
-    a->moveTo(ofVec2f(x, y));
-    a->color.set(c);
+    auto a = new Particle3D;
     a->setMass(mass)
     ->setBounce(bounce)
     ->setRadius(node_radius)
     ->enableCollision()
-    ->makeFree();
+    ->makeFree()
+    ->moveTo(ofVec2f(x, y));
     
     if (makeParticles)
         physics.addParticle(a);
@@ -352,8 +356,7 @@ void ofApp::makeParticlesFromImage(ofImage &img){
             
             if (ofGetWindowRect().inside(pos)) {
                 
-                auto a = new Particle;
-                a->color = ofColor(cur);
+                auto a = new Particle3D;
                 a->setMass(mass)
                 ->setBounce(bounce)
                 ->setRadius(radius)

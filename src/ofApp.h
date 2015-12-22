@@ -27,21 +27,7 @@
 #define SPRING_MAX_LENGTH		400
 #define SECTOR_COUNT            1
 
-//#define USE_3D
-
 using namespace msa::physics;
-
-#ifdef USE_3D
-class Particle : public Particle3D {
-public:
-    ofColor color;
-};
-#else
-class Particle : public Particle2D {
-public:
-    ofColor color;
-};
-#endif
 
 
 class ofApp : public ofBaseApp {
@@ -70,23 +56,17 @@ public:
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
 
-    void setGravity(ofVec2f& g);
+    void setGravity(ofPoint& g);
     void setupGui();
-#ifdef USE_3D
+
     World3D             physics;
-#else
-    World2D             physics;
-#endif
     
     ofLight             pointLight;
     ofMaterial          polyMat, springMat;
     
     ofxPanel            gui;
 
-    ofParameterGroup    particleParams;
-    ofParameterGroup    springParams;
-
-    ofParameter<ofVec2f> gravity;
+    ofParameter<ofPoint> gravity;
 
     ofVboMesh            polygonMesh;
     ofVboMesh            springMesh;
@@ -100,6 +80,7 @@ public:
     ofParameter<bool>    physicsPaused;
     
     ofParameter<double>  node_radius;
+    ofParameter<string>  springCount;
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
     ofParameter<double>  attraction;
@@ -109,4 +90,6 @@ public:
     ofParameter<bool>    makeSprings;
     ofParameter<bool>    drawUsingVboMesh;
     ofParameter<bool>    drawGui;
+    
+    ofEasyCam   cam;
 };
