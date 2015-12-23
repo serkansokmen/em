@@ -274,7 +274,7 @@ void ofApp::mouseExited(int x, int y){
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
     physics.clearWorldSize();
-    physics.setWorldSize(ofVec2f(0, 0), ofVec2f(w, h));
+    physics.setWorldSize(ofPoint(-w, -h, -h), ofPoint(w, h, h));
 }
 
 //--------------------------------------------------------------
