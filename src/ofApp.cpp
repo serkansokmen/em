@@ -156,8 +156,6 @@ void ofApp::draw(){
     ofEnableDepthTest();
     ofEnableAlphaBlending();
     
-//    arcball.begin();
-    
     if (drawUsingVboMesh) {
         ofEnableLighting();
         pointLight.enable();
@@ -198,8 +196,6 @@ void ofApp::draw(){
     ofDisableAlphaBlending();
     ofDisableDepthTest();
     ofPopMatrix();
-    
-//    arcball.end();
     
     ofSetColor(ofColor::white);
     if (drawGui) {
@@ -244,7 +240,6 @@ void ofApp::keyReleased(int key){
 
 //--------------------------------------------------------------
 void ofApp::mouseMoved(int x, int y ){
-//    arcball.startDrag();
 }
 
 //--------------------------------------------------------------
@@ -266,7 +261,6 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-//    arcball.stopDrag();
 }
 
 //--------------------------------------------------------------

@@ -4,7 +4,6 @@
 #include "MSAPhysics2D.h"
 #include "MSAPhysics3D.h"
 #include "ofxGui.h"
-#include "ofxArcBall.h"
 
 #define NODE_MIN_RADIUS     1
 #define NODE_MAX_RADIUS     60
@@ -70,8 +69,6 @@ public:
 
     ofVboMesh            polygonMesh;
     ofVboMesh            springMesh;
-    
-    ofxArcBall           arcball;
     
     ofParameter<ofPoint> lightPos;
     ofParameter<float>   colorHue;
