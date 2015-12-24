@@ -4,12 +4,14 @@
 #include "MSAPhysics2D.h"
 #include "MSAPhysics3D.h"
 #include "ofxGui.h"
+#include "ofxCameraSaveLoad.h"
 
-#define NODE_MIN_RADIUS     1
-#define NODE_MAX_RADIUS     60
+
+#define NODE_MIN_RADIUS     0.1
+#define NODE_MAX_RADIUS     10
 
 #define MIN_MASS            0.01
-#define MAX_MASS            500
+#define MAX_MASS            1
 
 #define MIN_DISTANCE        0.1
 #define MAX_DISTANCE        500
@@ -49,35 +51,38 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
 
-    void makeParticleAtPosition(float x, float y, ofColor c);
-    void makeParticlesFromImage(ofImage &img);
+    void makeParticleAtPosition(const ofPoint& p, const ofColor& c);
+    void makeParticlesFromImage(ofImage& img);
 
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
 
     void setGravity(ofPoint& g);
+    void setCamNearClip(float& v);
+    void setCamFarClip(float& v);
+    
     void setupGui();
+    void resetCamera();
 
     World3D             physics;
-    
+
     ofLight             pointLight;
     ofMaterial          polyMat, springMat;
-    
+
     ofxPanel            gui;
 
     ofParameter<ofPoint> gravity;
 
-    ofVboMesh            polygonMesh;
-    ofVboMesh            springMesh;
-    
+    ofVboMesh    polyMesh;
+    ofVboMesh    springMesh;
+
     ofParameter<ofPoint> lightPos;
     ofParameter<float>   colorHue;
     ofColor              lightColor;
     ofColor              materialColor;
-    ofParameter<bool>    physicsPaused;
     
-    ofParameter<double>  node_radius;
-    ofParameter<string>  springCount;
+    ofParameter<bool>    physicsPaused;
+    ofParameter<double>  radius;
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
     ofParameter<double>  attraction;
@@ -87,6 +92,9 @@ public:
     ofParameter<bool>    makeSprings;
     ofParameter<bool>    drawUsingVboMesh;
     ofParameter<bool>    drawGui;
+    ofParameter<string>  springCount;
+    ofParameter<float>   camNearClip;
+    ofParameter<float>   camFarClip;
     
-    ofEasyCam   cam;
+    ofEasyCam   previewCamera;
 };
