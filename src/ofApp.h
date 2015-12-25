@@ -50,51 +50,74 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-
-    void makeParticleAtPosition(const ofPoint& p, const ofColor& c);
+    
+    void makeParticleAtPosition(const ofPoint& p);
+    void makeParticleAtCenter(float radius);
     void makeParticlesFromImage(ofImage& img);
 
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
-
-    void setGravity(ofPoint& g);
+    
+    void setPhysicsBoxSize(double& s);
+    void setGravityVec(ofPoint& g);
+    void setCamFov(float& v);
     void setCamNearClip(float& v);
     void setCamFarClip(float& v);
     
     void setupGui();
     void resetCamera();
 
-    World3D             physics;
+    World3D              physics;
 
-    ofLight             pointLight;
-    ofMaterial          polyMat, springMat;
-
-    ofxPanel            gui;
-
-    ofParameter<ofPoint> gravity;
-
-    ofVboMesh    polyMesh;
-    ofVboMesh    springMesh;
-
-    ofParameter<ofPoint> lightPos;
-    ofParameter<float>   colorHue;
-    ofColor              lightColor;
-    ofColor              materialColor;
+    ofLight              pointLight;
+    ofMaterial           polyMat, springMat;
     
-    ofParameter<bool>    physicsPaused;
+    ofBoxPrimitive       worldBox;
+
+    ofxPanel             gui;
+
+    ofVboMesh            polyMesh;
+    ofVboMesh            springMesh;
+    Particle3D           fixedParticle;
+
+    ofColor              lightColor;
+    ofFloatColor         polyMatDiffuseColor;
+    ofFloatColor         springMatDiffuseColor;
+    
+//    Physics params
+    ofParameter<bool>    makeParticles;
+    ofParameter<bool>    makeSprings;
     ofParameter<double>  radius;
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
     ofParameter<double>  attraction;
     ofParameter<double>  spring_strength;
     ofParameter<double>  spring_length;
-    ofParameter<bool>    makeParticles;
-    ofParameter<bool>    makeSprings;
-    ofParameter<bool>    drawUsingVboMesh;
-    ofParameter<bool>    drawGui;
+    ofParameter<double>  boxSize;
+    ofParameter<string>  particleCount;
     ofParameter<string>  springCount;
+    ofParameter<string>  attractionCount;
+    ofParameter<ofPoint> gravity;
+    ofParameter<bool>    physicsPaused;
+    
+//    Camera params
+    ofParameter<float>   camFov;
     ofParameter<float>   camNearClip;
     ofParameter<float>   camFarClip;
+    
+//     Render params
+    ofParameter<ofPoint> lightPos;
+    ofParameter<float>   lightHue;
+    ofParameter<float>   polyHue;
+    ofParameter<float>   springHue;
+    ofParameter<bool>    drawWorldBox;
+    ofParameter<bool>    drawUsingVboMesh;
+    
+    
+    ofParameter<bool>    drawGrid;
+    ofParameter<bool>    drawGui;
+    
+    
     
     ofEasyCam   previewCamera;
 };

@@ -16,92 +16,122 @@ void ofApp::setup(){
 
     pointLight.setDiffuseColor(ofColor(255.f, 255.f, 255.f));
     pointLight.setSpecularColor(ofColor(255.f, 255.f, 255.f));
+    
+    ofColor c;
+    c.setBrightness(250.f);
+    c.setSaturation(200.f);
+    lightColor.set(c);
 
+    polyMatDiffuseColor.set(0,1,0);
+    springMatDiffuseColor.set(1,1,1);
+    
     polyMat.setShininess(255);
-    polyMat.setDiffuseColor(ofFloatColor(0,1,0));
-
+    polyMat.setDiffuseColor(polyMatDiffuseColor);
     springMat.setShininess(255);
-    springMat.setDiffuseColor(ofFloatColor(1,1,1));
-
-    lightColor.setBrightness( 250.f );
-    lightColor.setSaturation( 150.f );
-
-    materialColor.setBrightness(250.f);
-    materialColor.setSaturation(200);
+    springMat.setDiffuseColor(springMatDiffuseColor);
 
     setupGui();
     
-    float boxSize = 100.f;
-    physics.setWorldSize(ofVec3f(-boxSize, -boxSize, -boxSize),
-                         ofVec3f(boxSize, boxSize, boxSize));
     physics.setSectorCount(SECTOR_COUNT);
     physics.setDrag(0.97f);
     // physics.setTimeStep(60);
     physics.setDrag(0.97f);
     physics.setDrag(1);
-    physics.disableCollision();
+    physics.enableCollision();
+    
+    physics.addParticle(&fixedParticle);
+    fixedParticle.setMass(1)->setRadius(10.f)->moveTo(ofPoint::zero())->makeFixed();
     
     ofxLoadCamera(previewCamera, "previewCamSettings");
-    previewCamera.setFov(60);
+    previewCamera.setFov(camFov);
 }
 
 //--------------------------------------------------------------
 void ofApp::setupGui(){
 
     gui.setup();
-
+    drawGui.set(true);
+    
     ofParameterGroup    physicsParams;
     ofParameterGroup    renderParams;
+    ofParameterGroup    debugParams;
     ofParameterGroup    cameraParams;
-
+    
     physicsParams.setName("PHYSICS");
-    physicsParams.add(makeParticles.set("Particles", true));
-    physicsParams.add(makeSprings.set("Springs", true));
-    physicsParams.add(radius.set("Radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
-    physicsParams.add(mass.set("Mass", MIN_MASS, MIN_MASS, MAX_MASS));
-    physicsParams.add(bounce.set("Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
-    physicsParams.add(attraction.set("Attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
-    physicsParams.add(spring_strength.set("Spring Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
-    physicsParams.add(spring_length.set("Spring Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
-    physicsParams.add(springCount.set("SPRING COUNT", "0"));
-    physicsParams.add(gravity.set("Gravity", ofPoint(0, 0.2, 0), ofPoint(-1, -1, -1), ofPoint(1, 1, 1)));
-    physicsParams.add(physicsPaused.set("Paused", false));
+    physicsParams.add(boxSize.set("world size", 100.f, 1.f, 400.f));
+    physicsParams.add(makeParticles.set("particles", true));
+    physicsParams.add(makeSprings.set("springs", true));
+    physicsParams.add(radius.set("particle radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
+    physicsParams.add(mass.set("particle mass", MIN_MASS, MIN_MASS, MAX_MASS));
+    physicsParams.add(bounce.set("particle bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
+    physicsParams.add(attraction.set("particle attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
+    physicsParams.add(spring_strength.set("spring strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
+    physicsParams.add(spring_length.set("spring length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
+    physicsParams.add(particleCount.set("PARTICLES", "0"));
+    physicsParams.add(springCount.set("SPRINGS", "0"));
+    physicsParams.add(attractionCount.set("ATTRACTIONS", "0"));
+    physicsParams.add(gravity.set("gravity", ofPoint(0, 0.2, 0), ofPoint(-1, -1, -1), ofPoint(1, 1, 1)));
+    physicsParams.add(physicsPaused.set("paused", false));
 
     cameraParams.setName("CAMERA");
-    cameraParams.add(camNearClip.set("Near Clip", previewCamera.getNearClip(), 0.1f, 200.f));
-    cameraParams.add(camFarClip.set("Far Clip", previewCamera.getFarClip(), 200.f, 4000.f));
+    cameraParams.add(camFov.set("field of view", 60, 0.f, 180.f));
+    cameraParams.add(camNearClip.set("near clip", 0.1f, 0.1f, 20.f));
+    cameraParams.add(camFarClip.set("far clip", 5000.f, 20.f, 10000.f));
     
     renderParams.setName("RENDER");
-    renderParams.add(drawUsingVboMesh.set("Draw VBO", true));
-    renderParams.add(colorHue.set("Color Hue", 100.f, 0.f, 255.f));
-    renderParams.add(lightPos.set("Light Position", ofPoint(0, 40, -40),
-                                  ofPoint(-ofGetWidth()*2, -ofGetHeight()*2, -ofGetWidth()),
-                                  ofPoint(ofGetWidth()*2, ofGetHeight()*2, ofGetWidth())));
-
+    renderParams.add(lightHue.set("light hue", 100.f, 0.f, 255.f));
+    renderParams.add(polyHue.set("polygon hue", 100.f, 0.f, 255.f));
+    renderParams.add(springHue.set("spring hue", 255.f, 0.f, 255.f));
+    double bs = boxSize.get() * 1.8f;
+    renderParams.add(lightPos.set("light position", ofPoint(0, 40, -40),
+                                  ofPoint(-bs, -bs, -bs),
+                                  ofPoint(bs, bs, bs)));
+    debugParams.setName("DEBUG");
+    debugParams.add(drawUsingVboMesh.set("polygons", true));
+    debugParams.add(drawGrid.set("grid", true));
+    debugParams.add(drawWorldBox.set("world box", true));
+    
     gui.add(physicsParams);
     gui.add(cameraParams);
     gui.add(renderParams);
-
-    gui.setBackgroundColor(ofColor(28,28,28));
-    gui.add(drawGui.set("GUI", true));
+    gui.add(debugParams);
     
-    gravity.addListener(this, &ofApp::setGravity);
+    gui.minimizeAll();
+    
+
+    gui.setBackgroundColor(ofColor::black);
+    
+    gui.setBorderColor(ofColor::black);
+    gui.setDefaultTextPadding(10);
+    
+    boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
+    gravity.addListener(this, &ofApp::setGravityVec);
+    camFov.addListener(this, &ofApp::setCamFov);
     camNearClip.addListener(this, &ofApp::setCamNearClip);
     camFarClip.addListener(this, &ofApp::setCamFarClip);
 
     gui.loadFromFile("settings.xml");
+    
+    bs = boxSize.get();
+    setPhysicsBoxSize(bs);
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
+    particleCount.set(ofToString(physics.numberOfParticles()));
     springCount.set(ofToString(physics.numberOfSprings()));
-
-    lightColor.setHue(colorHue);
+    attractionCount.set(ofToString(physics.numberOfAttractions()));
+    
+    lightColor.setHue(lightHue);
     pointLight.setPosition(lightPos);
-    pointLight.setDiffuseColor(lightColor);
-    materialColor.setHue(colorHue);
-    polyMat.setSpecularColor(materialColor);
+    pointLight.setSpecularColor(lightColor);
+    
+    polyMatDiffuseColor.setHue(polyHue);
+    springMatDiffuseColor.setHue(springHue);
+
+    polyMat.setDiffuseColor(polyMatDiffuseColor);
+    springMat.setDiffuseColor(springMatDiffuseColor);
 
     if (!physicsPaused) {
         physics.update();
@@ -131,26 +161,45 @@ void ofApp::update(){
         springMesh.clear();
         springMesh.setMode(OF_PRIMITIVE_LINES);
         for(int i=0; i<physics.numberOfSprings(); i++){
-            auto s = physics.getSpring(i);
-            auto a = s->getOneEnd();
-            auto b = s->getTheOtherEnd();
-            auto vec = b->getPosition() - a->getPosition();
-            float dist = vec.normalize().length();
+            
+            auto spring = (msa::physics::Spring3D *) physics.getSpring(i);
+            auto a = spring->getOneEnd();
+            auto b = spring->getTheOtherEnd();
+            ofVec3f vec = b->getPosition() - a->getPosition();
+            float dist = vec.length();
+            float angle = acos( vec.z / dist ) * RAD_TO_DEG;
+            if(vec.z <= 0 ) angle = -angle;
+            float rx = -vec.y * vec.z;
+            float ry =  vec.x * vec.z;
+            
+//            ofRotate(angle, rx, ry, 0.0);
+            float size = ofMap(spring->getStrength(), SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH);
 
             springMesh.addVertex(a->getPosition());
             springMesh.addVertex(b->getPosition());
             springMesh.addIndex(i);
             springMesh.addIndex(i);
-            polyMesh.addIndex(i);
+//            polyMesh.addIndex(i);
         }
     }
 }
 
 //--------------------------------------------------------------
-void ofApp::setGravity(ofPoint& g){
+void ofApp::setPhysicsBoxSize(double& s){
+    worldBox.setScale(1);
+    worldBox.setWidth(s*2);
+    worldBox.setHeight(s*2);
+    worldBox.setDepth(s*2);
+    physics.setWorldSize(ofVec3f(-s, -s, -s),
+                         ofVec3f(s, s, s));
+    physics.clearWorldSize();
+}
+void ofApp::setGravityVec(ofPoint& g){
     physics.setGravity(g);
 }
-
+void ofApp::setCamFov(float& v) {
+    previewCamera.setFov(v);
+}
 void ofApp::setCamNearClip(float& v) {
     previewCamera.setNearClip(v);
 }
@@ -178,17 +227,22 @@ void ofApp::draw(){
     ofEnableLighting();
     pointLight.enable();
     previewCamera.begin();
-
-    if (drawGui) {
+    
+    if (drawWorldBox) {
+        worldBox.drawWireframe();
+    }
+    
+    if (drawGrid) {
         ofSetColor(255, 200);
-        ofDrawAxis(1);
-        ofDrawGridPlane(1);
+        ofDrawAxis(10);
+//        ofDrawGridPlane(100);
+        ofDrawGrid(40);
     }
 
     if (drawUsingVboMesh) {
         ofPushMatrix();
         polyMat.begin();
-        polyMesh.drawFaces();
+        polyMesh.draw();
         polyMat.end();
 
         springMat.begin();
@@ -209,8 +263,26 @@ void ofApp::draw(){
             polyMat.end();
             ofPopMatrix();
         }
+        
+        // draw springs
+        ofFloatColor(0.5, 0.5, 0.5, 0.5);
+        for(int i=0; i<physics.numberOfSprings(); i++) {
+            auto spring = (msa::physics::Spring3D *) physics.getSpring(i);
+            auto a = spring->getOneEnd();
+            auto b = spring->getTheOtherEnd();
+            
+            ofPushMatrix();
+            springMat.begin();
+            ofDrawLine(a->getPosition(), b->getPosition());
+            springMat.end();
+            ofPopMatrix();
+        }
     }
     
+    if (drawGui) {
+        ofSetColor(ofColor::white);
+        pointLight.draw();
+    }
     ofDisableLighting();
     previewCamera.end();
     ofDisableAlphaBlending();
@@ -224,18 +296,26 @@ void ofApp::draw(){
 }
 
 void ofApp::exit(){
-    gravity.removeListener(this, &ofApp::setGravity);
+    boxSize.removeListener(this, &ofApp::setPhysicsBoxSize);
+    gravity.removeListener(this, &ofApp::setGravityVec);
+    camFov.removeListener(this, &ofApp::setCamFov);
     camNearClip.removeListener(this, &ofApp::setCamNearClip);
     camFarClip.removeListener(this, &ofApp::setCamFarClip);
     ofxSaveCamera(previewCamera, "previewCamSettings");
+    gui.saveToFile("settings.xml");
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
         case ' ':
-            physics.clear();
-            break;
+      {
+        physics.clear();
+        physics.addParticle(&fixedParticle);
+//        auto z = ofPoint::zero();
+//        setGravityVec(z);
+        break;
+      }
         case 's':
             gui.saveToFile("settings.xml");
             break;
@@ -249,7 +329,7 @@ void ofApp::keyPressed(int key){
             resetCamera();
             break;
         case 'g':
-            drawGui = !drawGui;
+            drawGui.set(!drawGui.get());
         case 'b':
             for(int i=0; i<physics.numberOfAttractions(); i++){
                 auto a = (Attraction2D *)physics.getAttraction(i);
@@ -284,12 +364,20 @@ void ofApp::mouseDragged(int x, int y, int button){
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
     if (!gui.getShape().inside(x, y)){
-        ofColor color(ofNormalize(mass, MIN_MASS, MAX_MASS)*255,
-                ofNormalize(radius, NODE_MIN_RADIUS, NODE_MAX_RADIUS)*255,
-                ofNormalize(bounce, MIN_BOUNCE, MAX_BOUNCE)*255);
+        
+        int np = physics.numberOfParticles();
+        
         if (makeParticles) {
-            auto pos = previewCamera.worldToCamera(ofVec3f(x, y, 0));
-            makeParticleAtPosition(pos, color);
+//            auto pos = previewCamera.screenToWorld(ofVec3f(x, y, 0));
+//            makeParticleAtPosition(pos);
+            makeParticleAtCenter(boxSize.get() * 0.8f);
+        }
+        if (makeSprings && np > 1 && np % 2 == 0) {
+            auto a = physics.getParticle(np-1);
+            auto b = physics.getParticle(np-2);
+            makeSpringBetweenParticles(a, b);
+            makeSpringBetweenParticles(a, &fixedParticle);
+            makeSpringBetweenParticles(b, &fixedParticle);
         }
     }
 }
@@ -308,8 +396,8 @@ void ofApp::mouseExited(int x, int y){
 
 //--------------------------------------------------------------
 void ofApp::windowResized(int w, int h){
-    physics.clearWorldSize();
-    physics.setWorldSize(ofPoint(-w, -h, -h), ofPoint(w, h, h));
+//    physics.clearWorldSize();
+//    physics.setWorldSize(ofPoint(-w, -h, -h), ofPoint(w, h, h));
 }
 
 //--------------------------------------------------------------
@@ -335,9 +423,23 @@ void ofApp::makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b) {
     physics.makeSpring(a, b, spring_strength, spring_length);
 }
 
+//--------------------------------------------------------------
+void ofApp::makeParticleAtCenter(float r){
+    auto a = new Particle3D;
+    a->setMass(mass)
+    ->setBounce(bounce)
+    ->setRadius(radius)
+    ->enableCollision()
+    ->makeFree()
+    ->moveTo(ofPoint(ofRandom(-r, r),
+                     ofRandom(-r, r),
+                     ofRandom(-r, r)));
+    
+    physics.addParticle(a);
+}
 
 //--------------------------------------------------------------
-void ofApp::makeParticleAtPosition(const ofPoint& p, const ofColor& c){
+void ofApp::makeParticleAtPosition(const ofPoint& p){
     auto a = new Particle3D;
     a->setMass(mass)
     ->setBounce(bounce)
@@ -345,24 +447,15 @@ void ofApp::makeParticleAtPosition(const ofPoint& p, const ofColor& c){
     ->enableCollision()
     ->makeFree()
     ->moveTo(p);
-
     physics.addParticle(a);
 
-    if (makeSprings) {
-        for (int i = 0; i < physics.numberOfParticles(); i++) {
-            float dist = physics.getParticle(i)->getPosition().distance(a->getPosition());
-            if (dist > SPRING_MIN_LENGTH && dist < spring_length) {
-                makeSpringBetweenParticles(a, physics.getParticle(i));
-            }
-        }
-    }
     for (int i = 0; i < physics.numberOfParticles(); i++) {
         float dist = physics.getParticle(i)->getPosition().distance(a->getPosition());
-        if (dist > SPRING_MIN_LENGTH && dist < spring_length) {
+        if (dist > SPRING_MIN_LENGTH && dist < spring_length && attraction > 0.f) {
             physics.makeAttraction(a, physics.getParticle(i), attraction);
         }
     }
-
+    
     a->release();
 }
 
