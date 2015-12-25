@@ -19,14 +19,15 @@
 #define MIN_BOUNCE          0.0001
 #define MAX_BOUNCE          0.95
 
-#define MIN_ATTRACTION      -0.005
-#define MAX_ATTRACTION      0.005
+#define MIN_ATTRACTION      -0.05
+#define MAX_ATTRACTION      0.05
 
-#define	SPRING_MIN_STRENGTH		0.00000005
-#define SPRING_MAX_STRENGTH		0.000005
+#define	SPRING_MIN_STRENGTH		0.00005
+#define SPRING_MAX_STRENGTH		0.05
 #define	SPRING_MIN_LENGTH		0.1
-#define SPRING_MAX_LENGTH		400
+#define SPRING_MAX_LENGTH		1200
 #define SECTOR_COUNT            1
+
 
 using namespace msa::physics;
 
@@ -53,8 +54,8 @@ public:
     
     void makeParticleAtPosition(const ofPoint& p);
     void makeParticleAtCenter(float radius);
-    void makeParticlesFromImage(ofImage& img);
-
+    void makeCluster();
+    
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
     
@@ -68,7 +69,7 @@ public:
     void resetCamera();
 
     World3D              physics;
-
+    ofEasyCam            previewCam;
     ofLight              pointLight;
     ofMaterial           polyMat, springMat;
     
@@ -98,6 +99,7 @@ public:
     ofParameter<string>  springCount;
     ofParameter<string>  attractionCount;
     ofParameter<ofPoint> gravity;
+    ofParameter<bool>    bindToFixedParticle;
     ofParameter<bool>    physicsPaused;
     
 //    Camera params
@@ -110,14 +112,10 @@ public:
     ofParameter<float>   lightHue;
     ofParameter<float>   polyHue;
     ofParameter<float>   springHue;
+    ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawWorldBox;
     ofParameter<bool>    drawUsingVboMesh;
     
-    
     ofParameter<bool>    drawGrid;
     ofParameter<bool>    drawGui;
-    
-    
-    
-    ofEasyCam   previewCamera;
 };
