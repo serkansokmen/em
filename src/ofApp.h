@@ -2,45 +2,46 @@
 
 #include "ofMain.h"
 #include "MSAPhysics2D.h"
+#include "MSAPhysics3D.h"
 #include "ofxGui.h"
+#include "ofxCameraSaveLoad.h"
+#include "Leap.h"
+#include "LeapMath.h"
 
-#define NODE_MIN_RADIUS     5
-#define NODE_MAX_RADIUS     15
 
-#define MIN_MASS            1
-#define MAX_MASS            3
+#define NODE_MIN_RADIUS     0.1
+#define NODE_MAX_RADIUS     10
 
-#define MIN_BOUNCE          0.01
-#define MAX_BOUNCE          0.2
+#define MIN_MASS            0.01
+#define MAX_MASS            1
 
-#define MIN_ATTRACTION      3
-#define MAX_ATTRACTION      10
+#define MIN_DISTANCE        0.1
+#define MAX_DISTANCE        500
 
-#define	SPRING_MIN_STRENGTH		0.005
-#define SPRING_MAX_STRENGTH		0.1
+#define MIN_BOUNCE          0.0001
+#define MAX_BOUNCE          0.95
 
-#define	SPRING_MIN_WIDTH		1
-#define SPRING_MAX_WIDTH		3
+#define MIN_ATTRACTION      -0.05
+#define MAX_ATTRACTION      0.05
 
-#define SECTOR_COUNT        1       // currently there is a bug at sector borders
+#define	SPRING_MIN_STRENGTH		0.00005
+#define SPRING_MAX_STRENGTH		0.05
+#define	SPRING_MIN_LENGTH		0.1
+#define SPRING_MAX_LENGTH		1200
+#define SECTOR_COUNT            1
 
 
 using namespace msa::physics;
 
-class Particle : public Particle2D {
-public:
-    ofColor color;
-};
-
 
 class ofApp : public ofBaseApp {
-    
+
 public:
     void setup();
     void update();
     void draw();
     void exit();
-    
+
     void keyPressed(int key);
     void keyReleased(int key);
     void mouseMoved(int x, int y );
@@ -53,29 +54,78 @@ public:
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
     
-    void makeParticleAtPosition(float x, float y);
-    void makeParticlesFromImage(ofImage &img);
-    void setGravity(ofVec2f& g);
+    void makeParticleAtPosition(const ofPoint& p);
+    void makeParticleAtCenter(float radius);
+    void makeCluster();
+    
+    template <typename T>
+    void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
+    
+    // Event Handlers
+    void toggleLeap(bool& v);
+    void setPhysicsBoxSize(double& s);
+    void setGravityVec(ofPoint& g);
+    void setCamFov(float& v);
+    void setCamNearClip(float& v);
+    void setCamFarClip(float& v);
+    
     void setupGui();
+    void resetCamera();
+
+    World3D              physics;
+    ofEasyCam            previewCam;
+    ofLight              pointLight;
+    ofMaterial           polyMat, springMat;
     
-    World2D             physics;
-    ofxPanel            gui;
+    ofBoxPrimitive       worldBox;
     
-    ofParameterGroup    particleParams;
-    ofParameterGroup    springParams;
+    Leap::Controller     leap;
     
-    ofParameter<ofVec2f> gravity;
+    ofxPanel             gui;
+
+    ofVboMesh            polyMesh;
+    ofVboMesh            springMesh;
+    Particle3D           fixedParticle;
+
+    ofColor              lightColor;
+    ofFloatColor         polyMatDiffuseColor;
+    ofFloatColor         springMatDiffuseColor;
     
-    ofParameter<float>  node_min_radius;
-    ofParameter<float>  node_max_radius;
-    ofParameter<float>  min_mass;
-    ofParameter<float>  max_mass;
-    ofParameter<float>  min_bounce;
-    ofParameter<float>  max_bounce;
-    ofParameter<float>  min_attraction;
-    ofParameter<float>  max_attraction;
-    ofParameter<float>  spring_min_strength;
-    ofParameter<float>  spring_max_strength;
-    ofParameter<float>  spring_min_width;
-    ofParameter<float>  spring_max_width;
+    ofQuaternion         camQuat;
+    ofPoint              camPos;
+    
+//    Physics params
+    ofParameter<bool>    makeParticles;
+    ofParameter<bool>    makeSprings;
+    ofParameter<double>  radius;
+    ofParameter<double>  mass;
+    ofParameter<double>  bounce;
+    ofParameter<double>  attraction;
+    ofParameter<double>  spring_strength;
+    ofParameter<double>  spring_length;
+    ofParameter<double>  boxSize;
+    ofParameter<string>  particleCount;
+    ofParameter<string>  springCount;
+    ofParameter<string>  attractionCount;
+    ofParameter<ofPoint> gravity;
+    ofParameter<bool>    bindToFixedParticle;
+    ofParameter<bool>    physicsPaused;
+    
+//    Camera params
+    ofParameter<float>   camFov;
+    ofParameter<float>   camNearClip;
+    ofParameter<float>   camFarClip;
+    
+//     Render params
+    ofParameter<ofPoint> lightPos;
+    ofParameter<float>   lightHue;
+    ofParameter<float>   polyHue;
+    ofParameter<float>   springHue;
+    ofParameter<bool>    drawWireframe;
+    ofParameter<bool>    drawWorldBox;
+    ofParameter<bool>    drawUsingVboMesh;
+    
+    ofParameter<bool>    useLeap;
+    ofParameter<bool>    drawGrid;
+    ofParameter<bool>    drawGui;
 };

@@ -92,3 +92,4 @@ cloak/
 *.psd
 
 bin/data/settings.xml
+ScreenFlow/
