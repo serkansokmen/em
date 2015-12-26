@@ -27,6 +27,8 @@
 		E607F50E1C2A35F400712C72 /* ofxCameraSaveLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E607F50C1C2A35F400712C72 /* ofxCameraSaveLoad.cpp */; };
 		E66013181C2DE6DF000546B4 /* ofxLeapMotion.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E66013001C2DE6DF000546B4 /* ofxLeapMotion.cpp */; };
 		E66013191C2DE6DF000546B4 /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E660130C1C2DE6DF000546B4 /* libLeap.dylib */; };
+		E66013321C2EDB67000546B4 /* ofxLeapMotion2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E660131E1C2EDB67000546B4 /* ofxLeapMotion2.cpp */; };
+		E66013331C2EDB67000546B4 /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E66013281C2EDB67000546B4 /* libLeap.dylib */; };
 		E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */; };
 		F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */; };
 /* End PBXBuildFile section */
@@ -107,7 +109,7 @@
 		DDC4B8E536952A629F6C5206 /* MSAFluidDrawerGl-Cinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = "MSAFluidDrawerGl-Cinder.h"; path = "../../../addons/ofxMSAFluid/src/MSAFluidDrawerGl-Cinder.h"; sourceTree = SOURCE_ROOT; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		E4B69B5B0A3A1756003C02F2 /* ParticlesDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ParticlesDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4B69B5B0A3A1756003C02F2 /* emDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = emDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
 		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
 		E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
@@ -123,6 +125,11 @@
 		E660130C1C2DE6DF000546B4 /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libLeap.dylib; sourceTree = "<group>"; };
 		E66013161C2DE6DF000546B4 /* README.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = README.txt; sourceTree = "<group>"; };
 		E66013171C2DE6DF000546B4 /* version.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = version.txt; sourceTree = "<group>"; };
+		E660131E1C2EDB67000546B4 /* ofxLeapMotion2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxLeapMotion2.cpp; sourceTree = "<group>"; };
+		E660131F1C2EDB67000546B4 /* ofxLeapMotion2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxLeapMotion2.h; sourceTree = "<group>"; };
+		E66013221C2EDB67000546B4 /* Leap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Leap.h; sourceTree = "<group>"; };
+		E66013231C2EDB67000546B4 /* LeapMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeapMath.h; sourceTree = "<group>"; };
+		E66013281C2EDB67000546B4 /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libLeap.dylib; sourceTree = "<group>"; };
 		E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSAObjCPointer.cpp; sourceTree = "<group>"; };
 		E6BCC4881BC7174200C17F42 /* MSAObjCPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAObjCPointer.h; sourceTree = "<group>"; };
 		ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxGuiGroup.cpp; path = ../../../addons/ofxGui/src/ofxGuiGroup.cpp; sourceTree = SOURCE_ROOT; };
@@ -139,6 +146,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E66013331C2EDB67000546B4 /* libLeap.dylib in Frameworks */,
 				E66013191C2DE6DF000546B4 /* libLeap.dylib in Frameworks */,
 				E4328149138ABC9F0047C5CB /* openFrameworksDebug.a in Frameworks */,
 			);
@@ -269,6 +277,7 @@
 				E6BCC4851BC7174200C17F42 /* ofxMSAObjCPointer */,
 				E607F50A1C2A35F400712C72 /* ofxCameraSaveLoad */,
 				E66012FE1C2DE6DF000546B4 /* ofxLeapMotion */,
+				E660131C1C2EDB67000546B4 /* ofxLeapMotion2 */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -305,7 +314,7 @@
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
-				E4B69B5B0A3A1756003C02F2 /* ParticlesDebug.app */,
+				E4B69B5B0A3A1756003C02F2 /* emDebug.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -402,6 +411,60 @@
 			path = osx;
 			sourceTree = "<group>";
 		};
+		E660131C1C2EDB67000546B4 /* ofxLeapMotion2 */ = {
+			isa = PBXGroup;
+			children = (
+				E660131D1C2EDB67000546B4 /* src */,
+				E66013201C2EDB67000546B4 /* libs */,
+			);
+			name = ofxLeapMotion2;
+			sourceTree = "<group>";
+		};
+		E660131D1C2EDB67000546B4 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E660131E1C2EDB67000546B4 /* ofxLeapMotion2.cpp */,
+				E660131F1C2EDB67000546B4 /* ofxLeapMotion2.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxLeapMotion2/src;
+			sourceTree = "<group>";
+		};
+		E66013201C2EDB67000546B4 /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				E66013211C2EDB67000546B4 /* include */,
+				E66013241C2EDB67000546B4 /* lib */,
+			);
+			name = libs;
+			path = ../../../addons/ofxLeapMotion2/libs;
+			sourceTree = "<group>";
+		};
+		E66013211C2EDB67000546B4 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				E66013221C2EDB67000546B4 /* Leap.h */,
+				E66013231C2EDB67000546B4 /* LeapMath.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		E66013241C2EDB67000546B4 /* lib */ = {
+			isa = PBXGroup;
+			children = (
+				E66013271C2EDB67000546B4 /* osx */,
+			);
+			path = lib;
+			sourceTree = "<group>";
+		};
+		E66013271C2EDB67000546B4 /* osx */ = {
+			isa = PBXGroup;
+			children = (
+				E66013281C2EDB67000546B4 /* libLeap.dylib */,
+			);
+			path = osx;
+			sourceTree = "<group>";
+		};
 		E6BCC4851BC7174200C17F42 /* ofxMSAObjCPointer */ = {
 			isa = PBXGroup;
 			children = (
@@ -431,9 +494,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E4B69B5A0A3A1756003C02F2 /* Particles */ = {
+		E4B69B5A0A3A1756003C02F2 /* em */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "Particles" */;
+			buildConfigurationList = E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "em" */;
 			buildPhases = (
 				E4B69B580A3A1756003C02F2 /* Sources */,
 				E4B69B590A3A1756003C02F2 /* Frameworks */,
@@ -446,9 +509,9 @@
 			dependencies = (
 				E4EEB9AC138B136A00A80321 /* PBXTargetDependency */,
 			);
-			name = Particles;
+			name = em;
 			productName = myOFApp;
-			productReference = E4B69B5B0A3A1756003C02F2 /* ParticlesDebug.app */;
+			productReference = E4B69B5B0A3A1756003C02F2 /* emDebug.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -459,7 +522,7 @@
 			attributes = {
 				LastUpgradeCheck = 0600;
 			};
-			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "Particles" */;
+			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "em" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -480,7 +543,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				E4B69B5A0A3A1756003C02F2 /* Particles */,
+				E4B69B5A0A3A1756003C02F2 /* em */,
 			);
 		};
 /* End PBXProject section */
@@ -520,7 +583,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cp -f ../../../addons/ofxLeapMotion/libs/lib/osx/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libLeap.dylib\"; install_name_tool -change ./libLeap.dylib @executable_path/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n";
+			shellScript = "cp -f ../../../addons/ofxLeapMotion2/libs/lib/osx/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/libLeap.dylib\"; install_name_tool -change ./libLeap.dylib @executable_path/libLeap.dylib \"$TARGET_BUILD_DIR/$PRODUCT_NAME.app/Contents/MacOS/$PRODUCT_NAME\";\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -539,6 +602,7 @@
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */,
+				E66013321C2EDB67000546B4 /* ofxLeapMotion2.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
@@ -710,10 +774,10 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../../../addons/ofxLeapMotion/libs/lib/osx/,
+					../../../addons/ofxLeapMotion2/libs/lib/osx/,
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)Debug";
-				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxLeapMotion/libs/include/;
+				PRODUCT_NAME = emDebug;
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxLeapMotion2/libs/include/ ../../../addons/ofxLeapMotion/libs/include/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -760,10 +824,10 @@
 				INSTALL_PATH = "$(HOME)/Applications";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					../../../addons/ofxLeapMotion/libs/lib/osx/,
+					../../../addons/ofxLeapMotion2/libs/lib/osx/,
 				);
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxLeapMotion/libs/include/;
+				PRODUCT_NAME = emDebug;
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxLeapMotion2/libs/include/ ../../../addons/ofxLeapMotion/libs/include/";
 				WRAPPER_EXTENSION = app;
 				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
 			};
@@ -772,7 +836,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "Particles" */ = {
+		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "em" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E4B69B4E0A3A1720003C02F2 /* Debug */,
@@ -781,7 +845,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "Particles" */ = {
+		E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "em" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E4B69B600A3A1757003C02F2 /* Debug */,
