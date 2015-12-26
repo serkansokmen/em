@@ -14,21 +14,14 @@ void ofApp::setup(){
     float width = ofGetWidth();
     float height = ofGetHeight();
 
-    ofColor c;
-    c.setBrightness(250.f);
-    c.setSaturation(200.f);
+    ofFloatColor c;
+    c.setHsb(1, 1, 1);
     lightColor.set(c);
-    
-    pointLight.setDiffuseColor(lightColor.getHue());
-    pointLight.setSpecularColor(ofColor(255.f, 255.f, 255.f));
-
-    polyMatDiffuseColor.set(0,1,0);
-    springMatDiffuseColor.set(1,1,1);
     
     polyMat.setShininess(255);
     springMat.setShininess(255);
-    polyMat.setDiffuseColor(polyMatDiffuseColor);
-    springMat.setDiffuseColor(springMatDiffuseColor);
+    polyMat.setSpecularColor(lightColor);
+    springMat.setSpecularColor(lightColor);
     
     resetCamera();
     setupGui();
@@ -44,8 +37,6 @@ void ofApp::setup(){
     
     ofxLoadCamera(previewCam, "preview_cam_settings");
     previewCam.setFov(camFov);
-    
-    
 }
 
 //--------------------------------------------------------------
@@ -69,7 +60,7 @@ void ofApp::setupGui(){
     physicsParams.add(boxSize.set("world size", 100.f, 1.f, 2000.f));
     physicsParams.add(makeParticles.set("particles", true));
     physicsParams.add(makeSprings.set("springs", true));
-    physicsParams.add(radius.set("particle radius", NODE_MIN_RADIUS, NODE_MIN_RADIUS, NODE_MAX_RADIUS));
+    physicsParams.add(radius.set("particle radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
     physicsParams.add(mass.set("particle mass", MIN_MASS, MIN_MASS, MAX_MASS));
     physicsParams.add(bounce.set("particle bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
     physicsParams.add(attraction.set("particle attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
@@ -88,9 +79,10 @@ void ofApp::setupGui(){
     cameraParams.add(camFarClip.set("far clip", 5000.f, 20.f, 10000.f));
     
     renderParams.setName("RENDER");
-    renderParams.add(lightHue.set("light hue", 100.f, 0.f, 255.f));
-    renderParams.add(polyHue.set("polygon hue", 100.f, 0.f, 255.f));
-    renderParams.add(springHue.set("spring hue", 255.f, 0.f, 255.f));
+    renderParams.add(enableLights.set("lights enabled", true));
+    renderParams.add(lightColor.set("light color", 1.f, 0.f, 1.f));
+    renderParams.add(polyColor.set("polygon color", 1.f, 0.f, 1.f));
+    renderParams.add(springColor.set("spring color", 1.f, 0.f, 1.f));
     double bs = boxSize.get() * 10.f;
     renderParams.add(lightPos.set("light position", ofPoint(0, 40, -40),
                                   ofPoint(-bs, -bs, -bs),
@@ -101,6 +93,7 @@ void ofApp::setupGui(){
     debugParams.add(drawUsingVboMesh.set("polygons", true));
     debugParams.add(drawGrid.set("grid", true));
     debugParams.add(drawWorldBox.set("world box", true));
+    debugParams.add(drawGround.set("ground", true));
     
     gui.add(physicsParams);
     gui.add(cameraParams);
@@ -166,15 +159,14 @@ void ofApp::update(){
     springCount.set(ofToString(physics.numberOfSprings()));
     attractionCount.set(ofToString(physics.numberOfAttractions()));
     
-    lightColor.setHue(lightHue);
+//    lightColor.setHue(lightHue);
     pointLight.setPosition(lightPos);
     pointLight.setDiffuseColor(lightColor);
-    
-    polyMatDiffuseColor.setHue(polyHue);
-    springMatDiffuseColor.setHue(springHue);
 
-    polyMat.setSpecularColor(polyMatDiffuseColor);
-    springMat.setSpecularColor(springMatDiffuseColor);
+    polyMat.setSpecularColor(polyColor);
+    polyMat.setDiffuseColor(polyColor);
+    springMat.setSpecularColor(springColor);
+    springMat.setDiffuseColor(springColor);
 
     if (!physicsPaused) {
         physics.update();
@@ -279,11 +271,11 @@ void ofApp::draw(){
     float height = ofGetHeight();
     
     ofPushMatrix();
-    ofEnableLighting();
-    
     previewCam.begin();
-    pointLight.enable();
-    
+    if (enableLights) {
+        ofEnableLighting();
+        pointLight.enable();
+    }
     
     if (drawWorldBox) {
         worldBox.drawWireframe();
@@ -294,8 +286,12 @@ void ofApp::draw(){
         float stepSize = boxSize.get()/4;
         size_t numberOfSteps = 4;
         bool labels = false;
-//        ofDrawGrid(stepSize, numberOfSteps, labels);
-        ofDrawAxis(boxSize.get());
+        ofDrawGrid(stepSize, numberOfSteps, labels);
+//        ofDrawAxis(boxSize.get());
+    }
+    if (drawGround) {
+        ofSetColor(255, 50);
+        ofDrawGridPlane(boxSize.get());
     }
     
     if (drawUsingVboMesh) {
@@ -379,8 +375,10 @@ void ofApp::draw(){
         pointLight.draw();
     }
     
+    if (enableLights) {
+        ofDisableLighting();
+    }
     previewCam.end();
-    ofDisableLighting();
     ofPopMatrix();
     
     ofDisableAlphaBlending();
@@ -539,12 +537,14 @@ void ofApp::makeParticleAtPosition(const ofPoint& p){
     ->makeFree()
     ->moveTo(p);
     physics.addParticle(a);
-
+    
+    physics.makeAttraction(a, &fixedParticle, attraction);
+    
     for (int i = 0; i < physics.numberOfParticles(); i++) {
         float dist = physics.getParticle(i)->getPosition().distance(a->getPosition());
-        if (dist > SPRING_MIN_LENGTH && dist < spring_length && attraction > 0.f) {
-            physics.makeAttraction(a, physics.getParticle(i), attraction);
-        }
+//        if (dist > SPRING_MIN_LENGTH) {
+//        physics.makeAttraction(a, physics.getParticle(i), attraction);
+//        }
     }
     
     a->release();
@@ -562,10 +562,22 @@ void ofApp::makeCluster(){
     if (makeSprings && np > 1 && np % 2 == 0) {
         auto a = physics.getParticle(np-1);
         auto b = physics.getParticle(np-2);
-        makeSpringBetweenParticles(a, b);
+        
         if (bindToFixedParticle) {
             makeSpringBetweenParticles(a, &fixedParticle);
             makeSpringBetweenParticles(b, &fixedParticle);
+        } else {
+            makeSpringBetweenParticles(a, b);
         }
+        
+        physics.makeAttraction(a, b, attraction);
+        
+//        for (int j=0; j<physics.numberOfAttractions(); j++) {
+//            auto attr = physics.getAttraction(j);
+//            if ((attr->getOneEnd() == a || attr->getTheOtherEnd() == a) &&
+//                (attr->getOneEnd() == b || attr->getTheOtherEnd() == b)) {
+//                physics.makeAttraction(a, b, attraction);
+//            }
+//        }
     }
 }

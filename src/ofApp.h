@@ -9,8 +9,8 @@
 #include "LeapMath.h"
 
 
-#define NODE_MIN_RADIUS     0.1
-#define NODE_MAX_RADIUS     10
+#define PARTICLE_MIN_RADIUS 0.5
+#define PARTICLE_MAX_RADIUS 200
 
 #define MIN_MASS            0.01
 #define MAX_MASS            1
@@ -87,10 +87,6 @@ public:
     ofVboMesh            springMesh;
     Particle3D           fixedParticle;
 
-    ofColor              lightColor;
-    ofFloatColor         polyMatDiffuseColor;
-    ofFloatColor         springMatDiffuseColor;
-    
     ofQuaternion         camQuat;
     ofPoint              camPos;
     
@@ -117,13 +113,15 @@ public:
     ofParameter<float>   camFarClip;
     
 //     Render params
+    ofParameter<ofFloatColor>         lightColor;
+    ofParameter<ofFloatColor>         polyColor;
+    ofParameter<ofFloatColor>         springColor;
     ofParameter<ofPoint> lightPos;
-    ofParameter<float>   lightHue;
-    ofParameter<float>   polyHue;
-    ofParameter<float>   springHue;
+    ofParameter<bool>    enableLights;
     ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawWorldBox;
     ofParameter<bool>    drawUsingVboMesh;
+    ofParameter<bool>    drawGround;
     
     ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;
