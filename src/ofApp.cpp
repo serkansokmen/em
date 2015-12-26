@@ -129,44 +129,6 @@ void ofApp::setupGui(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
-//    // ofCamera myCam;
-//    float tweenvalue = (ofGetElapsedTimeMillis() % 2000) /2000.f; // this will slowly change from 0.0f to 1.0f, resetting every 2 seconds
-//    
-//    ofQuaternion startQuat;
-//    ofQuaternion targetQuat;
-//    ofVec3f startPos;
-//    ofVec3f targetPos;
-//    
-//    // we define the camer's start and end orientation here:
-//    startQuat.makeRotate(0, 0, 1, 0);			// zero rotation.
-//    targetQuat.makeRotate(90, 0, 1, 0);			// rotation 90 degrees around y-axis.
-//    
-//    // we define the camer's start and end-position here:
-//    startPos.set(0,0,0);
-//    targetPos.set(400,400,-600);
-//    
-//    
-//    ofQuaternion tweenedCameraQuaternion;	// this will be the camera's new rotation.
-//    
-//    // calculate the interpolated orientation
-//    tweenedCameraQuaternion.slerp(tweenvalue, startQuat, targetQuat);
-//    
-//    ofVec3f lerpPos;					//this will hold our tweened position.
-//    
-//    // calculate the interpolated values.
-//    lerpPos.x = ofLerp(tweenvalue, startPos.x, targetPos.x);
-//    lerpPos.y = ofLerp(tweenvalue, startPos.y, targetPos.y);
-//    lerpPos.z = ofLerp(tweenvalue, startPos.z, targetPos.z);
-//    
-//    // alternative way to calculate interpolated values:
-//    // lerpPos = startPos + ((targetPos-startPos) * tweenvalue);
-//    
-//    // now update the camera with the calculated orientation and position.
-//    previewCam.setOrientation(tweenedCameraQuaternion);
-//    previewCam.setGlobalPosition(lerpPos);
-    
-//    previewCam.orbit(ofGetElapsedTimef() * 3.f * 10.f, 0.2f, previewCam.getDistance());
-    
     if (useLeap) {
         Leap::PointableList pointables = leap.frame().pointables();
         Leap::InteractionBox iBox = leap.frame().interactionBox();
