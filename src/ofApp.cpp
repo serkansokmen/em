@@ -44,6 +44,8 @@ void ofApp::setup(){
     
     ofxLoadCamera(previewCam, "preview_cam_settings");
     previewCam.setFov(camFov);
+    
+    
 }
 
 //--------------------------------------------------------------
@@ -89,10 +91,11 @@ void ofApp::setupGui(){
     renderParams.add(lightHue.set("light hue", 100.f, 0.f, 255.f));
     renderParams.add(polyHue.set("polygon hue", 100.f, 0.f, 255.f));
     renderParams.add(springHue.set("spring hue", 255.f, 0.f, 255.f));
-    double bs = boxSize.get() * 1.8f;
+    double bs = boxSize.get() * 10.f;
     renderParams.add(lightPos.set("light position", ofPoint(0, 40, -40),
                                   ofPoint(-bs, -bs, -bs),
                                   ofPoint(bs, bs, bs)));
+    
     debugParams.setName("DEBUG");
     debugParams.add(drawWireframe.set("wireframe", false));
     debugParams.add(drawUsingVboMesh.set("polygons", true));
@@ -104,6 +107,10 @@ void ofApp::setupGui(){
     gui.add(renderParams);
     gui.add(debugParams);
     
+    gui.add(useLeap.set("Use Leap", true));
+    
+    useLeap.addListener(this, &ofApp::toggleLeap);
+    
     boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
     gravity.addListener(this, &ofApp::setGravityVec);
     camFov.addListener(this, &ofApp::setCamFov);
@@ -112,6 +119,9 @@ void ofApp::setupGui(){
 
     gui.loadFromFile("settings.xml");
     
+    bool ul = useLeap.get();
+    toggleLeap(ul);
+    
     bs = boxSize.get();
     setPhysicsBoxSize(bs);
 }
@@ -119,7 +129,76 @@ void ofApp::setupGui(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+//    // ofCamera myCam;
+//    float tweenvalue = (ofGetElapsedTimeMillis() % 2000) /2000.f; // this will slowly change from 0.0f to 1.0f, resetting every 2 seconds
+//    
+//    ofQuaternion startQuat;
+//    ofQuaternion targetQuat;
+//    ofVec3f startPos;
+//    ofVec3f targetPos;
+//    
+//    // we define the camer's start and end orientation here:
+//    startQuat.makeRotate(0, 0, 1, 0);			// zero rotation.
+//    targetQuat.makeRotate(90, 0, 1, 0);			// rotation 90 degrees around y-axis.
+//    
+//    // we define the camer's start and end-position here:
+//    startPos.set(0,0,0);
+//    targetPos.set(400,400,-600);
+//    
+//    
+//    ofQuaternion tweenedCameraQuaternion;	// this will be the camera's new rotation.
+//    
+//    // calculate the interpolated orientation
+//    tweenedCameraQuaternion.slerp(tweenvalue, startQuat, targetQuat);
+//    
+//    ofVec3f lerpPos;					//this will hold our tweened position.
+//    
+//    // calculate the interpolated values.
+//    lerpPos.x = ofLerp(tweenvalue, startPos.x, targetPos.x);
+//    lerpPos.y = ofLerp(tweenvalue, startPos.y, targetPos.y);
+//    lerpPos.z = ofLerp(tweenvalue, startPos.z, targetPos.z);
+//    
+//    // alternative way to calculate interpolated values:
+//    // lerpPos = startPos + ((targetPos-startPos) * tweenvalue);
+//    
+//    // now update the camera with the calculated orientation and position.
+//    previewCam.setOrientation(tweenedCameraQuaternion);
+//    previewCam.setGlobalPosition(lerpPos);
+    
 //    previewCam.orbit(ofGetElapsedTimef() * 3.f * 10.f, 0.2f, previewCam.getDistance());
+    
+    if (useLeap) {
+        Leap::PointableList pointables = leap.frame().pointables();
+        Leap::InteractionBox iBox = leap.frame().interactionBox();
+        
+        bool step = floor(((ofGetElapsedTimeMillis() % 500) / 500.f) * 100.f) < 10;
+        
+        for (int p = 0; p < pointables.count(); p++){
+            
+            Leap::Pointable pointable = pointables[p];
+            Leap::Vector normalizedPosition = iBox.normalizePoint(pointable.stabilizedTipPosition());
+            
+            ofPoint tipPos(pointable.stabilizedTipPosition().x,
+                           pointable.stabilizedTipPosition().y,
+                           pointable.stabilizedTipPosition().z);
+            ofPoint normBoxPos(normalizedPosition.x,
+                               normalizedPosition.y,
+                               normalizedPosition.z);
+            
+            if (pointable.touchDistance() <= 0 &&
+                     pointable.touchZone() == Leap::Pointable::Zone::ZONE_TOUCHING) {
+                if (step) {
+                    makeParticleAtPosition(normBoxPos*boxSize);
+                    if (bindToFixedParticle) {
+                        makeSpringBetweenParticles(physics.getParticle(physics.numberOfParticles()-1), &fixedParticle);
+                    }
+                }
+            }
+            
+//            ofDrawSphere(normBoxPos*boxSize, 20);
+//            ofDrawSphere(tipPos*boxSize, 40);
+        }
+    }
     
     particleCount.set(ofToString(physics.numberOfParticles()));
     springCount.set(ofToString(physics.numberOfSprings()));
@@ -191,6 +270,13 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
+void ofApp::toggleLeap(bool &v){
+//    if (!leap.isConnected()) {
+//        ofLog(OF_LOG_WARNING) << "LeapMotion not connected!" << endl;
+//        return;
+//    }
+}
+
 void ofApp::setPhysicsBoxSize(double& s){
     worldBox.setScale(1);
     worldBox.setWidth(s*2);
@@ -214,11 +300,12 @@ void ofApp::setCamFarClip(float& v) {
 }
 
 void ofApp::resetCamera(){
-    previewCam.setDistance(5.0f);
-    previewCam.setNearClip(0.01f);
-    previewCam.setFarClip(5000.0f);
-    previewCam.setPosition(0.4f, 0.2f, 0.8f);
-    previewCam.lookAt(ofVec3f(0.0f, 0.0f, 0.0f));
+    previewCam.reset();
+//    previewCam.setDistance(5.0f);
+//    previewCam.setNearClip(0.01f);
+//    previewCam.setFarClip(5000.0f);
+//    previewCam.setPosition(0.4f, 0.2f, 0.8f);
+//    previewCam.lookAt(ofVec3f(0.0f, 0.0f, 0.0f));
 }
 
 //--------------------------------------------------------------
@@ -245,7 +332,8 @@ void ofApp::draw(){
         float stepSize = boxSize.get()/4;
         size_t numberOfSteps = 4;
         bool labels = false;
-        ofDrawGrid(stepSize, numberOfSteps, labels);
+//        ofDrawGrid(stepSize, numberOfSteps, labels);
+        ofDrawAxis(boxSize.get());
     }
     
     if (drawUsingVboMesh) {
@@ -290,6 +378,45 @@ void ofApp::draw(){
         }
     }
     
+    if (useLeap) {
+        Leap::PointableList pointables = leap.frame().pointables();
+        Leap::InteractionBox iBox = leap.frame().interactionBox();
+        
+        for (int p = 0; p < pointables.count(); p++){
+            
+            Leap::Pointable pointable = pointables[p];
+            Leap::Vector normalizedPosition = iBox.normalizePoint(pointable.stabilizedTipPosition());
+            
+            ofPoint tipPos(pointable.stabilizedTipPosition().x,
+                           pointable.stabilizedTipPosition().y,
+                           pointable.stabilizedTipPosition().z);
+            ofPoint normBoxPos(normalizedPosition.x,
+                               normalizedPosition.y,
+                               normalizedPosition.z);
+            
+            if (pointable.touchDistance() > 0 &&
+               pointable.touchZone() != Leap::Pointable::Zone::ZONE_NONE){
+                ofSetColor(0, 255, 0, (1 - pointable.touchDistance())*255.f + 150.f);
+            }
+            else if (pointable.touchDistance() <= 0){
+                ofSetColor(255, 0, 0, -pointable.touchDistance()*255 + 100.f);
+            }
+            else {
+                ofSetColor(0, 0, 255, 255);
+            }
+            
+            ofDrawSphere(normBoxPos*boxSize, 20);
+            
+            ofSetColor(150, 150, 150, 55);
+            ofDrawSphere(tipPos*boxSize, 40);
+          }
+    }
+    
+    if (drawGrid) {
+        ofSetColor(ofColor::white, 255);
+        pointLight.draw();
+    }
+    
     previewCam.end();
     ofDisableLighting();
     ofPopMatrix();
@@ -304,6 +431,7 @@ void ofApp::draw(){
 }
 
 void ofApp::exit(){
+    useLeap.removeListener(this, &ofApp::toggleLeap);
     boxSize.removeListener(this, &ofApp::setPhysicsBoxSize);
     gravity.removeListener(this, &ofApp::setGravityVec);
     camFov.removeListener(this, &ofApp::setCamFov);

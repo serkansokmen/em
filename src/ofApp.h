@@ -5,6 +5,8 @@
 #include "MSAPhysics3D.h"
 #include "ofxGui.h"
 #include "ofxCameraSaveLoad.h"
+#include "Leap.h"
+#include "LeapMath.h"
 
 
 #define NODE_MIN_RADIUS     0.1
@@ -59,6 +61,8 @@ public:
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
     
+    // Event Handlers
+    void toggleLeap(bool& v);
     void setPhysicsBoxSize(double& s);
     void setGravityVec(ofPoint& g);
     void setCamFov(float& v);
@@ -74,7 +78,9 @@ public:
     ofMaterial           polyMat, springMat;
     
     ofBoxPrimitive       worldBox;
-
+    
+    Leap::Controller     leap;
+    
     ofxPanel             gui;
 
     ofVboMesh            polyMesh;
@@ -84,6 +90,9 @@ public:
     ofColor              lightColor;
     ofFloatColor         polyMatDiffuseColor;
     ofFloatColor         springMatDiffuseColor;
+    
+    ofQuaternion         camQuat;
+    ofPoint              camPos;
     
 //    Physics params
     ofParameter<bool>    makeParticles;
@@ -116,6 +125,7 @@ public:
     ofParameter<bool>    drawWorldBox;
     ofParameter<bool>    drawUsingVboMesh;
     
+    ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;
     ofParameter<bool>    drawGui;
 };
