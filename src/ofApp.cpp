@@ -110,8 +110,6 @@ void ofApp::setupGui(){
     camNearClip.addListener(this, &ofApp::setCamNearClip);
     camFarClip.addListener(this, &ofApp::setCamFarClip);
 
-    gui.loadFromFile("settings.xml");
-    
     bool ul = useLeap.get();
     toggleLeap(ul);
     
@@ -224,6 +222,24 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
+void ofApp::loadPreset(){
+    ofFileDialogResult res;
+    res = ofSystemLoadDialog("Loading preset");
+    if (res.bSuccess) {
+        gui.loadFromFile(res.filePath);
+    }
+}
+
+void ofApp::savePreset(){
+    auto fileName = ofSystemTextBoxDialog("Preset filename:");
+    ofFileDialogResult res;
+    res = ofSystemSaveDialog(fileName, "Saving preset");
+    if (res.bSuccess) {
+        gui.saveToFile(res.filePath);
+    }
+}
+
+//--------------------------------------------------------------
 void ofApp::toggleLeap(bool &v){
 //    if (!leap.isConnected()) {
 //        ofLog(OF_LOG_WARNING) << "LeapMotion not connected!" << endl;
@@ -301,7 +317,6 @@ void ofApp::draw(){
         else                polyMesh.draw();
         polyMat.end();
         
-        // Draw spring mesh
         springMat.begin();
         if (drawWireframe)  springMesh.drawWireframe();
         else                springMesh.draw();
@@ -328,11 +343,9 @@ void ofApp::draw(){
             auto a = spring->getOneEnd();
             auto b = spring->getTheOtherEnd();
             
-            ofPushMatrix();
             springMat.begin();
             ofDrawLine(a->getPosition(), b->getPosition());
             springMat.end();
-            ofPopMatrix();
         }
     }
     
@@ -398,7 +411,6 @@ void ofApp::exit(){
     camNearClip.removeListener(this, &ofApp::setCamNearClip);
     camFarClip.removeListener(this, &ofApp::setCamFarClip);
     ofxSaveCamera(previewCam, "preview_cam_settings");
-    gui.saveToFile("settings.xml");
 }
 
 //--------------------------------------------------------------
@@ -416,10 +428,10 @@ void ofApp::keyPressed(int key){
         break;
       }
         case 's':
-            gui.saveToFile("settings.xml");
+            savePreset();
             break;
         case 'l':
-            gui.loadFromFile("settings.xml");
+            loadPreset();
             break;
         case 'f':
             ofToggleFullscreen();
@@ -567,8 +579,9 @@ void ofApp::makeCluster(){
             makeSpringBetweenParticles(a, &fixedParticle);
             makeSpringBetweenParticles(b, &fixedParticle);
         } else {
-            makeSpringBetweenParticles(a, b);
+            
         }
+        makeSpringBetweenParticles(a, b);
         
         physics.makeAttraction(a, b, attraction);
         

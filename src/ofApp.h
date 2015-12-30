@@ -71,6 +71,9 @@ public:
     
     void setupGui();
     void resetCamera();
+    
+    void loadPreset();
+    void savePreset();
 
     World3D              physics;
     ofEasyCam            previewCam;
