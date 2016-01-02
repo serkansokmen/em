@@ -78,6 +78,8 @@ public:
     World3D              physics;
     ofEasyCam            previewCam;
     ofLight              pointLight;
+    ofPlanePrimitive     plane;
+    ofMaterial           matPlane;
     ofMaterial           polyMat, springMat;
     
     ofBoxPrimitive       worldBox;
@@ -125,6 +127,7 @@ public:
     ofParameter<bool>    drawWorldBox;
     ofParameter<bool>    drawUsingVboMesh;
     ofParameter<bool>    drawGround;
+    ofParameter<bool>    orbitCamera;
     
     ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;

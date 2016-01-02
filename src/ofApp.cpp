@@ -18,6 +18,15 @@ void ofApp::setup(){
     c.setHsb(1, 1, 1);
     lightColor.set(c);
     
+    ofBackground(0);
+    plane.set(20000,20000,2,2);
+    plane.rotate(-90,ofVec3f(1,0,0));
+    plane.move(ofVec3f(0,-300,0));
+    matPlane.setAmbientColor(ofFloatColor(0.1,0.1,0.1,1.0));
+    matPlane.setDiffuseColor(ofFloatColor(0.8,0.8,0.8,1.0));
+    matPlane.setSpecularColor(ofFloatColor(0.8,0.8,0.8,1.0));
+    matPlane.setShininess(10);
+    
     polyMat.setShininess(255);
     springMat.setShininess(255);
     polyMat.setSpecularColor(lightColor);
@@ -74,6 +83,7 @@ void ofApp::setupGui(){
     physicsParams.add(physicsPaused.set("paused", false));
 
     cameraParams.setName("CAMERA");
+    cameraParams.add(orbitCamera.set("Orbit", true));
     cameraParams.add(camFov.set("field of view", 60, 35.f, 180.f));
     cameraParams.add(camNearClip.set("near clip", 0.1f, 0.1f, 20.f));
     cameraParams.add(camFarClip.set("far clip", 5000.f, 20.f, 10000.f));
@@ -120,6 +130,14 @@ void ofApp::setupGui(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    if (orbitCamera) {
+        float time = ofGetElapsedTimef();
+        float lng = time*10;
+        float lat = sin(time*0.8)*10;
+        float radius = sin(time*0.4)*50 + 600;
+        previewCam.orbit(lng, lat, radius);
+    }
+    
     if (useLeap) {
         Leap::PointableList pointables = leap.frame().pointables();
         Leap::InteractionBox iBox = leap.frame().interactionBox();
@@ -157,7 +175,6 @@ void ofApp::update(){
     springCount.set(ofToString(physics.numberOfSprings()));
     attractionCount.set(ofToString(physics.numberOfAttractions()));
     
-//    lightColor.setHue(lightHue);
     pointLight.setPosition(lightPos);
     pointLight.setDiffuseColor(lightColor);
 
@@ -224,16 +241,15 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::loadPreset(){
     ofFileDialogResult res;
-    res = ofSystemLoadDialog("Loading preset");
+    res = ofSystemLoadDialog("Load preset");
     if (res.bSuccess) {
         gui.loadFromFile(res.filePath);
     }
 }
 
 void ofApp::savePreset(){
-    auto fileName = ofSystemTextBoxDialog("Preset filename:");
     ofFileDialogResult res;
-    res = ofSystemSaveDialog(fileName, "Saving preset");
+    res = ofSystemSaveDialog("settings.xml", "Save preset");
     if (res.bSuccess) {
         gui.saveToFile(res.filePath);
     }
@@ -291,6 +307,9 @@ void ofApp::draw(){
     if (enableLights) {
         ofEnableLighting();
         pointLight.enable();
+        
+        matPlane.begin();
+        plane.draw();
     }
     
     if (drawWorldBox) {
@@ -389,6 +408,8 @@ void ofApp::draw(){
     }
     
     if (enableLights) {
+        matPlane.end();
+        pointLight.draw();
         ofDisableLighting();
     }
     previewCam.end();
