@@ -77,12 +77,8 @@ public:
 
     World3D              physics;
     ofEasyCam            previewCam;
-    ofLight              pointLight;
-    ofPlanePrimitive     plane;
-    ofMaterial           matPlane;
+    ofLight              pLight0, pLight1;
     ofMaterial           polyMat, springMat;
-    
-    ofBoxPrimitive       worldBox;
     
     Leap::Controller     leap;
     
@@ -118,16 +114,16 @@ public:
     ofParameter<float>   camFarClip;
     
 //     Render params
-    ofParameter<ofFloatColor>         lightColor;
+    ofParameter<ofFloatColor>         lightColor0, lightColor1;
     ofParameter<ofFloatColor>         polyColor;
     ofParameter<ofFloatColor>         springColor;
     ofParameter<ofPoint> lightPos;
     ofParameter<bool>    enableLights;
     ofParameter<bool>    drawWireframe;
-    ofParameter<bool>    drawWorldBox;
     ofParameter<bool>    drawUsingVboMesh;
     ofParameter<bool>    drawGround;
     ofParameter<bool>    orbitCamera;
+    ofParameter<bool>    orbitLights;
     
     ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;

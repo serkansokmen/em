@@ -16,21 +16,15 @@ void ofApp::setup(){
 
     ofFloatColor c;
     c.setHsb(1, 1, 1);
-    lightColor.set(c);
-    
-    ofBackground(0);
-    plane.set(20000,20000,2,2);
-    plane.rotate(-90,ofVec3f(1,0,0));
-    plane.move(ofVec3f(0,-300,0));
-    matPlane.setAmbientColor(ofFloatColor(0.1,0.1,0.1,1.0));
-    matPlane.setDiffuseColor(ofFloatColor(0.8,0.8,0.8,1.0));
-    matPlane.setSpecularColor(ofFloatColor(0.8,0.8,0.8,1.0));
-    matPlane.setShininess(10);
+    lightColor0.set(c);
+    lightColor1.set(c);
     
     polyMat.setShininess(255);
+    polyMat.setEmissiveColor(ofFloatColor(.0,.0,.0));
+    polyMat.setSpecularColor(c);
+    
+    springMat.setSpecularColor(c);
     springMat.setShininess(255);
-    polyMat.setSpecularColor(lightColor);
-    springMat.setSpecularColor(lightColor);
     
     resetCamera();
     setupGui();
@@ -89,8 +83,11 @@ void ofApp::setupGui(){
     cameraParams.add(camFarClip.set("far clip", 5000.f, 20.f, 10000.f));
     
     renderParams.setName("RENDER");
+    renderParams.add(drawWireframe.set("wireframe", false));
     renderParams.add(enableLights.set("lights enabled", true));
-    renderParams.add(lightColor.set("light color", 1.f, 0.f, 1.f));
+    renderParams.add(orbitLights.set("Orbit lights", true));
+    renderParams.add(lightColor0.set("light 0 color", 1.f, 0.f, 1.f));
+    renderParams.add(lightColor1.set("light 1 color", 1.f, 0.f, 1.f));
     renderParams.add(polyColor.set("polygon color", 1.f, 0.f, 1.f));
     renderParams.add(springColor.set("spring color", 1.f, 0.f, 1.f));
     double bs = boxSize.get() * 10.f;
@@ -99,10 +96,8 @@ void ofApp::setupGui(){
                                   ofPoint(bs, bs, bs)));
     
     debugParams.setName("DEBUG");
-    debugParams.add(drawWireframe.set("wireframe", false));
     debugParams.add(drawUsingVboMesh.set("polygons", true));
     debugParams.add(drawGrid.set("grid", true));
-    debugParams.add(drawWorldBox.set("world box", true));
     debugParams.add(drawGround.set("ground", true));
     
     gui.add(physicsParams);
@@ -130,13 +125,32 @@ void ofApp::setupGui(){
 //--------------------------------------------------------------
 void ofApp::update(){
     
+    float time = ofGetElapsedTimef();
+    float bs = boxSize / 2;
+    
     if (orbitCamera) {
-        float time = ofGetElapsedTimef();
         float lng = time*10;
-        float lat = sin(time*0.8)*10;
-        float radius = sin(time*0.4)*50 + 600;
+        float lat = sin(time*boxSize/1000)*10;
+        float radius = sin(time*boxSize/2000)*50 + 600;
         previewCam.orbit(lng, lat, radius);
     }
+    
+    if (orbitLights) {
+        float lat0 = sin(time*0.08)*bs;
+        float lng0 = cos(time*0.04)*bs;
+        float lat1 = cos(time*0.08)*bs;
+        float lng1 = sin(time*0.04)*bs;
+        float radius = boxSize;
+        pLight0.orbit(lng0, lat0, radius);
+        pLight1.orbit(lng1, lat1, radius);
+    } else {
+        pLight0.setPosition(lightPos);
+        pLight1.setPosition(lightPos);
+    }
+    pLight0.setDiffuseColor(lightColor0);
+    pLight1.setDiffuseColor(lightColor1);
+    pLight0.setSpecularColor(lightColor0);
+    pLight1.setSpecularColor(lightColor1);
     
     if (useLeap) {
         Leap::PointableList pointables = leap.frame().pointables();
@@ -174,9 +188,6 @@ void ofApp::update(){
     particleCount.set(ofToString(physics.numberOfParticles()));
     springCount.set(ofToString(physics.numberOfSprings()));
     attractionCount.set(ofToString(physics.numberOfAttractions()));
-    
-    pointLight.setPosition(lightPos);
-    pointLight.setDiffuseColor(lightColor);
 
     polyMat.setSpecularColor(polyColor);
     polyMat.setDiffuseColor(polyColor);
@@ -240,19 +251,21 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::loadPreset(){
-    ofFileDialogResult res;
-    res = ofSystemLoadDialog("Load preset");
-    if (res.bSuccess) {
-        gui.loadFromFile(res.filePath);
-    }
+//    ofFileDialogResult res;
+//    res = ofSystemLoadDialog("Load preset");
+//    if (res.bSuccess) {
+//        gui.loadFromFile(res.filePath);
+//    }
+    gui.loadFromFile("settings.xml");
 }
 
 void ofApp::savePreset(){
-    ofFileDialogResult res;
-    res = ofSystemSaveDialog("settings.xml", "Save preset");
-    if (res.bSuccess) {
-        gui.saveToFile(res.filePath);
-    }
+//    ofFileDialogResult res;
+//    res = ofSystemSaveDialog("settings.xml", "Save preset");
+//    if (res.bSuccess) {
+//        gui.saveToFile(res.filePath);
+//    }
+    gui.saveToFile("settings.xml");
 }
 
 //--------------------------------------------------------------
@@ -264,10 +277,7 @@ void ofApp::toggleLeap(bool &v){
 }
 
 void ofApp::setPhysicsBoxSize(double& s){
-    worldBox.setScale(1);
-    worldBox.setWidth(s*2);
-    worldBox.setHeight(s*2);
-    worldBox.setDepth(s*2);
+    spring_length.setMax(s);
     physics.setWorldSize(ofVec3f(-s, -s, -s),
                          ofVec3f(s, s, s));
     physics.clearWorldSize();
@@ -306,14 +316,8 @@ void ofApp::draw(){
     previewCam.begin();
     if (enableLights) {
         ofEnableLighting();
-        pointLight.enable();
-        
-        matPlane.begin();
-        plane.draw();
-    }
-    
-    if (drawWorldBox) {
-        worldBox.drawWireframe();
+        pLight0.enable();
+        pLight1.enable();
     }
     
     if (drawGrid) {
@@ -404,12 +408,13 @@ void ofApp::draw(){
     
     if (drawGrid) {
         ofSetColor(ofColor::white, 255);
-        pointLight.draw();
     }
     
     if (enableLights) {
-        matPlane.end();
-        pointLight.draw();
+//        ofSetColor(lightColor0->getClamped());
+        pLight0.draw();
+//        ofSetColor(lightColor1->getClamped());
+        pLight1.draw();
         ofDisableLighting();
     }
     previewCam.end();
