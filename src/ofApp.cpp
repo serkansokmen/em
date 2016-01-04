@@ -40,6 +40,9 @@ void ofApp::setup(){
     
     ofxLoadCamera(previewCam, "preview_cam_settings");
     previewCam.setFov(camFov);
+    previewCam.lookAt(fixedParticle.getPosition());
+    
+    polyTextureImage.load("1380489_10152539373427814_159706546_n.jpg");
 }
 
 //--------------------------------------------------------------
@@ -77,7 +80,7 @@ void ofApp::setupGui(){
     physicsParams.add(physicsPaused.set("paused", false));
 
     cameraParams.setName("CAMERA");
-    cameraParams.add(orbitCamera.set("Orbit", true));
+    cameraParams.add(orbitCamera.set("Orbit", false));
     cameraParams.add(camFov.set("field of view", 60, 35.f, 180.f));
     cameraParams.add(camNearClip.set("near clip", 0.1f, 0.1f, 20.f));
     cameraParams.add(camFarClip.set("far clip", 5000.f, 20.f, 10000.f));
@@ -98,7 +101,6 @@ void ofApp::setupGui(){
     debugParams.setName("DEBUG");
     debugParams.add(drawUsingVboMesh.set("polygons", true));
     debugParams.add(drawGrid.set("grid", true));
-    debugParams.add(drawGround.set("ground", true));
     
     gui.add(physicsParams);
     gui.add(cameraParams);
@@ -136,10 +138,10 @@ void ofApp::update(){
     }
     
     if (orbitLights) {
-        float lat0 = sin(time*0.08)*bs;
-        float lng0 = cos(time*0.04)*bs;
-        float lat1 = cos(time*0.08)*bs;
-        float lng1 = sin(time*0.04)*bs;
+        float lat0 = sin(time*0.4)*bs;
+        float lng0 = cos(time*0.2)*bs;
+        float lat1 = cos(time*0.4)*bs;
+        float lng1 = sin(time*0.2)*bs;
         float radius = boxSize;
         pLight0.orbit(lng0, lat0, radius);
         pLight1.orbit(lng1, lat1, radius);
@@ -152,36 +154,89 @@ void ofApp::update(){
     pLight0.setSpecularColor(lightColor0);
     pLight1.setSpecularColor(lightColor1);
     
+    
     if (useLeap) {
-        Leap::PointableList pointables = leap.frame().pointables();
-        Leap::InteractionBox iBox = leap.frame().interactionBox();
+        Leap::GestureList gestures = leap.frame().gestures();
         
+        float tweenVal = (ofGetElapsedTimeMillis() % 2000) / 2000.f;
         bool step = floor(((ofGetElapsedTimeMillis() % 500) / 500.f) * 100.f) < 10;
         
-        for (int p = 0; p < pointables.count(); p++){
-            
-            Leap::Pointable pointable = pointables[p];
-            Leap::Vector normalizedPosition = iBox.normalizePoint(pointable.stabilizedTipPosition());
-            
-            ofPoint tipPos(pointable.stabilizedTipPosition().x,
-                           pointable.stabilizedTipPosition().y,
-                           pointable.stabilizedTipPosition().z);
-            ofPoint normBoxPos(normalizedPosition.x,
-                               normalizedPosition.y,
-                               normalizedPosition.z);
-            
-            if (pointable.touchDistance() <= 0 &&
-                     pointable.touchZone() == Leap::Pointable::Zone::ZONE_TOUCHING) {
-                if (step) {
-                    makeParticleAtPosition(normBoxPos*boxSize);
-                    if (bindToFixedParticle) {
-                        makeSpringBetweenParticles(physics.getParticle(physics.numberOfParticles()-1), &fixedParticle);
+        for (auto gesture : gestures) {
+            switch (gesture.type()) {
+
+                case Leap::Gesture::TYPE_CIRCLE: {
+                    ofLog() << "Circle gesture detected" << endl;
+                    for (auto pointable : gesture.pointables()) {
+                        ofPoint tipPos(pointable.stabilizedTipPosition().x,
+                                       pointable.stabilizedTipPosition().y,
+                                       pointable.stabilizedTipPosition().z);
+                        ofPoint tipVel(pointable.tipVelocity().x,
+                                       pointable.tipVelocity().y,
+                                       pointable.tipVelocity().z);
+                        
+                        auto p = new Particle3D;
+                        p->setMass(mass)
+                        ->setBounce(bounce)
+                        ->setRadius(radius)
+                        ->enableCollision()
+                        ->makeFree()
+                        ->moveTo(tipPos)
+                        ->addVelocity(tipVel);
+                        physics.addParticle(p);
+                        if (bindToFixedParticle) {
+                            makeSpringBetweenParticles(p, &fixedParticle);
+                        }
+                        p->release();
                     }
+                    break;
                 }
+
+                case Leap::Gesture::TYPE_SCREEN_TAP: {
+                    break;
+                }
+                    
+                case Leap::Gesture::TYPE_SWIPE: {
+                    Leap::SwipeGesture swipe = (Leap::SwipeGesture)gesture;
+                    Leap::Vector swipeDir = swipe.direction();
+                    ofPoint swipePoint(swipeDir.x, swipeDir.y, swipeDir.z);
+                    swipePoint.normalize();
+                    
+                    ofQuaternion startQuat, targetQuat;
+                    ofPoint startPos, targetPos;
+                    
+                    startQuat.set(previewCam.getOrientationQuat());
+                    startPos.set(previewCam.getGlobalPosition());
+                    targetQuat.set(startQuat);
+                    targetPos.set(startPos);
+                    
+                    if (swipePoint.x < 0) {
+//                        targetQuat.makeRotate(10, 0, 1, 0);
+                        targetPos.x -= 50.f;
+                    } else if (swipePoint.x > 0) {
+//                        targetQuat.makeRotate(-10, 0, 1, 0);
+                        targetPos.x += 50.f;
+                    }
+                    
+                    ofQuaternion    tweenedCamQuat;
+                    ofPoint         lerpPos;
+                    
+                    tweenedCamQuat.slerp(tweenVal, startQuat, targetQuat);
+                    lerpPos = startPos + ((targetPos - startPos) * tweenVal);
+                    
+//                    previewCam.setOrientation(tweenedCamQuat);
+//                    previewCam.setGlobalPosition(lerpPos);
+//                    previewCam.lookAt(fixedParticle.getPosition());
+                    previewCam.truck(swipePoint.x);
+                    
+                    break;
+                }
+                case Leap::Gesture::TYPE_KEY_TAP:
+//                    makeCluster();
+                    break;
+                    
+                default:
+                    break;
             }
-            
-//            ofDrawSphere(normBoxPos*boxSize, 20);
-//            ofDrawSphere(tipPos*boxSize, 40);
         }
     }
     
@@ -198,32 +253,20 @@ void ofApp::update(){
         physics.update();
     }
 
-    // Remove distant attractions
-    for(int i=0; i<physics.numberOfAttractions(); i++){
-        auto a = (Attraction2D *)physics.getAttraction(i);
-        auto p0 = a->getOneEnd();
-        auto p1 = a->getTheOtherEnd();
-
-        if (p0->getPosition().distance(p1->getPosition()) > MAX_DISTANCE) {
-            a->kill();
-        }
-    }
-
     if (drawUsingVboMesh) {
 
         polyMesh.clear();
-        polyMesh.setMode(OF_PRIMITIVE_TRIANGLE_STRIP_ADJACENCY);
+        polyMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
         for(int i=0; i<physics.numberOfParticles(); i++){
             auto p = physics.getParticle(i);
             if (p->isFree()) {
                 polyMesh.addVertex(p->getPosition());
-                polyMesh.addColor(ofColor::fromHsb(ofRandom(255), 255, 255));
-                polyMesh.addIndex(i);
+                polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
             }
         }
 
         springMesh.clear();
-        springMesh.setMode(OF_PRIMITIVE_LINES);
+        springMesh.setMode(OF_PRIMITIVE_LINE_LOOP);
         for(int i=0; i<physics.numberOfSprings(); i++){
             
             auto spring = (msa::physics::Spring3D *) physics.getSpring(i);
@@ -240,11 +283,11 @@ void ofApp::update(){
             float size = ofMap(spring->getStrength(), SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH);
 
             springMesh.addVertex(a->getPosition());
-            polyMesh.addColor(ofColor::fromHsb(0, 255, 0));
             springMesh.addVertex(b->getPosition());
-            polyMesh.addColor(ofColor::fromHsb(0, 255, 0));
-            springMesh.addIndex(i);
-            springMesh.addIndex(i);
+//            springMesh.addColor(ofFloatColor(1,1,1));
+//            springMesh.addColor(ofFloatColor(1,1,1));
+//            springMesh.addIndex(i);
+//            springMesh.addIndex(i);
         }
     }
 }
@@ -270,10 +313,17 @@ void ofApp::savePreset(){
 
 //--------------------------------------------------------------
 void ofApp::toggleLeap(bool &v){
-//    if (!leap.isConnected()) {
-//        ofLog(OF_LOG_WARNING) << "LeapMotion not connected!" << endl;
-//        return;
-//    }
+    if (leap.isConnected()) {
+        leap.enableGesture(Leap::Gesture::TYPE_SCREEN_TAP);
+        leap.enableGesture(Leap::Gesture::TYPE_SWIPE);
+        leap.enableGesture(Leap::Gesture::TYPE_CIRCLE);
+        leap.config().setFloat("Gesture.Swipe.MinLength", 100.0f);
+        leap.config().setFloat("Gesture.Swipe.MinVelocity", 250);
+        leap.config().setFloat("Gesture.ScreenTap.MinForwardVelocity", 30.0);
+        leap.config().setFloat("Gesture.ScreenTap.HistorySeconds", .5);
+        leap.config().setFloat("Gesture.ScreenTap.MinDistance", 1.0);
+        leap.config().save();
+    }
 }
 
 void ofApp::setPhysicsBoxSize(double& s){
@@ -296,12 +346,21 @@ void ofApp::setCamFarClip(float& v) {
 }
 
 void ofApp::resetCamera(){
-    previewCam.reset();
+//    previewCam.reset();
 //    previewCam.setDistance(5.0f);
 //    previewCam.setNearClip(0.01f);
 //    previewCam.setFarClip(5000.0f);
 //    previewCam.setPosition(0.4f, 0.2f, 0.8f);
 //    previewCam.lookAt(ofVec3f(0.0f, 0.0f, 0.0f));
+}
+
+void ofApp::randomiseParams(){
+    radius.set(ofRandom(radius.getMin(), radius.getMax()));
+    mass.set(ofRandom(mass.getMin(), mass.getMax()));
+    bounce.set(ofRandom(bounce.getMin(), bounce.getMax()));
+    attraction.set(ofRandom(attraction.getMin(), attraction.getMax()));
+    spring_strength.set(ofRandom(spring_strength.getMin(), spring_strength.getMax()));
+    spring_length.set(ofRandom(spring_length.getMin(), spring_length.getMax()));
 }
 
 //--------------------------------------------------------------
@@ -328,16 +387,14 @@ void ofApp::draw(){
         ofDrawGrid(stepSize, numberOfSteps, labels);
 //        ofDrawAxis(boxSize.get());
     }
-    if (drawGround) {
-        ofSetColor(255, 50);
-        ofDrawGridPlane(boxSize.get());
-    }
     
     if (drawUsingVboMesh) {
         // Draw polygon mesh
         polyMat.begin();
+        polyTextureImage.bind();
         if (drawWireframe)  polyMesh.drawWireframe();
         else                polyMesh.draw();
+        polyTextureImage.unbind();
         polyMat.end();
         
         springMat.begin();
@@ -374,6 +431,7 @@ void ofApp::draw(){
     
     if (useLeap) {
         Leap::PointableList pointables = leap.frame().pointables();
+//        Leap::GestureList gestures = leap.frame().gestures();
         Leap::InteractionBox iBox = leap.frame().interactionBox();
         
         for (int p = 0; p < pointables.count(); p++){
@@ -399,10 +457,13 @@ void ofApp::draw(){
                 ofSetColor(0, 0, 255, 255);
             }
             
-            ofDrawSphere(normBoxPos*boxSize, 20);
+//            ofDrawSphere(normBoxPos*boxSize, 10);
             
-            ofSetColor(150, 150, 150, 55);
-            ofDrawSphere(tipPos*boxSize, 40);
+            ofPushMatrix();
+            ofTranslate(tipPos);
+            ofDrawSphere(0, 0, 10);
+            ofPopMatrix();
+            
           }
     }
     
@@ -412,9 +473,9 @@ void ofApp::draw(){
     
     if (enableLights) {
 //        ofSetColor(lightColor0->getClamped());
-        pLight0.draw();
+//        pLight0.draw();
 //        ofSetColor(lightColor1->getClamped());
-        pLight1.draw();
+//        pLight1.draw();
         ofDisableLighting();
     }
     previewCam.end();
@@ -442,7 +503,7 @@ void ofApp::exit(){
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
     switch (key) {
-        case 'c':
+        case 'C':
             makeCluster();
             break;
         case ' ':
@@ -453,36 +514,33 @@ void ofApp::keyPressed(int key){
 //        setGravityVec(z);
         break;
       }
-        case 's':
+        case 'S':
             savePreset();
             break;
-        case 'l':
+        case 'L':
             loadPreset();
             break;
-        case 'f':
+        case 'F':
             ofToggleFullscreen();
             break;
-        case '.':
-            resetCamera();
-            break;
-        case 'g':
+        case 'G':
             drawGui.set(!drawGui.get());
-        case 'm':
+        case 'M':
             gui.minimizeAll();
             break;
-        case 'n':
+        case 'N':
             gui.maximizeAll();
             break;
-        case 'b':
-            for(int i=0; i<physics.numberOfAttractions(); i++){
-                auto a = (Attraction2D *)physics.getAttraction(i);
-                a->kill();
-            }
-        case 'q':
+        case 'Q':
             makeParticles = !makeParticles;
             break;
-        case 'w':
+        case 'W':
             makeSprings = !makeSprings;
+            break;
+        case '/':
+            randomiseParams();
+            break;
+        case '.':
             break;
     }
 }
@@ -607,16 +665,8 @@ void ofApp::makeCluster(){
         } else {
             
         }
-        makeSpringBetweenParticles(a, b);
-        
+        auto r = physics.getParticle((int)ofRandom(np-1));
+        makeSpringBetweenParticles(a, r);
         physics.makeAttraction(a, b, attraction);
-        
-//        for (int j=0; j<physics.numberOfAttractions(); j++) {
-//            auto attr = physics.getAttraction(j);
-//            if ((attr->getOneEnd() == a || attr->getTheOtherEnd() == a) &&
-//                (attr->getOneEnd() == b || attr->getTheOtherEnd() == b)) {
-//                physics.makeAttraction(a, b, attraction);
-//            }
-//        }
     }
 }

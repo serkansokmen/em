@@ -6,7 +6,6 @@
 #include "ofxGui.h"
 #include "ofxCameraSaveLoad.h"
 #include "Leap.h"
-#include "LeapMath.h"
 
 
 #define PARTICLE_MIN_RADIUS 0.5
@@ -71,6 +70,7 @@ public:
     
     void setupGui();
     void resetCamera();
+    void randomiseParams();
     
     void loadPreset();
     void savePreset();
@@ -83,7 +83,10 @@ public:
     Leap::Controller     leap;
     
     ofxPanel             gui;
-
+    
+    of3dPrimitive        polyPrimitive;
+    of3dPrimitive        springPrimitive;
+    ofImage              polyTextureImage;
     ofVboMesh            polyMesh;
     ofVboMesh            springMesh;
     Particle3D           fixedParticle;
@@ -121,7 +124,6 @@ public:
     ofParameter<bool>    enableLights;
     ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawUsingVboMesh;
-    ofParameter<bool>    drawGround;
     ofParameter<bool>    orbitCamera;
     ofParameter<bool>    orbitLights;
     
