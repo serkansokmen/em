@@ -17,11 +17,11 @@
 #define MIN_DISTANCE        0.1
 #define MAX_DISTANCE        500
 
-#define MIN_BOUNCE          0.0001
+#define MIN_BOUNCE          0.0
 #define MAX_BOUNCE          0.95
 
-#define MIN_ATTRACTION      -0.05
-#define MAX_ATTRACTION      0.05
+#define MIN_ATTRACTION      0.0
+#define MAX_ATTRACTION      10.0
 
 #define	SPRING_MIN_STRENGTH		0.00005
 #define SPRING_MAX_STRENGTH		0.05
@@ -96,8 +96,7 @@ public:
     ofPoint              camPos;
 
 //    Physics params
-    ofParameter<bool>    makeParticles;
-    ofParameter<bool>    makeSprings;
+    ofParameter<bool>    makeParticles, makeSprings;
     ofParameter<double>  radius;
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
@@ -124,13 +123,17 @@ public:
     ofParameter<bool>    orbitCamera;
     ofParameter<bool>    orbitLight0, orbitLight1;
     ofParameter<bool>    drawLights;
+    ofParameter<bool>    drawSprings;
 
 //      Material params
-    ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0;
-    ofParameter<ofFloatColor>   lightAmbient1, lightDiffuse1, lightSpecular1;
+    ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0,
+                                lightAmbient1, lightDiffuse1, lightSpecular1;
     ofParameter<ofFloatColor>   polygonAmbient, polygonDiffuse, polygonSpecular;
     ofParameter<ofFloatColor>   springAmbient, springDiffuse, springSpecular;
     ofParameter<float>          polygonShininess, springShininess;
+    ofParameter<float>          lightAttenuation;
+    ofParameter<float>          attConstant0, attLinear0, attQuadratic0,
+                                attConstant1, attLinear1, attQuadratic1;
     
     string settingsFileName;
 

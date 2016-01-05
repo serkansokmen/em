@@ -10,16 +10,20 @@ void ofApp::setup(){
     ofEnableSmoothing();
     ofEnableAntiAliasing();
     ofSetSmoothLighting(true);
+    ofSetGlobalAmbientColor(ofColor(0, 0, 0));
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 
     float width = ofGetWidth();
     float height = ofGetHeight();
 
     resetCamera();
     setupGui();
+    gui.minimizeAll();
     setupShading();
 
     physics.setSectorCount(SECTOR_COUNT);
-    // physics.setTimeStep(60);
+//    physics.setTimeStep(60);
     physics.setDrag(0.97f);
     physics.setDrag(1);
     physics.enableCollision();
@@ -66,18 +70,24 @@ void ofApp::setupGui(){
     light0Params.setName("LIGHT 1");
     light0Params.add(enableLight0.set("Enabled", true));
     light0Params.add(orbitLight0.set("Orbit", true));
+    light0Params.add(attConstant0.set("Constant Attenuation", 1.0, 0.0, 1.0));
+    light0Params.add(attLinear0.set("Linear Attenuation", 0.001, 0.0001, 0.1));
+    light0Params.add(attQuadratic0.set("Quadratic Attenuation", 0.0001, 0.0001, 0.001));
     light0Params.add(lightAmbient0.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    light0Params.add(lightDiffuse0.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    light0Params.add(lightSpecular0.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+    lightDiffuse0.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
+    lightSpecular0.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
     gui.add(light0Params);
     
     ofParameterGroup    light1Params;
     light1Params.setName("LIGHT 2");
     light1Params.add(enableLight1.set("Enabled", true));
     light1Params.add(orbitLight1.set("Orbit", true));
+    light1Params.add(attConstant1.set("Constant Attenuation", 1.0, 0.0, 1.0));
+    light1Params.add(attLinear1.set("Linear Attenuation", 0.001, 0.0001, 0.1));
+    light1Params.add(attQuadratic1.set("Quadratic Attenuation", 0.0001, 0.0001, 0.001));
     light1Params.add(lightAmbient1.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    light1Params.add(lightDiffuse1.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    light1Params.add(lightSpecular1.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+    lightDiffuse1.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
+    lightSpecular1.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
     gui.add(light1Params);
     
     ofParameterGroup    polygonParams;
@@ -85,21 +95,16 @@ void ofApp::setupGui(){
     
     polygonParams.add(polygonAmbient.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
     polygonParams.add(polygonDiffuse.set("Diffuse", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    polygonParams.add(polygonSpecular.set("Specular", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+    polygonSpecular.set("Specular", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
     polygonParams.add(polygonShininess.set("Shininess", 10, 0, 255));
-    polygonParams.add(radius.set("Radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
-    polygonParams.add(mass.set("Mass", MIN_MASS, MIN_MASS, MAX_MASS));
-    polygonParams.add(bounce.set("Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
     gui.add(polygonParams);
     
     ofParameterGroup    springParams;
     springParams.setName("SPRINGS");
     springParams.add(springAmbient.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
     springParams.add(springDiffuse.set("Diffuse", ofFloatColor(1.0,1.0,1.0,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    springParams.add(springSpecular.set("Specular", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+    springSpecular.set("Specular", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
     springParams.add(springShininess.set("Shininess", 10, 0, 255));
-    springParams.add(spring_strength.set("Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
-    springParams.add(spring_length.set("Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
     gui.add(springParams);
     
     ofParameterGroup    physicsParams;
@@ -108,6 +113,11 @@ void ofApp::setupGui(){
     physicsParams.add(attraction.set("Attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
     physicsParams.add(bindToFixedParticle.set("Bind to center", true));
     physicsParams.add(physicsPaused.set("Pause", false));
+    physicsParams.add(radius.set("Radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
+    physicsParams.add(mass.set("Mass", MIN_MASS, MIN_MASS, MAX_MASS));
+    physicsParams.add(bounce.set("Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
+    physicsParams.add(spring_strength.set("Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
+    physicsParams.add(spring_length.set("Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
     gui.add(physicsParams);
     
     gui.add(boxSize.set("Box size", 100.f, 1.f, 2000.f));
@@ -117,6 +127,7 @@ void ofApp::setupGui(){
     gui.add(springCount.set("Spring Count", "0"));
     gui.add(attractionCount.set("Attraction Count", "0"));
     gui.add(drawUsingVboMesh.set("Draw mesh", true));
+    gui.add(drawSprings.set("Draw springs", true));
     gui.add(drawWireframe.set("Draw wireframe", false));
     gui.add(drawLights.set("Draw lights", true));
     gui.add(drawGrid.set("Draw grid", true));
@@ -129,28 +140,18 @@ void ofApp::setupGui(){
     camFov.addListener(this, &ofApp::setCamFov);
     camNearClip.addListener(this, &ofApp::setCamNearClip);
     camFarClip.addListener(this, &ofApp::setCamFarClip);
-
-    bool ul = useLeap.get();
-    toggleLeap(ul);
-    
-    double bs = boxSize.get() * 10.f;
-    setPhysicsBoxSize(bs);
 }
 
 void ofApp::setupShading(){
     
     pLight0.setup();
-    pLight0.enable();
-    pLight0.setAreaLight(120, boxSize);
-    //.setSpotlight(80,3);
-    pLight0.setAttenuation(1.0,0.0001,0.0001);
-    pLight0.lookAt(ofPoint::zero());
+    pLight0.setAreaLight(boxSize/4, boxSize/4);
+    pLight0.setAttenuation(0.1,0.01,0.001);
     
     pLight1.setup();
-    pLight1.enable();
-    pLight1.setAreaLight(120, boxSize);
-    pLight1.setAttenuation(1.0,0.0001,0.0001);
-    pLight1.lookAt(ofPoint::zero());
+    pLight1.setAreaLight(boxSize/4, boxSize/4);
+//    pLight1.setSpotlight(0.8, 0.001);
+    pLight1.setAttenuation(.25,0.001,0.0001);
 }
 
 //--------------------------------------------------------------
@@ -166,43 +167,49 @@ void ofApp::update(){
     if (orbitCamera) {
         float lng = time*10;
         float lat = sin(time*boxSize/1000)*10;
-        float radius = sin(time*boxSize/2000)*50 + 600;
+//        float radius = sin(time*boxSize/2000)*50 + 600;
+        float radius = previewCam.getGlobalPosition().distance(previewCam.getTarget().getPosition());
         previewCam.orbit(lng, lat, radius);
     }
     
-    if (enableLight0 || enableLight1) {
-        
-        if (enableLight0) {
-            pLight0.setAmbientColor(lightAmbient0);
-            pLight0.setDiffuseColor(lightDiffuse0);
-            pLight0.setSpecularColor(lightSpecular0);
-        }
-        if (enableLight1) {
-            pLight1.setAmbientColor(lightAmbient1);
-            pLight1.setDiffuseColor(lightDiffuse1);
-            pLight1.setSpecularColor(lightSpecular1);
-        }
-        
-        polyMat.setAmbientColor(polygonAmbient);
-        polyMat.setDiffuseColor(polygonDiffuse);
-        polyMat.setSpecularColor(polygonSpecular);
-        polyMat.setShininess(polygonShininess);
-        
-        springMat.setAmbientColor(springAmbient);
-        springMat.setDiffuseColor(springDiffuse);
-        springMat.setSpecularColor(springSpecular);
-        springMat.setShininess(springShininess);
-        
-        if (orbitLight0 || orbitLight1) {
-            float lat0 = sin(time*0.4)*bs;
-            float lng0 = cos(time*0.2)*bs;
-            float lat1 = cos(time*0.4)*bs;
-            float lng1 = sin(time*0.2)*bs;
-            float radius = boxSize;
-            if (orbitLight0)    pLight0.orbit(lng0, lat0, radius);
-            if (orbitLight1)    pLight1.orbit(lng1, lat1, radius);
-        }
+    if (enableLight0) {
+        pLight0.enable();
+        pLight0.setAttenuation(attConstant0, attLinear0, attQuadratic0);
+        pLight0.setAmbientColor(lightAmbient0);
+        pLight0.setDiffuseColor(lightDiffuse0);
+        pLight0.setSpecularColor(lightSpecular0);
+    } else {
+        pLight0.disable();
     }
+    if (enableLight1) {
+        pLight1.enable();
+        pLight1.setAttenuation(attConstant1, attLinear1, attQuadratic1);
+        pLight1.setAmbientColor(lightAmbient1);
+        pLight1.setDiffuseColor(lightDiffuse1);
+        pLight1.setSpecularColor(lightSpecular1);
+    } else {
+        pLight1.disable();
+    }
+    if (orbitLight0 || orbitLight1) {
+        float lat0 = sin(time*0.4)*bs;
+        float lng0 = cos(time*0.2)*bs;
+        float lat1 = cos(time*0.4)*bs;
+        float lng1 = sin(time*0.2)*bs;
+        float radius = boxSize * 0.8;
+        if (enableLight0 && orbitLight0)    pLight0.orbit(lng0, lat0, radius);
+        if (enableLight1 && orbitLight1)    pLight1.orbit(lng1, lat1, radius);
+    }
+    
+    polyMat.setAmbientColor(polygonAmbient);
+    polyMat.setDiffuseColor(polygonDiffuse);
+    polyMat.setSpecularColor(polygonSpecular);
+    polyMat.setShininess(polygonShininess);
+    
+    springMat.setEmissiveColor(springAmbient);
+    springMat.setAmbientColor(springAmbient);
+    springMat.setDiffuseColor(springDiffuse);
+    springMat.setSpecularColor(springSpecular);
+    springMat.setShininess(springShininess);
 
 
     if (useLeap) {
@@ -300,10 +307,19 @@ void ofApp::update(){
         polyMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
         for(int i=0; i<physics.numberOfParticles(); i++){
             auto p = physics.getParticle(i);
-            if (p->isFree()) {
-                polyMesh.addVertex(p->getPosition());
-                polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
-            }
+            polyMesh.addVertex(p->getPosition());
+            polyMesh.addColor(polyMat.getDiffuseColor());
+            polyMesh.addVertex(p->getPosition());
+            polyMesh.addColor(polyMat.getDiffuseColor());
+            polyMesh.addVertex(p->getPosition());
+            polyMesh.addColor(polyMat.getDiffuseColor());
+            polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
+            polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
+            polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
+            
+            polyMesh.addIndex(i-1);
+            polyMesh.addIndex(i);
+            polyMesh.addIndex(i+1);
         }
 
         springMesh.clear();
@@ -324,11 +340,20 @@ void ofApp::update(){
             float size = ofMap(spring->getStrength(), SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH);
 
             springMesh.addVertex(a->getPosition());
+            springMesh.addColor(springMat.getDiffuseColor());
             springMesh.addVertex(b->getPosition());
-//            springMesh.addColor(ofFloatColor(1,1,1));
-//            springMesh.addColor(ofFloatColor(1,1,1));
-//            springMesh.addIndex(i);
-//            springMesh.addIndex(i);
+            springMesh.addColor(springMat.getDiffuseColor());
+            
+            if (i == 0) {
+                polyMesh.addIndex(i);
+                polyMesh.addIndex(physics.numberOfSprings() - 1);
+            } else if (i == physics.numberOfSprings() - 1) {
+                springMesh.addIndex(i);
+                springMesh.addIndex(0);
+            } else {
+                springMesh.addIndex(i);
+                springMesh.addIndex(i+1);
+            }
         }
     }
 }
@@ -367,10 +392,10 @@ void ofApp::toggleLeap(bool &v){
 }
 
 void ofApp::setPhysicsBoxSize(double& s){
-    spring_length.setMax(s);
+    spring_length.setMax(s*2);
     physics.setWorldSize(ofVec3f(-s, -s, -s),
                          ofVec3f(s, s, s));
-    physics.clearWorldSize();
+//    physics.clearWorldSize();
 }
 void ofApp::setGravityVec(ofPoint& g){
     physics.setGravity(g);
@@ -429,16 +454,19 @@ void ofApp::draw(){
     if (drawUsingVboMesh) {
         // Draw polygon mesh
         polyMat.begin();
-        polyTextureImage.bind();
+//        polyTextureImage.bind();
         if (drawWireframe)  polyMesh.drawWireframe();
         else                polyMesh.draw();
-        polyTextureImage.unbind();
+//        polyTextureImage.unbind();
         polyMat.end();
-
-        springMat.begin();
-        if (drawWireframe)  springMesh.drawWireframe();
-        else                springMesh.draw();
-        springMat.end();
+        
+        if (drawSprings) {
+            springMat.begin();
+            glLineWidth(4);
+            if (drawWireframe)  springMesh.drawWireframe();
+            else                springMesh.draw();
+            springMat.end();
+        }
 
     } else {
         // Draw polygons
@@ -507,8 +535,8 @@ void ofApp::draw(){
 
     if (enableLight0 || enableLight1) {
         if (drawLights) {
-            pLight0.draw();
-            pLight1.draw();
+            if (enableLight0) pLight0.draw();
+            if (enableLight1) pLight1.draw();
         }
         ofDisableLighting();
     }
@@ -552,7 +580,7 @@ void ofApp::keyPressed(int key){
             ofToggleFullscreen();
             break;
         case ',':
-            drawGui.set(!drawGui.get());
+            drawGui = !drawGui;
         case 'm':
             gui.minimizeAll();
             break;
@@ -560,7 +588,7 @@ void ofApp::keyPressed(int key){
             gui.maximizeAll();
             break;
         
-        case '0': {
+        case ' ': {
             physics.clear();
             physics.addParticle(&fixedParticle);
             break;
@@ -588,19 +616,10 @@ void ofApp::mouseMoved(int x, int y ){
 
 //--------------------------------------------------------------
 void ofApp::mouseDragged(int x, int y, int button){
-    if (!drawGui || (drawGui && !gui.getShape().inside(x, y))){
-        if (makeParticles) {
-//            makeCluster();
-//            mousePressed(x, y, button);
-        }
-    }
 }
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (!gui.getShape().inside(x, y)){
-//        makeCluster();
-    }
 }
 
 //--------------------------------------------------------------
@@ -679,25 +698,34 @@ void ofApp::makeParticleAtPosition(const ofPoint& p){
 
 //--------------------------------------------------------------
 void ofApp::makeCluster(){
-    int np = physics.numberOfParticles();
-
+    
+    int numParticles = physics.numberOfParticles();
+    
     if (makeParticles) {
         //            auto pos = previewCam.screenToWorld(ofVec3f(x, y, 0));
         //            makeParticleAtPosition(pos);
-        makeParticleAtCenter(boxSize.get() * 0.8f);
+        makeParticleAtCenter(boxSize * 0.8f);
     }
-    if (makeSprings && np > 1 && np % 2 == 0) {
-        auto a = physics.getParticle(np-1);
-        auto b = physics.getParticle(np-2);
-
-        if (bindToFixedParticle) {
-            makeSpringBetweenParticles(a, &fixedParticle);
-            makeSpringBetweenParticles(b, &fixedParticle);
-        } else {
-
+    
+    if (makeSprings && numParticles > 1) {
+        for (int i=numParticles; i>0; i--) {
+            auto a = physics.getParticle(i-1);
+            auto b = physics.getParticle(i);
+            
+            if (makeSprings && numParticles % 2 == 0) {
+                if (bindToFixedParticle) {
+                    makeSpringBetweenParticles(a, &fixedParticle);
+                    makeSpringBetweenParticles(b, &fixedParticle);
+                }
+                makeSpringBetweenParticles(a, b);
+            }
         }
-        auto r = physics.getParticle((int)ofRandom(np-1));
-        makeSpringBetweenParticles(a, r);
-        physics.makeAttraction(a, b, attraction);
+    }
+    if (numParticles > 1) {
+        auto a = physics.getParticle(numParticles-1);
+        for (int i=0; i<numParticles-1; i++) {
+            auto b = physics.getParticle(i);
+            physics.makeAttraction(a, b, attraction);
+        }
     }
 }
