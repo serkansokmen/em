@@ -496,7 +496,7 @@
 		E4B69B4C0A3A1720003C02F2 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0600;
+				LastUpgradeCheck = 0720;
 			};
 			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "em" */;
 			compatibilityVersion = "Xcode 3.2";
@@ -611,6 +611,7 @@
 				CONFIGURATION_BUILD_DIR = "$(SRCROOT)/bin/";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_TESTABILITY = YES;
 				GCC_AUTO_VECTORIZATION = YES;
 				GCC_ENABLE_SSE3_EXTENSIONS = YES;
 				GCC_ENABLE_SUPPLEMENTAL_SSE3_INSTRUCTIONS = YES;
@@ -755,6 +756,7 @@
 					"$(inherited)",
 					../../../addons/ofxLeapMotion2/libs/lib/osx/,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ofoto.osx.em;
 				PRODUCT_NAME = emDebug;
 				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxLeapMotion2/libs/include/;
 				WRAPPER_EXTENSION = app;
@@ -805,6 +807,7 @@
 					"$(inherited)",
 					../../../addons/ofxLeapMotion2/libs/lib/osx/,
 				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.ofoto.osx.em;
 				PRODUCT_NAME = emDebug;
 				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxLeapMotion2/libs/include/;
 				WRAPPER_EXTENSION = app;
