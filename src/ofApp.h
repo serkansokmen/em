@@ -101,12 +101,13 @@ public:
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
     ofParameter<double>  attraction;
-    ofParameter<double>  spring_strength;
-    ofParameter<double>  spring_length;
+    ofParameter<double>  springStrength;
+    ofParameter<double>  springLength;
     ofParameter<double>  boxSize;
-    ofParameter<string>  particleCount;
-    ofParameter<string>  springCount;
-    ofParameter<string>  attractionCount;
+    ofParameter<int>     particleCount;
+    ofParameter<int>     springCount;
+    ofParameter<int>     attractionCount;
+    ofParameter<float>   fps;
     ofParameter<ofPoint> gravity;
     ofParameter<bool>    bindToFixedParticle;
     ofParameter<bool>    physicsPaused;

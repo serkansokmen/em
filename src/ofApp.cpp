@@ -10,7 +10,8 @@ void ofApp::setup(){
     ofEnableSmoothing();
     ofEnableAntiAliasing();
     ofSetSmoothLighting(true);
-    ofSetGlobalAmbientColor(ofColor(0, 0, 0));
+    ofEnableArbTex();
+    ofSetGlobalAmbientColor(ofFloatColor(0.01, 0.01, 0.01));
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
@@ -20,6 +21,7 @@ void ofApp::setup(){
     resetCamera();
     setupGui();
     gui.minimizeAll();
+    restoreParams();
     setupShading();
 
     physics.setSectorCount(SECTOR_COUNT);
@@ -57,6 +59,8 @@ void ofApp::setupGui(){
     gui.setDefaultHeaderBackgroundColor(guiColor);
     gui.setDefaultBorderColor(guiColor);
 //    gui.setDefaultTextColor(ofColor::black);
+    
+    gui.add(fps.set("FPS", 0));
     
     ofParameterGroup    cameraParams;
     cameraParams.setName("CAMERA");
@@ -116,16 +120,16 @@ void ofApp::setupGui(){
     physicsParams.add(radius.set("Radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
     physicsParams.add(mass.set("Mass", MIN_MASS, MIN_MASS, MAX_MASS));
     physicsParams.add(bounce.set("Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
-    physicsParams.add(spring_strength.set("Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
-    physicsParams.add(spring_length.set("Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
+    physicsParams.add(springStrength.set("Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
+    physicsParams.add(springLength.set("Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
     gui.add(physicsParams);
     
     gui.add(boxSize.set("Box size", 100.f, 1.f, 2000.f));
     gui.add(makeParticles.set("Make Particles", true));
     gui.add(makeSprings.set("Make Springs", true));
-    gui.add(particleCount.set("Particle Count", "0"));
-    gui.add(springCount.set("Spring Count", "0"));
-    gui.add(attractionCount.set("Attraction Count", "0"));
+    gui.add(particleCount.set("Particle Count", 0));
+    gui.add(springCount.set("Spring Count", 0));
+    gui.add(attractionCount.set("Attraction Count", 0));
     gui.add(drawUsingVboMesh.set("Draw mesh", true));
     gui.add(drawSprings.set("Draw springs", true));
     gui.add(drawWireframe.set("Draw wireframe", false));
@@ -133,7 +137,7 @@ void ofApp::setupGui(){
     gui.add(drawGrid.set("Draw grid", true));
     gui.add(useLeap.set("LeapMotion", false));
     gui.add(drawGui.set("Keep settings open", true));
-
+    
     useLeap.addListener(this, &ofApp::toggleLeap);
     boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
     gravity.addListener(this, &ofApp::setGravityVec);
@@ -145,13 +149,10 @@ void ofApp::setupGui(){
 void ofApp::setupShading(){
     
     pLight0.setup();
-    pLight0.setAreaLight(boxSize/4, boxSize/4);
-    pLight0.setAttenuation(0.1,0.01,0.001);
-    
     pLight1.setup();
-    pLight1.setAreaLight(boxSize/4, boxSize/4);
-//    pLight1.setSpotlight(0.8, 0.001);
-    pLight1.setAttenuation(.25,0.001,0.0001);
+    
+    pLight0.setAreaLight(boxSize/2, boxSize/2);
+    pLight1.setAreaLight(boxSize/2, boxSize/2);
 }
 
 //--------------------------------------------------------------
@@ -160,14 +161,14 @@ void ofApp::update(){
     float time = ofGetElapsedTimef();
     float bs = boxSize / 2;
     
-    particleCount.set(ofToString(physics.numberOfParticles()));
-    springCount.set(ofToString(physics.numberOfSprings()));
-    attractionCount.set(ofToString(physics.numberOfAttractions()));
+    fps.set(ofGetFrameRate());
+    particleCount.set(physics.numberOfParticles());
+    springCount.set(physics.numberOfSprings());
+    attractionCount.set(physics.numberOfAttractions());
 
     if (orbitCamera) {
         float lng = time*10;
         float lat = sin(time*boxSize/1000)*10;
-//        float radius = sin(time*boxSize/2000)*50 + 600;
         float radius = previewCam.getGlobalPosition().distance(previewCam.getTarget().getPosition());
         previewCam.orbit(lng, lat, radius);
     }
@@ -355,6 +356,20 @@ void ofApp::update(){
                 springMesh.addIndex(i+1);
             }
         }
+    } else {
+//        springCylinders.clear();
+//        for (int i=0; i<physics.numberOfSprings(); i++) {
+//            auto s = physics.getSpring(i);
+//            auto a = s->getOneEnd();
+//            auto b = s->getTheOtherEnd();
+//            ofCylinderPrimitive cylinder;
+//            cylinder.setPosition(a->getPosition());
+//            cylinder.setOrientation(ofVec3f());
+//            cylinder.setRadius(5);
+//            cylinder.setHeight(a->getPosition().distance(b->getPosition()));
+//            cylinder.setOrientation(a->getPosition().getPerpendicular(<#const ofVec3f &vec#>))
+//            springCylinders.push_back(cylinder);
+//        }
     }
 }
 
@@ -392,9 +407,11 @@ void ofApp::toggleLeap(bool &v){
 }
 
 void ofApp::setPhysicsBoxSize(double& s){
-    spring_length.setMax(s*2);
+    springLength.setMax(s*2);
     physics.setWorldSize(ofVec3f(-s, -s, -s),
                          ofVec3f(s, s, s));
+    pLight0.setAreaLight(s/2, s/2);
+    pLight1.setAreaLight(s/2, s/2);
 //    physics.clearWorldSize();
 }
 void ofApp::setGravityVec(ofPoint& g){
@@ -424,8 +441,8 @@ void ofApp::randomiseParams(){
     mass.set(ofRandom(mass.getMin(), mass.getMax()));
     bounce.set(ofRandom(bounce.getMin(), bounce.getMax()));
     attraction.set(ofRandom(attraction.getMin(), attraction.getMax()));
-    spring_strength.set(ofRandom(spring_strength.getMin(), spring_strength.getMax()));
-    spring_length.set(ofRandom(spring_length.getMin(), spring_length.getMax()));
+    springStrength.set(ofRandom(springStrength.getMin(), springStrength.getMax()));
+    springLength.set(ofRandom(springLength.getMin(), springLength.getMax()));
 }
 
 //--------------------------------------------------------------
@@ -454,44 +471,44 @@ void ofApp::draw(){
     if (drawUsingVboMesh) {
         // Draw polygon mesh
         polyMat.begin();
-//        polyTextureImage.bind();
+        polyTextureImage.bind();
         if (drawWireframe)  polyMesh.drawWireframe();
         else                polyMesh.draw();
-//        polyTextureImage.unbind();
+        polyTextureImage.unbind();
         polyMat.end();
         
         if (drawSprings) {
             springMat.begin();
-            glLineWidth(4);
+            ofSetLineWidth(100);
             if (drawWireframe)  springMesh.drawWireframe();
             else                springMesh.draw();
             springMat.end();
         }
 
     } else {
-        // Draw polygons
-        for(int i=0; i<physics.numberOfParticles(); i++){
+        // Draw particle spheres
+        for (int i=0; i<physics.numberOfParticles(); i++) {
             auto p = physics.getParticle(i);
-            ofPushMatrix();
-            ofTranslate(p->getPosition());
-            ofSetColor(200);
-            ofSetCircleResolution(p->getRadius()*10);
-            polyMat.begin();
-            if (p->isFree())
-                ofDrawSphere(p->getRadius());
-            polyMat.end();
-            ofPopMatrix();
+            if (p->isFree()) {
+                polyMat.begin();
+                ofSetCircleResolution(p->getVelocity().length());
+                ofDrawSphere(p->getPosition(), p->getRadius());
+                polyMat.end();
+            }
         }
+        
         // Draw springs
-        ofFloatColor(0.5, 0.5, 0.5, 0.5);
-        for(int i=0; i<physics.numberOfSprings(); i++) {
-            auto spring = (msa::physics::Spring3D *) physics.getSpring(i);
-            auto a = spring->getOneEnd();
-            auto b = spring->getTheOtherEnd();
-
-            springMat.begin();
-            ofDrawLine(a->getPosition(), b->getPosition());
-            springMat.end();
+        if (drawSprings) {
+            for(int i=0; i<physics.numberOfSprings(); i++) {
+                auto spring = physics.getSpring(i);
+                auto a = spring->getOneEnd();
+                auto b = spring->getTheOtherEnd();
+                
+                springMat.begin();
+                ofSetLineWidth(a->getPosition().distance(b->getPosition()));
+                ofDrawLine(a->getPosition(), b->getPosition());
+                springMat.end();
+            }
         }
     }
 
@@ -654,8 +671,17 @@ void ofApp::dragEvent(ofDragInfo info){
 template <typename T>
 void ofApp::makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b) {
     float dist = a->getPosition().distance(b->getPosition());
-    float strength = dist*spring_strength;
-    physics.makeSpring(a, b, spring_strength, spring_length);
+    float strength = dist*springStrength;
+    bool springExists = false;
+    for (int i=0; i<physics.numberOfSprings(); i++) {
+        auto s = physics.getSpring(i);
+        if ((s->getOneEnd() == a || s->getTheOtherEnd() == a) &&
+            (s->getOneEnd() == b || s->getTheOtherEnd() == b)) {
+            springExists = true;
+            return;
+        }
+    }
+    if (!springExists) physics.makeSpring(a, b, springStrength, springLength);
 }
 
 //--------------------------------------------------------------
