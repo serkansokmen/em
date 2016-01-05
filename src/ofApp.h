@@ -52,14 +52,14 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    
+
     void makeParticleAtPosition(const ofPoint& p);
     void makeParticleAtCenter(float radius);
     void makeCluster();
-    
+
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
-    
+
     // Event Handlers
     void toggleLeap(bool& v);
     void setPhysicsBoxSize(double& s);
@@ -67,23 +67,24 @@ public:
     void setCamFov(float& v);
     void setCamNearClip(float& v);
     void setCamFarClip(float& v);
-    
+    void setupShading();
     void setupGui();
     void resetCamera();
     void randomiseParams();
-    
-    void loadPreset();
-    void savePreset();
+
+    void restoreParams();
+    void saveParams(bool showDialog = false);
 
     World3D              physics;
     ofEasyCam            previewCam;
     ofLight              pLight0, pLight1;
+
     ofMaterial           polyMat, springMat;
-    
+
     Leap::Controller     leap;
-    
+
     ofxPanel             gui;
-    
+
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
     ofImage              polyTextureImage;
@@ -93,7 +94,7 @@ public:
 
     ofQuaternion         camQuat;
     ofPoint              camPos;
-    
+
 //    Physics params
     ofParameter<bool>    makeParticles;
     ofParameter<bool>    makeSprings;
@@ -110,23 +111,30 @@ public:
     ofParameter<ofPoint> gravity;
     ofParameter<bool>    bindToFixedParticle;
     ofParameter<bool>    physicsPaused;
-    
+
 //    Camera params
     ofParameter<float>   camFov;
     ofParameter<float>   camNearClip;
     ofParameter<float>   camFarClip;
-    
+
 //     Render params
-    ofParameter<ofFloatColor>         lightColor0, lightColor1;
-    ofParameter<ofFloatColor>         polyColor;
-    ofParameter<ofFloatColor>         springColor;
-    ofParameter<ofPoint> lightPos;
-    ofParameter<bool>    enableLights;
+    ofParameter<bool>    enableLight0, enableLight1;
     ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawUsingVboMesh;
     ofParameter<bool>    orbitCamera;
-    ofParameter<bool>    orbitLights;
+    ofParameter<bool>    orbitLight0, orbitLight1;
+    ofParameter<bool>    drawLights;
+
+//      Material params
+    ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0;
+    ofParameter<ofFloatColor>   lightAmbient1, lightDiffuse1, lightSpecular1;
+    ofParameter<ofFloatColor>   polygonAmbient, polygonDiffuse, polygonSpecular;
+    ofParameter<ofFloatColor>   springAmbient, springDiffuse, springSpecular;
+    ofParameter<float>          polygonShininess, springShininess;
     
+    string settingsFileName;
+
+
     ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;
     ofParameter<bool>    drawGui;
