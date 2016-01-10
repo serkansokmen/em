@@ -11,15 +11,13 @@ void ofApp::setup(){
     ofEnableAntiAliasing();
     ofSetSmoothLighting(true);
     ofEnableArbTex();
-    ofSetGlobalAmbientColor(ofFloatColor(0.01, 0.01, 0.01));
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_CULL_FACE);
+    ofSetCircleResolution(20);
+    ofSetGlobalAmbientColor(ofFloatColor(0.1, 0.1, 0.1));
 
     float width = ofGetWidth();
     float height = ofGetHeight();
 
     setupShading();
-    resetCamera();
     setupGui();
     gui.minimizeAll();
     restoreParams();
@@ -38,7 +36,7 @@ void ofApp::setup(){
     physics.setTimeStep(60);
     
     physics.setDrag(0.97f);
-    physics.enableCollision();
+    physics.disableCollision();
 
     physics.addParticle(&fixedParticle);
     fixedParticle.setMass(1)->setRadius(10.f)->moveTo(ofPoint::zero())->makeFixed();
@@ -135,8 +133,11 @@ void ofApp::setupGui(){
     gui.add(physicsParams);
     
     gui.add(boxSize.set("Box size", 100.f, 1.f, 2000.f));
+    gui.add(lightOrbitSpeed.set("Light orbit speed", 0.01, 0.01, 1.0f));
+    gui.add(zDepth.set("Z depth", 50, 0, 400));
     gui.add(makeParticles.set("Make Particles", true));
     gui.add(makeSprings.set("Make Springs", true));
+    gui.add(moveOnClick.set("Move on click", false));
     gui.add(fixedParticleMoveDuration.set("Click_Move duration", 0.3, 0.0, 10.0));
     gui.add(particleCount.set("Particle Count", 0));
     gui.add(springCount.set("Spring Count", 0));
@@ -146,10 +147,13 @@ void ofApp::setupGui(){
     gui.add(drawWireframe.set("Draw wireframe", false));
     gui.add(drawLights.set("Draw lights", true));
     gui.add(drawGrid.set("Draw grid", true));
-    gui.add(useLeap.set("LeapMotion", false));
+    gui.add(drawLabels.set("Draw names", true));
+//    gui.add(useLeap.set("LeapMotion", false));
     gui.add(drawGui.set("Keep settings open", true));
     
     fixedParticleMoveDuration.addListener(this, &ofApp::setFixedParticleMoveDuration);
+    
+    zDepth.addListener(this, &ofApp::setZDepth);
     useLeap.addListener(this, &ofApp::toggleLeap);
     boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
     gravity.addListener(this, &ofApp::setGravityVec);
@@ -163,13 +167,10 @@ void ofApp::setupShading(){
     pLight0.setup();
     pLight1.setup();
     
-    pLight0.setAreaLight(boxSize/2, boxSize/2);
-    pLight1.setAreaLight(boxSize/2, boxSize/2);
-    
     lights.push_back(pLight0);
     lights.push_back(pLight1);
     
-    mbShader.load("metaball");
+//    mbShader.load("metaball");
 }
 
 //--------------------------------------------------------------
@@ -195,7 +196,7 @@ void ofApp::update(){
 
     if (orbitCamera) {
         float lng = time*10;
-        float lat = sin(time*boxSize/1000)*10;
+        float lat = sin(time*boxSize/1000)*2;
         float radius = previewCam.getGlobalPosition().distance(previewCam.getTarget().getPosition());
         previewCam.orbit(lng, lat, radius);
     }
@@ -219,10 +220,10 @@ void ofApp::update(){
         pLight1.disable();
     }
     if (orbitLight0 || orbitLight1) {
-        float lat0 = sin(time*0.4)*bs;
-        float lng0 = cos(time*0.2)*bs;
-        float lat1 = cos(time*0.4)*bs;
-        float lng1 = sin(time*0.2)*bs;
+        float lat0 = sin(time*0.8*lightOrbitSpeed)*bs;
+        float lng0 = cos(time*0.4*lightOrbitSpeed)*bs;
+        float lat1 = cos(time*0.8*lightOrbitSpeed)*bs;
+        float lng1 = sin(time*0.4*lightOrbitSpeed)*bs;
         float radius = boxSize * 1.2;
         if (enableLight0 && orbitLight0)    pLight0.orbit(lng0, lat0, radius);
         if (enableLight1 && orbitLight1)    pLight1.orbit(lng1, lat1, radius);
@@ -264,7 +265,7 @@ void ofApp::update(){
                         ->setBounce(bounce)
                         ->setRadius(radius)
                         ->enableCollision()
-                        ->makeFree()
+                        ->makeFixed()
                         ->moveTo(tipPos)
                         ->addVelocity(tipVel);
                         physics.addParticle(p);
@@ -381,7 +382,6 @@ void ofApp::update(){
             float rx = -vec.y * vec.z;
             float ry =  vec.x * vec.z;
 
-//            ofRotate(angle, rx, ry, 0.0);
             float size = ofMap(spring->getStrength(), SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH);
 
             springMesh.addVertex(a->getPosition());
@@ -389,20 +389,6 @@ void ofApp::update(){
             springMesh.addVertex(b->getPosition());
             springMesh.addColor(springMat.getDiffuseColor());
         }
-    } else {
-//        springCylinders.clear();
-//        for (int i=0; i<physics.numberOfSprings(); i++) {
-//            auto s = physics.getSpring(i);
-//            auto a = s->getOneEnd();
-//            auto b = s->getTheOtherEnd();
-//            ofCylinderPrimitive cylinder;
-//            cylinder.setPosition(a->getPosition());
-//            cylinder.setOrientation(ofVec3f());
-//            cylinder.setRadius(5);
-//            cylinder.setHeight(a->getPosition().distance(b->getPosition()));
-//            cylinder.setOrientation(a->getPosition().getPerpendicular(<#const ofVec3f &vec#>))
-//            springCylinders.push_back(cylinder);
-//        }
     }
 }
 
@@ -441,20 +427,13 @@ void ofApp::toggleLeap(bool &v){
 
 void ofApp::setPhysicsBoxSize(double& s){
     springLength.setMax(s*2);
-    physics.setWorldSize(ofVec3f(-s, -s, -s),
-                         ofVec3f(s, s, s));
-    pLight0.setAreaLight(s/2, s/2);
-    pLight1.setAreaLight(s/2, s/2);
+//    physics.setWorldSize(ofVec3f(-s, -s, -s),
+//                         ofVec3f(s, s, s));
+//    pLight0.setAreaLight(s/2, s/2);
+//    pLight1.setAreaLight(s/2, s/2);
+    pLight0.setPointLight();
+    pLight1.setPointLight();
 //    physics.clearWorldSize();
-}
-
-void ofApp::resetCamera(){
-//    previewCam.reset();
-//    previewCam.setDistance(5.0f);
-//    previewCam.setNearClip(0.01f);
-//    previewCam.setFarClip(5000.0f);
-//    previewCam.setPosition(0.4f, 0.2f, 0.8f);
-//    previewCam.lookAt(ofVec3f(0.0f, 0.0f, 0.0f));
 }
 
 void ofApp::randomiseParams(){
@@ -490,6 +469,9 @@ void ofApp::draw(){
     ofDisableDepthTest();
     ofDisableAlphaBlending();
     
+    ofSetColor(ofColor::white);
+    ofDrawBitmapString(currentGraphName, drawGui ? gui.getWidth() + 20 : 20, 20);
+    
     if (drawGui) {
         ofEnableAlphaBlending();
         gui.draw();
@@ -499,12 +481,11 @@ void ofApp::draw(){
 //--------------------------------------------------------------
 void ofApp::renderScene(){
     if (drawGrid) {
-        ofSetColor(255, 50);
+        ofSetColor(255, 10);
         float stepSize = boxSize.get()/4;
         size_t numberOfSteps = 4;
         bool labels = false;
         ofDrawGrid(stepSize, numberOfSteps, labels);
-//    ofDrawSphere(fixedParticle.getPosition(), boxSize/100.f);
     }
     
     if (drawUsingVboMesh) {
@@ -525,14 +506,13 @@ void ofApp::renderScene(){
         
     } else {
         // Draw particle spheres
-        for (int i=0; i<physics.numberOfParticles(); i++) {
-            auto p = physics.getParticle(i);
-            if (p->isFree()) {
-                polyMat.begin();
-                ofSetCircleResolution(p->getVelocity().length());
-                ofDrawSphere(p->getPosition(), p->getRadius());
-                polyMat.end();
-            }
+        for (auto p : particles) {
+            ofPushMatrix();
+            ofTranslate(p->getPosition());
+            polyMat.begin();
+            ofDrawSphere(0, 0, p->getRadius());
+            polyMat.end();
+            ofPopMatrix();
         }
         
         // Draw springs
@@ -542,11 +522,26 @@ void ofApp::renderScene(){
                 auto a = spring->getOneEnd();
                 auto b = spring->getTheOtherEnd();
                 
-                springMat.begin();
-                ofSetLineWidth(a->getPosition().distance(b->getPosition()));
+//                springMat.begin();
+                ofSetColor(springDiffuse->r*255,
+                           springDiffuse->g*255,
+                           springDiffuse->b*255,
+                           springDiffuse->a*255);
+//                ofSetLineWidth(a->getPosition().distance(b->getPosition()));
                 ofDrawLine(a->getPosition(), b->getPosition());
-                springMat.end();
+//                springMat.end();
             }
+        }
+    }
+    
+    if (drawLabels) {
+        for (auto p : particles) {
+            ofPushMatrix();
+            ofTranslate(p->getPosition());
+            float distToCam = p->getPosition().distance(previewCam.getGlobalPosition()) / 10;
+            ofSetColor(p->color, ofClamp(255 - distToCam, 0, 255));
+            ofDrawBitmapString(p->node.name, 0, 0);
+            ofPopMatrix();
         }
     }
     
@@ -591,6 +586,7 @@ void ofApp::renderScene(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
+    zDepth.removeListener(this, &ofApp::setZDepth);
     fixedParticleMoveDuration.removeListener(this, &ofApp::setFixedParticleMoveDuration);
     useLeap.removeListener(this, &ofApp::toggleLeap);
     boxSize.removeListener(this, &ofApp::setPhysicsBoxSize);
@@ -607,6 +603,9 @@ void ofApp::keyPressed(int key){
 
         case 'c':
             makeCluster();
+            break;
+        case 'o':
+            orbitCamera = !orbitCamera;
             break;
             
         case 's':
@@ -629,9 +628,16 @@ void ofApp::keyPressed(int key){
         case 'n':
             gui.maximizeAll();
             break;
+        case '=':
+            loadJson("7f0b54a4-02b3-4e83-bd68-4c007f9c2dfd.json");
+            break;
+        case '-':
+            loadJson("1ac1ee14-0567-4f04-a6e5-96b24ed5b5d5.json");
+            break;
         
         case ' ': {
             physics.clear();
+            particles.clear();
             physics.addParticle(&fixedParticle);
             break;
         }
@@ -662,7 +668,7 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (button == 0) {
+    if (moveOnClick && button == 0) {
         int n = physics.numberOfParticles();
         float nearestDistance = 0;
         ofVec2f nearestVertex;
@@ -677,7 +683,9 @@ void ofApp::mousePressed(int x, int y, int button){
                 nearestIndex = i;
             }
         }
-        fixedParticlePos.animateTo(physics.getParticle(nearestIndex)->getPosition());
+        ofPoint pos = physics.getParticle(nearestIndex)->getPosition();
+        previewCam.lookAt(pos);
+//        fixedParticlePos.animateTo(physics.getParticle(nearestIndex)->getPosition());
     }
 }
 
@@ -798,5 +806,125 @@ void ofApp::makeCluster(){
             auto b = physics.getParticle(i);
             physics.makeAttraction(a, b, attraction);
         }
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::loadJson(const string& url){
+    
+    // Now parse the JSON
+    bool parsingSuccessful = json.open(url);
+    
+    if (parsingSuccessful){
+        
+        nodeTypes.clear();
+        edgeTypes.clear();
+        nodes.clear();
+        edges.clear();
+        particles.clear();
+        physics.clear();
+        
+        currentGraphName = json["graph"]["name"].asString();
+        
+        // Parse edge types
+        for (Json::ArrayIndex i = 0; i < json["graph"]["edge_types"].size(); ++i){
+            auto jsNode = json["graph"]["edge_types"][i];
+            gcv::EdgeType it;
+            it.id = jsNode["id"].asString();
+            it.name = jsNode["name"].asString();
+            it.description = jsNode["description"].asString();
+            it.weighted = jsNode["weighted"].asDouble();
+            it.directed = jsNode["directed"].asDouble();
+            it.color = ofColor::fromHex(getHexFromColorName(jsNode["color"].asString()));
+            edgeTypes.push_back(it);
+        }
+        
+        // Parse node types
+        for (Json::ArrayIndex i = 0; i < json["graph"]["node_types"].size(); ++i){
+            auto jsNode = json["graph"]["node_types"][i];
+            gcv::NodeType it;
+            it.id = jsNode["id"].asString();
+            it.name = jsNode["name"].asString();
+            it.description = jsNode["description"].asString();
+            it.image = jsNode["image"].asString();
+            it.color = ofColor::fromHex(getHexFromColorName(jsNode["color"].asString()));
+            nodeTypes.push_back(it);
+        }
+        
+        // Parse nodes
+        for (Json::ArrayIndex i=0; i<json["graph"]["nodes"].size(); ++i){
+            
+            auto jsNode = json["graph"]["nodes"][i];
+            
+            gcv::Node node;
+            node.id = jsNode["id"].asString();
+            node.name = jsNode["name"].asString();
+            node.description = jsNode["description"].asString();
+            node.image = jsNode["image"].asString();
+            node.pos_x = jsNode["pos_x"].asDouble();
+            node.pos_y = jsNode["pos_y"].asDouble();
+            node.type_id = jsNode["type_id"].asString();
+            nodes.push_back(node);
+            
+            auto a = new gcv::Particle;
+            a->setMass(mass)
+                ->setBounce(bounce)
+                ->setRadius(radius)
+                ->enableCollision()
+                ->makeFixed()
+                ->moveTo(ofPoint(node.pos_x, node.pos_y, ofRandom(-zDepth, zDepth)));
+            a->node = node;
+            for (auto nt : nodeTypes) {
+                if (nt.id == node.type_id) {
+                    a->color = ofColor(nt.color);
+                }
+            }
+            physics.addParticle(a);
+            particles.push_back(a);
+        }
+        
+        // Parse edges
+        for (Json::ArrayIndex i=0; i<json["graph"]["edges"].size(); ++i){
+            
+            auto jsNode = json["graph"]["edges"][i];
+            
+            gcv::Edge edge;
+            edge.id = jsNode["id"].asString();
+            edge.name = jsNode["name"].asString();
+            edge.from_node_id = jsNode["from"].asString();
+            edge.to_node_id = jsNode["to"].asString();
+            edge.type_id = jsNode["type_id"].asString();
+            edge.weight = ofToDouble(jsNode["weight"].asString());
+            edge.directed = jsNode["directed"].asBool();
+            
+            gcv::Particle *a;
+            gcv::Particle *b;
+            for (auto p : particles) {
+                if (p->node.id == edge.from_node_id) {
+                    a = p;
+                }
+                if (p->node.id == edge.to_node_id) {
+                    b = p;
+                }
+            }
+            if (a != NULL && b != NULL) {
+                bool springExists = false;
+                float dist = a->getPosition().distance(b->getPosition());
+                for (int i=0; i<physics.numberOfSprings(); i++) {
+                    auto s = physics.getSpring(i);
+                    if ((s->getOneEnd() == a || s->getTheOtherEnd() == a) &&
+                        (s->getOneEnd() == b || s->getTheOtherEnd() == b)) {
+                        springExists = true;
+                        return;
+                    }
+                }
+                if (!springExists) physics.makeSpring(a, b, edge.weight, dist);
+            }
+            
+            edges.push_back(edge);
+        }
+        
+    } else {
+        ofLogNotice("ofApp::loadJson") << "Failed to parse JSON.";
     }
 }

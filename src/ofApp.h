@@ -3,12 +3,13 @@
 #include "ofMain.h"
 #include "MSAPhysics3D.h"
 #include "ofxGui.h"
+#include "ofxJSON.h"
 #include "ofxCameraSaveLoad.h"
 #include "ofxAnimatableOfPoint.h"
 #include "ofxMeshUtils.h"
 #include "Leap.h"
 
-// you design a boxed thing in a way that it can interpret data in a visual way
+// design a boxed thing in a way that it can interpret data in a visual way
 
 
 #define PARTICLE_MIN_RADIUS 0.5
@@ -38,6 +39,52 @@
 using namespace msa::physics;
 
 
+namespace gcv {
+    
+    struct NodeType {
+        string      id;
+        string      name;
+        string      description;
+        string      image;
+        ofColor     color;
+    };
+    struct EdgeType {
+        string      id;
+        string      name;
+        string      description;
+        double      weighted;
+        double      directed;
+        ofColor     color;
+    };
+    
+    struct Node {
+        string      id;
+        string      name;
+        string      description;
+        string      image;
+        string      type_id;
+        ofColor     color;
+        double      pos_x;
+        double      pos_y;
+    };
+    struct Edge {
+        string      id;
+        string      name;
+        string      from_node_id;
+        string      to_node_id;
+        string      type_id;
+        double      weight;
+        bool        directed;
+    };
+    class Particle : public Particle3D {
+    public:
+        Node    node;
+        ofColor color;
+    };
+};
+
+
+
 class ofApp : public ofBaseApp {
 
 public:
@@ -62,6 +109,8 @@ public:
     void makeParticleAtPosition(const ofPoint& p);
     void makeParticleAtCenter(float radius);
     void makeCluster();
+    
+    void loadJson(const string& url);
 
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
@@ -71,7 +120,6 @@ public:
     void setPhysicsBoxSize(double& s);
     void setupShading();
     void setupGui();
-    void resetCamera();
     void randomiseParams();
 
     void restoreParams();
@@ -85,6 +133,14 @@ public:
     inline void setCamFov(float& v) {
         previewCam.setFov(v);
     }
+    inline void setZDepth(float& v) {
+        for (int i=0; i<physics.numberOfParticles(); i++) {
+            auto p = physics.getParticle(i);
+            ofPoint pos(p->getPosition());
+            pos.z = ofRandom(-v, v);
+            p->moveTo(pos);
+        }
+    }
     inline void setCamNearClip(float& v) {
         previewCam.setNearClip(v);
     }
@@ -94,6 +150,10 @@ public:
     inline void setFixedParticleMoveDuration(float& val) {
         fixedParticlePos.setDuration(val);
     };
+    inline int getHexFromColorName(string colorName){
+        return ofHexToInt(colorName.replace(0, 1, "0x"));
+    };
+    
     
     
 
@@ -106,8 +166,14 @@ public:
     ofShader             mbShader;
 
     Leap::Controller     leap;
-
     ofxPanel             gui;
+    
+    ofxJSONElement          json;
+    vector<gcv::NodeType>   nodeTypes;
+    vector<gcv::EdgeType>   edgeTypes;
+    vector<gcv::Node>       nodes;
+    vector<gcv::Edge>       edges;
+    vector<gcv::Particle*>  particles;
 
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
@@ -130,12 +196,14 @@ public:
     ofParameter<double>  springStrength;
     ofParameter<double>  springLength;
     ofParameter<double>  boxSize;
+    ofParameter<float>   zDepth;
     ofParameter<int>     particleCount;
     ofParameter<int>     springCount;
     ofParameter<int>     attractionCount;
     ofParameter<float>   fps;
     ofParameter<ofPoint> gravity;
     ofParameter<bool>    bindToFixedParticle;
+    ofParameter<bool>    moveOnClick;
     ofParameter<bool>    physicsPaused;
 
 //    Camera params
@@ -144,6 +212,7 @@ public:
     ofParameter<float>   camFarClip;
 
 //     Render params
+    ofParameter<float>   lightOrbitSpeed;
     ofParameter<bool>    enableLight0, enableLight1;
     ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawUsingVboMesh;
@@ -151,6 +220,7 @@ public:
     ofParameter<bool>    orbitLight0, orbitLight1;
     ofParameter<bool>    drawLights;
     ofParameter<bool>    drawSprings;
+    ofParameter<bool>    drawLabels;
 
 //      Material params
     ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0,
@@ -163,6 +233,7 @@ public:
                                 attConstant1, attLinear1, attQuadratic1;
     
     string settingsFileName;
+    string currentGraphName;
 
 
     ofParameter<bool>    useLeap;
