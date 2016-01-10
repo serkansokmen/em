@@ -18,16 +18,26 @@ void ofApp::setup(){
     float width = ofGetWidth();
     float height = ofGetHeight();
 
+    setupShading();
     resetCamera();
     setupGui();
     gui.minimizeAll();
     restoreParams();
-    setupShading();
+    
+    fixedParticlePos.setPosition(ofPoint(0,0,0));
+    fixedParticlePos.setRepeatType(PLAY_ONCE);
+    fixedParticlePos.setCurve(EXPONENTIAL_SIGMOID_PARAM);
+    
+//    fixedParticlePos.setRepeatTimes(3);
+    //pointAnim.setAutoFlipCurve(true);
+    
+//    soundPlayer.load("08 Physics-Based Sound Synthesis for Games and Interactive Systems.mp3");
+//    soundPlayer.play();
 
     physics.setSectorCount(SECTOR_COUNT);
-//    physics.setTimeStep(60);
+    physics.setTimeStep(60);
+    
     physics.setDrag(0.97f);
-    physics.setDrag(1);
     physics.enableCollision();
 
     physics.addParticle(&fixedParticle);
@@ -54,10 +64,10 @@ void ofApp::setupGui(){
     gui.setDefaultWidth(width);
     gui.setDefaultHeight(16);
     
-    gui.setDefaultBackgroundColor(guiColor);
+//    gui.setDefaultBackgroundColor(guiColor);
 //    gui.setDefaultFillColor(fillColor);
-    gui.setDefaultHeaderBackgroundColor(guiColor);
-    gui.setDefaultBorderColor(guiColor);
+//    gui.setDefaultHeaderBackgroundColor(guiColor);
+//    gui.setDefaultBorderColor(guiColor);
 //    gui.setDefaultTextColor(ofColor::black);
     
     gui.add(fps.set("FPS", 0));
@@ -75,8 +85,8 @@ void ofApp::setupGui(){
     light0Params.add(enableLight0.set("Enabled", true));
     light0Params.add(orbitLight0.set("Orbit", true));
     light0Params.add(attConstant0.set("Constant Attenuation", 1.0, 0.0, 1.0));
-    light0Params.add(attLinear0.set("Linear Attenuation", 0.001, 0.0001, 0.1));
-    light0Params.add(attQuadratic0.set("Quadratic Attenuation", 0.0001, 0.0001, 0.001));
+    light0Params.add(attLinear0.set("Linear Attenuation", 0.0001, 0.0, 0.1));
+    light0Params.add(attQuadratic0.set("Quadratic Attenuation", 0.0001, 0.0, 0.001));
     light0Params.add(lightAmbient0.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
     lightDiffuse0.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
     lightSpecular0.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
@@ -127,6 +137,7 @@ void ofApp::setupGui(){
     gui.add(boxSize.set("Box size", 100.f, 1.f, 2000.f));
     gui.add(makeParticles.set("Make Particles", true));
     gui.add(makeSprings.set("Make Springs", true));
+    gui.add(fixedParticleMoveDuration.set("Click_Move duration", 0.3, 0.0, 10.0));
     gui.add(particleCount.set("Particle Count", 0));
     gui.add(springCount.set("Spring Count", 0));
     gui.add(attractionCount.set("Attraction Count", 0));
@@ -138,6 +149,7 @@ void ofApp::setupGui(){
     gui.add(useLeap.set("LeapMotion", false));
     gui.add(drawGui.set("Keep settings open", true));
     
+    fixedParticleMoveDuration.addListener(this, &ofApp::setFixedParticleMoveDuration);
     useLeap.addListener(this, &ofApp::toggleLeap);
     boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
     gravity.addListener(this, &ofApp::setGravityVec);
@@ -153,6 +165,11 @@ void ofApp::setupShading(){
     
     pLight0.setAreaLight(boxSize/2, boxSize/2);
     pLight1.setAreaLight(boxSize/2, boxSize/2);
+    
+    lights.push_back(pLight0);
+    lights.push_back(pLight1);
+    
+    mbShader.load("metaball");
 }
 
 //--------------------------------------------------------------
@@ -160,11 +177,21 @@ void ofApp::update(){
 
     float time = ofGetElapsedTimef();
     float bs = boxSize / 2;
+    float dt = 1.0f / 60.0f;
+    int numParticles = physics.numberOfParticles();
+    int numSprings = physics.numberOfSprings();
+    int numAttractions = physics.numberOfAttractions();
+    
+    fixedParticlePos.update(dt);
+//    if (!fixedParticlePos.isAnimating()) {
+    fixedParticle.moveTo(fixedParticlePos.getCurrentPosition());
+//    }
+
     
     fps.set(ofGetFrameRate());
-    particleCount.set(physics.numberOfParticles());
-    springCount.set(physics.numberOfSprings());
-    attractionCount.set(physics.numberOfAttractions());
+    particleCount.set(numParticles);
+    springCount.set(numSprings);
+    attractionCount.set(numAttractions);
 
     if (orbitCamera) {
         float lng = time*10;
@@ -196,22 +223,22 @@ void ofApp::update(){
         float lng0 = cos(time*0.2)*bs;
         float lat1 = cos(time*0.4)*bs;
         float lng1 = sin(time*0.2)*bs;
-        float radius = boxSize * 0.8;
+        float radius = boxSize * 1.2;
         if (enableLight0 && orbitLight0)    pLight0.orbit(lng0, lat0, radius);
         if (enableLight1 && orbitLight1)    pLight1.orbit(lng1, lat1, radius);
     }
     
-    polyMat.setAmbientColor(polygonAmbient);
-    polyMat.setDiffuseColor(polygonDiffuse);
-    polyMat.setSpecularColor(polygonSpecular);
-    polyMat.setShininess(polygonShininess);
-    
-    springMat.setEmissiveColor(springAmbient);
-    springMat.setAmbientColor(springAmbient);
-    springMat.setDiffuseColor(springDiffuse);
-    springMat.setSpecularColor(springSpecular);
-    springMat.setShininess(springShininess);
-
+    if (enableLight0 || enableLight1) {
+        polyMat.setAmbientColor(polygonAmbient);
+        polyMat.setDiffuseColor(polygonDiffuse);
+        polyMat.setSpecularColor(polygonSpecular);
+        polyMat.setShininess(polygonShininess);
+        
+        springMat.setAmbientColor(springAmbient);
+        springMat.setDiffuseColor(springDiffuse);
+        springMat.setSpecularColor(springSpecular);
+        springMat.setShininess(springShininess);
+    }
 
     if (useLeap) {
         Leap::GestureList gestures = leap.frame().gestures();
@@ -301,27 +328,44 @@ void ofApp::update(){
     if (!physicsPaused) {
         physics.update();
     }
-
+    
     if (drawUsingVboMesh) {
+        
+        float noiseScale = ofMap(mouseX, 0, ofGetWidth(), 0, 0.1);
+        float noiseVel = ofGetElapsedTimef();
+        auto pixels = polyTextureImage.getPixels();
+        int tw = polyTextureImage.getWidth();
+        int th = polyTextureImage.getHeight();
+        for(int y=0; y<th; y++) {
+            for(int x=0; x<tw; x++) {
+                int i = y * tw + x;
+                float noiseVelue = ofNoise(x * noiseScale, y * noiseScale, noiseVel);
+                pixels[i] = 255 * noiseVelue;
+            }
+        }
+        polyTextureImage.update();
 
+        
         polyMesh.clear();
         polyMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-        for(int i=0; i<physics.numberOfParticles(); i++){
+        int w = polyTextureImage.getWidth()/numParticles;
+        int h = polyTextureImage.getHeight()/numParticles;
+        
+        for(int i=0; i<numParticles; i++){
             auto p = physics.getParticle(i);
             polyMesh.addVertex(p->getPosition());
             polyMesh.addColor(polyMat.getDiffuseColor());
+            polyMesh.addTexCoord(ofVec2f(w*(i+0), h*(i+0)));
             polyMesh.addVertex(p->getPosition());
             polyMesh.addColor(polyMat.getDiffuseColor());
+            polyMesh.addTexCoord(ofVec2f(w*(i+1), h*(i+1)));
             polyMesh.addVertex(p->getPosition());
             polyMesh.addColor(polyMat.getDiffuseColor());
-            polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
-            polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
-            polyMesh.addTexCoord(ofVec2f(p->getPosition()/10));
-            
-            polyMesh.addIndex(i-1);
-            polyMesh.addIndex(i);
-            polyMesh.addIndex(i+1);
+            polyMesh.addTexCoord(ofVec2f(w*(i+2), h*(i+2)));
         }
+//        polyMesh.smoothNormals(1);
+        ofxMeshUtils::calcNormals(polyMesh);
+        
 
         springMesh.clear();
         springMesh.setMode(OF_PRIMITIVE_LINE_LOOP);
@@ -344,17 +388,6 @@ void ofApp::update(){
             springMesh.addColor(springMat.getDiffuseColor());
             springMesh.addVertex(b->getPosition());
             springMesh.addColor(springMat.getDiffuseColor());
-            
-            if (i == 0) {
-                polyMesh.addIndex(i);
-                polyMesh.addIndex(physics.numberOfSprings() - 1);
-            } else if (i == physics.numberOfSprings() - 1) {
-                springMesh.addIndex(i);
-                springMesh.addIndex(0);
-            } else {
-                springMesh.addIndex(i);
-                springMesh.addIndex(i+1);
-            }
         }
     } else {
 //        springCylinders.clear();
@@ -414,18 +447,6 @@ void ofApp::setPhysicsBoxSize(double& s){
     pLight1.setAreaLight(s/2, s/2);
 //    physics.clearWorldSize();
 }
-void ofApp::setGravityVec(ofPoint& g){
-    physics.setGravity(g);
-}
-void ofApp::setCamFov(float& v) {
-    previewCam.setFov(v);
-}
-void ofApp::setCamNearClip(float& v) {
-    previewCam.setNearClip(v);
-}
-void ofApp::setCamFarClip(float& v) {
-    previewCam.setFarClip(v);
-}
 
 void ofApp::resetCamera(){
 //    previewCam.reset();
@@ -448,43 +469,60 @@ void ofApp::randomiseParams(){
 //--------------------------------------------------------------
 void ofApp::draw(){
 
-    ofEnableDepthTest();
-    ofEnableAlphaBlending();
     float width = ofGetWidth();
     float height = ofGetHeight();
-
-    ofPushMatrix();
+    
+    ofEnableDepthTest();
+    ofEnableAlphaBlending();
     previewCam.begin();
+    
     if (enableLight0 || enableLight1) {
         ofEnableLighting();
+        if (drawLights) {
+            if (enableLight0) pLight0.draw();
+            if (enableLight1) pLight1.draw();
+        }
     }
+    
+    renderScene();
+    
+    previewCam.end();
+    ofDisableDepthTest();
+    ofDisableAlphaBlending();
+    
+    if (drawGui) {
+        ofEnableAlphaBlending();
+        gui.draw();
+    }
+}
 
+//--------------------------------------------------------------
+void ofApp::renderScene(){
     if (drawGrid) {
         ofSetColor(255, 50);
         float stepSize = boxSize.get()/4;
         size_t numberOfSteps = 4;
         bool labels = false;
         ofDrawGrid(stepSize, numberOfSteps, labels);
-//        ofDrawAxis(boxSize.get());
+//    ofDrawSphere(fixedParticle.getPosition(), boxSize/100.f);
     }
-
+    
     if (drawUsingVboMesh) {
         // Draw polygon mesh
         polyMat.begin();
-        polyTextureImage.bind();
+        polyTextureImage.getTexture().bind();
         if (drawWireframe)  polyMesh.drawWireframe();
         else                polyMesh.draw();
-        polyTextureImage.unbind();
+        polyTextureImage.getTexture().unbind();
         polyMat.end();
         
         if (drawSprings) {
             springMat.begin();
-            ofSetLineWidth(100);
             if (drawWireframe)  springMesh.drawWireframe();
             else                springMesh.draw();
             springMat.end();
         }
-
+        
     } else {
         // Draw particle spheres
         for (int i=0; i<physics.numberOfParticles(); i++) {
@@ -511,26 +549,26 @@ void ofApp::draw(){
             }
         }
     }
-
+    
     if (useLeap) {
         Leap::PointableList pointables = leap.frame().pointables();
-//        Leap::GestureList gestures = leap.frame().gestures();
+        //        Leap::GestureList gestures = leap.frame().gestures();
         Leap::InteractionBox iBox = leap.frame().interactionBox();
-
+        
         for (int p = 0; p < pointables.count(); p++){
-
+            
             Leap::Pointable pointable = pointables[p];
             Leap::Vector normalizedPosition = iBox.normalizePoint(pointable.stabilizedTipPosition());
-
+            
             ofPoint tipPos(pointable.stabilizedTipPosition().x,
                            pointable.stabilizedTipPosition().y,
                            pointable.stabilizedTipPosition().z);
             ofPoint normBoxPos(normalizedPosition.x,
                                normalizedPosition.y,
                                normalizedPosition.z);
-
+            
             if (pointable.touchDistance() > 0 &&
-               pointable.touchZone() != Leap::Pointable::Zone::ZONE_NONE){
+                pointable.touchZone() != Leap::Pointable::Zone::ZONE_NONE){
                 ofSetColor(0, 255, 0, (1 - pointable.touchDistance())*255.f + 150.f);
             }
             else if (pointable.touchDistance() <= 0){
@@ -539,34 +577,21 @@ void ofApp::draw(){
             else {
                 ofSetColor(0, 0, 255, 255);
             }
-
-//            ofDrawSphere(normBoxPos*boxSize, 10);
-
+            
+            //            ofDrawSphere(normBoxPos*boxSize, 10);
+            
             ofPushMatrix();
             ofTranslate(tipPos);
             ofDrawSphere(0, 0, 10);
             ofPopMatrix();
-
-          }
-    }
-
-    if (enableLight0 || enableLight1) {
-        if (drawLights) {
-            if (enableLight0) pLight0.draw();
-            if (enableLight1) pLight1.draw();
+            
         }
-        ofDisableLighting();
-    }
-    previewCam.end();
-    ofPopMatrix();
-    ofDisableDepthTest();
-    
-    if (drawGui) {
-        gui.draw();
     }
 }
 
+//--------------------------------------------------------------
 void ofApp::exit(){
+    fixedParticleMoveDuration.removeListener(this, &ofApp::setFixedParticleMoveDuration);
     useLeap.removeListener(this, &ofApp::toggleLeap);
     boxSize.removeListener(this, &ofApp::setPhysicsBoxSize);
     gravity.removeListener(this, &ofApp::setGravityVec);
@@ -637,6 +662,23 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
+    if (button == 0) {
+        int n = physics.numberOfParticles();
+        float nearestDistance = 0;
+        ofVec2f nearestVertex;
+        int nearestIndex = 0;
+        ofVec2f mouse(x, y);
+        for(int i = 0; i < n; i++) {
+            ofVec3f cur = previewCam.worldToScreen(physics.getParticle(i)->getPosition());
+            float distance = cur.distance(mouse);
+            if(i == 0 || distance < nearestDistance) {
+                nearestDistance = distance;
+                nearestVertex = cur;
+                nearestIndex = i;
+            }
+        }
+        fixedParticlePos.animateTo(physics.getParticle(nearestIndex)->getPosition());
+    }
 }
 
 //--------------------------------------------------------------
@@ -709,8 +751,11 @@ void ofApp::makeParticleAtPosition(const ofPoint& p){
     ->makeFree()
     ->moveTo(p);
     physics.addParticle(a);
-
-    physics.makeAttraction(a, &fixedParticle, attraction);
+    
+    if (attraction > 0.0f) {
+        physics.makeAttraction(a, &fixedParticle, attraction);
+    }
+    
 
     for (int i = 0; i < physics.numberOfParticles(); i++) {
         float dist = physics.getParticle(i)->getPosition().distance(a->getPosition());
@@ -734,11 +779,11 @@ void ofApp::makeCluster(){
     }
     
     if (makeSprings && numParticles > 1) {
-        for (int i=numParticles; i>0; i--) {
+        for (int i = numParticles; i > 0; i--) {
             auto a = physics.getParticle(i-1);
             auto b = physics.getParticle(i);
             
-            if (makeSprings && numParticles % 2 == 0) {
+            if (numParticles % 2 == 0) {
                 if (bindToFixedParticle) {
                     makeSpringBetweenParticles(a, &fixedParticle);
                     makeSpringBetweenParticles(b, &fixedParticle);
@@ -747,7 +792,7 @@ void ofApp::makeCluster(){
             }
         }
     }
-    if (numParticles > 1) {
+    if (numParticles > 1 && attraction > 0.0f) {
         auto a = physics.getParticle(numParticles-1);
         for (int i=0; i<numParticles-1; i++) {
             auto b = physics.getParticle(i);

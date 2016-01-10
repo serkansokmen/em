@@ -1,11 +1,14 @@
 #pragma once
 
 #include "ofMain.h"
-#include "MSAPhysics2D.h"
 #include "MSAPhysics3D.h"
 #include "ofxGui.h"
 #include "ofxCameraSaveLoad.h"
+#include "ofxAnimatableOfPoint.h"
+#include "ofxMeshUtils.h"
 #include "Leap.h"
+
+// you design a boxed thing in a way that it can interpret data in a visual way
 
 
 #define PARTICLE_MIN_RADIUS 0.5
@@ -23,6 +26,8 @@
 #define MIN_ATTRACTION      0.0
 #define MAX_ATTRACTION      10.0
 
+#define MAX_PARTICLES       2000
+
 #define	SPRING_MIN_STRENGTH		0.00005
 #define SPRING_MAX_STRENGTH		0.05
 #define	SPRING_MIN_LENGTH		0.1
@@ -39,6 +44,7 @@ public:
     void setup();
     void update();
     void draw();
+    void renderScene();
     void exit();
 
     void keyPressed(int key);
@@ -63,10 +69,6 @@ public:
     // Event Handlers
     void toggleLeap(bool& v);
     void setPhysicsBoxSize(double& s);
-    void setGravityVec(ofPoint& g);
-    void setCamFov(float& v);
-    void setCamNearClip(float& v);
-    void setCamFarClip(float& v);
     void setupShading();
     void setupGui();
     void resetCamera();
@@ -74,12 +76,34 @@ public:
 
     void restoreParams();
     void saveParams(bool showDialog = false);
+    
+    
+    
+    inline void setGravityVec(ofPoint& g){
+        physics.setGravity(g);
+    }
+    inline void setCamFov(float& v) {
+        previewCam.setFov(v);
+    }
+    inline void setCamNearClip(float& v) {
+        previewCam.setNearClip(v);
+    }
+    inline void setCamFarClip(float& v) {
+        previewCam.setFarClip(v);
+    }
+    inline void setFixedParticleMoveDuration(float& val) {
+        fixedParticlePos.setDuration(val);
+    };
+    
+    
 
     World3D              physics;
     ofEasyCam            previewCam;
     ofLight              pLight0, pLight1;
+    vector<ofLight>      lights;
 
     ofMaterial           polyMat, springMat;
+    ofShader             mbShader;
 
     Leap::Controller     leap;
 
@@ -88,13 +112,15 @@ public:
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
     ofImage              polyTextureImage;
-    ofVboMesh            polyMesh;
-    ofVboMesh            springMesh;
+    ofVboMesh            polyMesh, springMesh;
+    ofShader             polyShader, springShader;
     Particle3D           fixedParticle;
+    ofxAnimatableOfPoint fixedParticlePos;
+    ofParameter<float>   fixedParticleMoveDuration;
 
     ofQuaternion         camQuat;
     ofPoint              camPos;
-
+    
 //    Physics params
     ofParameter<bool>    makeParticles, makeSprings;
     ofParameter<double>  radius;
