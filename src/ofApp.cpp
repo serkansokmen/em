@@ -372,7 +372,6 @@ void ofApp::update(){
             polyMesh.addTexCoord(ofVec2f(w*(i+2), h*(i+2)));
         }
 //        polyMesh.smoothNormals(1);
-        ofxMeshUtils::calcNormals(polyMesh);
     } else {
         
         nodeMesh.clear();
@@ -381,7 +380,6 @@ void ofApp::update(){
             auto p = physics.getParticle(i);
             nodeMesh.addVertex(p->getPosition());
         }
-        ofxMeshUtils::calcNormals(nodeMesh);
         
     }
     
@@ -522,19 +520,23 @@ void ofApp::renderScene(){
         
     } else {
         // Draw spheres mesh
+        shader.begin();
+//        shader.setUniform3f("position", 0, 0, 0);
         nodeMesh.draw();
+        shader.end();
         if (drawSprings) {
             springMesh.draw();
         }
     }
     
     if (drawLabels) {
-        for (auto p : particles) {
+        for (int i=0; i<physics.numberOfParticles(); i++) {
+            auto p = physics.getParticle(i);
             ofPushMatrix();
             ofTranslate(p->getPosition());
             float distToCam = p->getPosition().distance(previewCam.getGlobalPosition()) / 10;
-            ofSetColor(p->color, ofClamp(255 - distToCam, 0, 255));
-            ofDrawBitmapString(p->node.name, 0, 0);
+            ofSetColor(255.0, ofClamp(255 - distToCam, 0, 255));
+//            ofDrawBitmapString(p->node.name, 0, 0);
             ofPopMatrix();
         }
     }
@@ -628,13 +630,9 @@ void ofApp::keyPressed(int key){
         case '-':
             loadJson("1ac1ee14-0567-4f04-a6e5-96b24ed5b5d5.json");
             break;
-        case '0':
-            loadJson("6d08f8ac-7fbb-43d7-9a8b-d2c8dc255b2b.json");
-            break;
         
         case ' ': {
             physics.clear();
-            particles.clear();
             physics.addParticle(&fixedParticle);
             break;
         }
@@ -818,7 +816,6 @@ void ofApp::loadJson(const string& url){
         edgeTypes.clear();
         nodes.clear();
         edges.clear();
-        particles.clear();
         physics.clear();
         
         currentGraphName = json["graph"]["name"].asString();
@@ -832,7 +829,7 @@ void ofApp::loadJson(const string& url){
             it.description = jsNode["description"].asString();
             it.weighted = jsNode["weighted"].asDouble();
             it.directed = jsNode["directed"].asDouble();
-            it.color = ofColor::fromHex(getHexFromColorName(jsNode["color"].asString()));
+            it.color = getHexFromColorName(jsNode["color"].asString());
             edgeTypes.push_back(it);
         }
         
@@ -844,84 +841,84 @@ void ofApp::loadJson(const string& url){
             it.name = jsNode["name"].asString();
             it.description = jsNode["description"].asString();
             it.image = jsNode["image"].asString();
-            it.color = ofColor::fromHex(getHexFromColorName(jsNode["color"].asString()));
+            it.color = getHexFromColorName(jsNode["color"].asString());
             nodeTypes.push_back(it);
         }
         
         // Parse nodes
         for (Json::ArrayIndex i=0; i<json["graph"]["nodes"].size(); ++i){
-            
             auto jsNode = json["graph"]["nodes"][i];
-            
             gcv::Node node;
             node.id = jsNode["id"].asString();
             node.name = jsNode["name"].asString();
-            node.description = jsNode["description"].asString();
-            node.image = jsNode["image"].asString();
             node.pos_x = jsNode["pos_x"].asDouble();
             node.pos_y = jsNode["pos_y"].asDouble();
             node.type_id = jsNode["type_id"].asString();
             nodes.push_back(node);
             
-            auto a = new gcv::Particle;
-            a->setMass(mass)
-                ->setBounce(bounce)
-                ->setRadius(radius)
-                ->enableCollision()
-                ->makeFree()
-                ->moveTo(ofPoint(node.pos_x, node.pos_y, ofRandom(-zDepth, zDepth)));
-            a->node = node;
-            for (auto nt : nodeTypes) {
-                if (nt.id == node.type_id) {
-                    a->color = ofColor(nt.color);
-                }
-            }
-            physics.addParticle(a);
-            particles.push_back(a);
+            makeParticleForNode(node);
         }
         
         // Parse edges
         for (Json::ArrayIndex i=0; i<json["graph"]["edges"].size(); ++i){
-            
             auto jsNode = json["graph"]["edges"][i];
-            
             gcv::Edge edge;
             edge.id = jsNode["id"].asString();
             edge.name = jsNode["name"].asString();
-            edge.from_node_id = jsNode["from"].asString();
-            edge.to_node_id = jsNode["to"].asString();
-            edge.type_id = jsNode["type_id"].asString();
-            edge.weight = ofToDouble(jsNode["weight"].asString());
-//            edge.directed = jsNode["directed"].asBool();
-            
-            gcv::Particle *a;
-            gcv::Particle *b;
-            for (auto p : particles) {
-                if (p->node.id == edge.from_node_id) {
-                    a = p;
-                }
-                if (p->node.id == edge.to_node_id) {
-                    b = p;
-                }
-            }
-            if (a != NULL && b != NULL) {
-                bool springExists = false;
-                float dist = a->getPosition().distance(b->getPosition());
-                for (int i=0; i<physics.numberOfSprings(); i++) {
-                    auto s = physics.getSpring(i);
-                    if ((s->getOneEnd() == a || s->getTheOtherEnd() == a) &&
-                        (s->getOneEnd() == b || s->getTheOtherEnd() == b)) {
-                        springExists = true;
-                        return;
-                    }
-                }
-                if (!springExists) physics.makeSpring(a, b, edge.weight, dist);
-            }
-            
+            edge.from = jsNode["from"].asString();
+            edge.to = jsNode["to"].asString();
+            edge.type_id = jsNode["type_id"].asString();            
             edges.push_back(edge);
+            
+//            makeSpringForEdge(edge);
         }
         
     } else {
         ofLogNotice("ofApp::loadJson") << "Failed to parse JSON.";
+    }
+}
+
+void ofApp::makeParticleForNode(const gcv::Node& node){
+    auto a = new Particle3D;
+    a->setMass(mass)
+    ->setBounce(bounce)
+    ->setRadius(radius)
+    ->enableCollision()
+    ->makeFree()
+    ->moveTo(ofPoint(node.pos_x, node.pos_y, ofRandom(-zDepth, zDepth)));
+    //            a->node = node;
+    for (auto nt : nodeTypes) {
+        if (nt.id == node.type_id) {
+            //                    a->color = ofColor(ofHexToInt(nt.color));
+        }
+    }
+    physics.addParticle(a);
+}
+
+void ofApp::makeSpringForEdge(const gcv::Edge& edge) {
+    Particle3D *a;
+    Particle3D *b;
+    for (int i=0; i<physics.numberOfParticles(); ++i) {
+        auto p = physics.getParticle(i);
+//        if (p->node.id == edge.from) {
+//            a = p;
+//        }
+//        if (p->node.id == edge.to) {
+//            b = p;
+//        }
+    }
+
+    if (a != NULL && b != NULL) {
+        bool springExists = false;
+        float dist = a->getPosition().distance(b->getPosition());
+        for (int i=0; i<physics.numberOfSprings(); i++) {
+            auto s = physics.getSpring(i);
+            if ((s->getOneEnd() == a || s->getTheOtherEnd() == a) &&
+                (s->getOneEnd() == b || s->getTheOtherEnd() == b)) {
+                springExists = true;
+                return;
+            }
+        }
+        if (!springExists) physics.makeSpring(a, b, 1.0, dist);
     }
 }

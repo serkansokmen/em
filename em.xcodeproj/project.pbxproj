@@ -29,7 +29,6 @@
 		E60B2B491C3EFD9500987819 /* ofxAnimatableFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */; };
 		E60B2B4A1C3EFD9500987819 /* ofxAnimatableOfColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B441C3EFD9500987819 /* ofxAnimatableOfColor.cpp */; };
 		E60B2B4B1C3EFD9500987819 /* ofxAnimatableOfPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B461C3EFD9500987819 /* ofxAnimatableOfPoint.cpp */; };
-		E60B2B771C3F57AD00987819 /* ofxMeshUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B751C3F57AD00987819 /* ofxMeshUtils.cpp */; };
 		E62145911C39E8190058BEBD /* ofxLeapMotion2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E621457D1C39E8190058BEBD /* ofxLeapMotion2.cpp */; };
 		E62145921C39E8190058BEBD /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E62145871C39E8190058BEBD /* libLeap.dylib */; };
 		E664537A1C39A0E5005591D8 /* ofxFirstPersonCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */; };
@@ -132,13 +131,12 @@
 		E60B2B451C3EFD9500987819 /* ofxAnimatableOfColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableOfColor.h; sourceTree = "<group>"; };
 		E60B2B461C3EFD9500987819 /* ofxAnimatableOfPoint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatableOfPoint.cpp; sourceTree = "<group>"; };
 		E60B2B471C3EFD9500987819 /* ofxAnimatableOfPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableOfPoint.h; sourceTree = "<group>"; };
-		E60B2B751C3F57AD00987819 /* ofxMeshUtils.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxMeshUtils.cpp; sourceTree = "<group>"; };
-		E60B2B761C3F57AD00987819 /* ofxMeshUtils.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxMeshUtils.h; sourceTree = "<group>"; };
 		E621457D1C39E8190058BEBD /* ofxLeapMotion2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxLeapMotion2.cpp; sourceTree = "<group>"; };
 		E621457E1C39E8190058BEBD /* ofxLeapMotion2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxLeapMotion2.h; sourceTree = "<group>"; };
 		E62145811C39E8190058BEBD /* Leap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Leap.h; sourceTree = "<group>"; };
 		E62145821C39E8190058BEBD /* LeapMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeapMath.h; sourceTree = "<group>"; };
 		E62145871C39E8190058BEBD /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libLeap.dylib; sourceTree = "<group>"; };
+		E62A5B8E1C443CA5007D9CD6 /* GraphStructs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphStructs.h; sourceTree = "<group>"; };
 		E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFirstPersonCamera.cpp; sourceTree = "<group>"; };
 		E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFirstPersonCamera.h; sourceTree = "<group>"; };
 		E6B635AC1C4315D80045B918 /* sphere.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.geom; sourceTree = "<group>"; };
@@ -298,7 +296,6 @@
 				E66453761C39A0E5005591D8 /* ofxFirstPersonCamera */,
 				E621457B1C39E8190058BEBD /* ofxLeapMotion2 */,
 				E60B2B3E1C3EFD9500987819 /* ofxAnimatable */,
-				E60B2B731C3F57AD00987819 /* ofxMeshUtils */,
 				E6DE392B1C42927D00EE613A /* ofxJSON */,
 			);
 			name = addons;
@@ -347,6 +344,7 @@
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
+				E62A5B8E1C443CA5007D9CD6 /* GraphStructs.h */,
 			);
 			path = src;
 			sourceTree = SOURCE_ROOT;
@@ -400,24 +398,6 @@
 			);
 			name = src;
 			path = ../../../addons/ofxAnimatable/src;
-			sourceTree = "<group>";
-		};
-		E60B2B731C3F57AD00987819 /* ofxMeshUtils */ = {
-			isa = PBXGroup;
-			children = (
-				E60B2B741C3F57AD00987819 /* src */,
-			);
-			name = ofxMeshUtils;
-			sourceTree = "<group>";
-		};
-		E60B2B741C3F57AD00987819 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				E60B2B751C3F57AD00987819 /* ofxMeshUtils.cpp */,
-				E60B2B761C3F57AD00987819 /* ofxMeshUtils.h */,
-			);
-			name = src;
-			path = ../../../addons/ofxMeshUtils/src;
 			sourceTree = "<group>";
 		};
 		E621457B1C39E8190058BEBD /* ofxLeapMotion2 */ = {
@@ -698,7 +678,6 @@
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				E60B2B4B1C3EFD9500987819 /* ofxAnimatableOfPoint.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
-				E60B2B771C3F57AD00987819 /* ofxMeshUtils.cpp in Sources */,
 				E6DE39381C42927D00EE613A /* ofxJSONElement.cpp in Sources */,
 				E607F50E1C2A35F400712C72 /* ofxCameraSaveLoad.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,

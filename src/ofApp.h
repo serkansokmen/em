@@ -6,7 +6,7 @@
 #include "ofxJSON.h"
 #include "ofxCameraSaveLoad.h"
 #include "ofxAnimatableOfPoint.h"
-#include "ofxMeshUtils.h"
+#include "GraphStructs.h"
 #include "Leap.h"
 
 // design a boxed thing in a way that it can interpret data in a visual way
@@ -39,52 +39,6 @@
 using namespace msa::physics;
 
 
-namespace gcv {
-    
-    struct NodeType {
-        string      id;
-        string      name;
-        string      description;
-        string      image;
-        ofColor     color;
-    };
-    struct EdgeType {
-        string      id;
-        string      name;
-        string      description;
-        double      weighted;
-        double      directed;
-        ofColor     color;
-    };
-    
-    struct Node {
-        string      id;
-        string      name;
-        string      description;
-        string      image;
-        string      type_id;
-        ofColor     color;
-        double      pos_x;
-        double      pos_y;
-    };
-    struct Edge {
-        string      id;
-        string      name;
-        string      from_node_id;
-        string      to_node_id;
-        string      type_id;
-        double      weight;
-        bool        directed;
-    };
-    class Particle : public Particle3D {
-    public:
-        Node    node;
-        ofColor color;
-    };
-};
-
-
-
 class ofApp : public ofBaseApp {
 
 public:
@@ -109,6 +63,9 @@ public:
     void makeParticleAtPosition(const ofPoint& p);
     void makeParticleAtCenter(float radius);
     void makeCluster();
+    
+    void makeParticleForNode(const gcv::Node& node);
+    void makeSpringForEdge(const gcv::Edge& edge);
     
     void loadJson(const string& url);
 
@@ -171,7 +128,6 @@ public:
     vector<gcv::EdgeType>   edgeTypes;
     vector<gcv::Node>       nodes;
     vector<gcv::Edge>       edges;
-    vector<gcv::Particle*>  particles;
 
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
