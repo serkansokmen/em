@@ -148,7 +148,7 @@ void ofApp::setupGui(){
     gui.add(drawLights.set("Draw lights", true));
     gui.add(drawGrid.set("Draw grid", true));
     gui.add(drawLabels.set("Draw names", true));
-//    gui.add(useLeap.set("LeapMotion", false));
+    gui.add(useLeap.set("LeapMotion", false));
     gui.add(drawGui.set("Keep settings open", true));
     
     fixedParticleMoveDuration.addListener(this, &ofApp::setFixedParticleMoveDuration);
@@ -170,7 +170,14 @@ void ofApp::setupShading(){
     lights.push_back(pLight0);
     lights.push_back(pLight1);
     
-//    mbShader.load("metaball");
+    shader.setGeometryInputType(GL_LINES);
+    shader.setGeometryOutputType(GL_TRIANGLE_STRIP);
+    shader.setGeometryOutputCount(4);
+    shader.load("shaders/sphere.vert", "shaders/sphere.frag");
+    
+//    polyMesh.setUsage(GL_STATIC_DRAW);
+//    springMesh.setUsage(GL_STATIC_DRAW);
+//    nodeMesh.setUsage(GL_STATIC_DRAW);
 }
 
 //--------------------------------------------------------------
@@ -366,29 +373,38 @@ void ofApp::update(){
         }
 //        polyMesh.smoothNormals(1);
         ofxMeshUtils::calcNormals(polyMesh);
+    } else {
         
-
-        springMesh.clear();
-        springMesh.setMode(OF_PRIMITIVE_LINE_LOOP);
-        for(int i=0; i<physics.numberOfSprings(); i++){
-
-            auto spring = (msa::physics::Spring3D *) physics.getSpring(i);
-            auto a = spring->getOneEnd();
-            auto b = spring->getTheOtherEnd();
-            ofVec3f vec = b->getPosition() - a->getPosition();
-            float dist = vec.length();
-            float angle = acos( vec.z / dist ) * RAD_TO_DEG;
-            if(vec.z <= 0 ) angle = -angle;
-            float rx = -vec.y * vec.z;
-            float ry =  vec.x * vec.z;
-
-            float size = ofMap(spring->getStrength(), SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH);
-
-            springMesh.addVertex(a->getPosition());
-            springMesh.addColor(springMat.getDiffuseColor());
-            springMesh.addVertex(b->getPosition());
-            springMesh.addColor(springMat.getDiffuseColor());
+        nodeMesh.clear();
+        nodeMesh.setMode(OF_PRIMITIVE_POINTS);
+        for(int i=0; i<numParticles; i++){
+            auto p = physics.getParticle(i);
+            nodeMesh.addVertex(p->getPosition());
         }
+        ofxMeshUtils::calcNormals(nodeMesh);
+        
+    }
+    
+    springMesh.clear();
+    springMesh.setMode(OF_PRIMITIVE_LINES);
+    for(int i=0; i<physics.numberOfSprings(); i++){
+        
+        auto spring = (msa::physics::Spring3D *) physics.getSpring(i);
+        auto a = spring->getOneEnd();
+        auto b = spring->getTheOtherEnd();
+        ofVec3f vec = b->getPosition() - a->getPosition();
+        float dist = vec.length();
+        float angle = acos( vec.z / dist ) * RAD_TO_DEG;
+        if(vec.z <= 0 ) angle = -angle;
+        float rx = -vec.y * vec.z;
+        float ry =  vec.x * vec.z;
+        
+        float size = ofMap(spring->getStrength(), SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH);
+        
+        springMesh.addVertex(a->getPosition());
+        springMesh.addColor(springMat.getDiffuseColor());
+        springMesh.addVertex(b->getPosition());
+        springMesh.addColor(springMat.getDiffuseColor());
     }
 }
 
@@ -498,39 +514,17 @@ void ofApp::renderScene(){
         polyMat.end();
         
         if (drawSprings) {
-            springMat.begin();
+//            springMat.begin();
             if (drawWireframe)  springMesh.drawWireframe();
             else                springMesh.draw();
-            springMat.end();
+//            springMat.end();
         }
         
     } else {
-        // Draw particle spheres
-        for (auto p : particles) {
-            ofPushMatrix();
-            ofTranslate(p->getPosition());
-            polyMat.begin();
-            ofDrawSphere(0, 0, p->getRadius());
-            polyMat.end();
-            ofPopMatrix();
-        }
-        
-        // Draw springs
+        // Draw spheres mesh
+        nodeMesh.draw();
         if (drawSprings) {
-            for(int i=0; i<physics.numberOfSprings(); i++) {
-                auto spring = physics.getSpring(i);
-                auto a = spring->getOneEnd();
-                auto b = spring->getTheOtherEnd();
-                
-//                springMat.begin();
-                ofSetColor(springDiffuse->r*255,
-                           springDiffuse->g*255,
-                           springDiffuse->b*255,
-                           springDiffuse->a*255);
-//                ofSetLineWidth(a->getPosition().distance(b->getPosition()));
-                ofDrawLine(a->getPosition(), b->getPosition());
-//                springMat.end();
-            }
+            springMesh.draw();
         }
     }
     
@@ -633,6 +627,9 @@ void ofApp::keyPressed(int key){
             break;
         case '-':
             loadJson("1ac1ee14-0567-4f04-a6e5-96b24ed5b5d5.json");
+            break;
+        case '0':
+            loadJson("6d08f8ac-7fbb-43d7-9a8b-d2c8dc255b2b.json");
             break;
         
         case ' ': {
@@ -871,7 +868,7 @@ void ofApp::loadJson(const string& url){
                 ->setBounce(bounce)
                 ->setRadius(radius)
                 ->enableCollision()
-                ->makeFixed()
+                ->makeFree()
                 ->moveTo(ofPoint(node.pos_x, node.pos_y, ofRandom(-zDepth, zDepth)));
             a->node = node;
             for (auto nt : nodeTypes) {
@@ -895,7 +892,7 @@ void ofApp::loadJson(const string& url){
             edge.to_node_id = jsNode["to"].asString();
             edge.type_id = jsNode["type_id"].asString();
             edge.weight = ofToDouble(jsNode["weight"].asString());
-            edge.directed = jsNode["directed"].asBool();
+//            edge.directed = jsNode["directed"].asBool();
             
             gcv::Particle *a;
             gcv::Particle *b;

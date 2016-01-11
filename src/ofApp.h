@@ -154,8 +154,6 @@ public:
         return ofHexToInt(colorName.replace(0, 1, "0x"));
     };
     
-    
-    
 
     World3D              physics;
     ofEasyCam            previewCam;
@@ -163,7 +161,7 @@ public:
     vector<ofLight>      lights;
 
     ofMaterial           polyMat, springMat;
-    ofShader             mbShader;
+    ofShader             shader;
 
     Leap::Controller     leap;
     ofxPanel             gui;
@@ -178,7 +176,7 @@ public:
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
     ofImage              polyTextureImage;
-    ofVboMesh            polyMesh, springMesh;
+    ofVboMesh            polyMesh, springMesh, nodeMesh;
     ofShader             polyShader, springShader;
     Particle3D           fixedParticle;
     ofxAnimatableOfPoint fixedParticlePos;

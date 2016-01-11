@@ -139,17 +139,11 @@
 		E62145811C39E8190058BEBD /* Leap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Leap.h; sourceTree = "<group>"; };
 		E62145821C39E8190058BEBD /* LeapMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeapMath.h; sourceTree = "<group>"; };
 		E62145871C39E8190058BEBD /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libLeap.dylib; sourceTree = "<group>"; };
-		E65210931C400B8C004D14D3 /* compute1.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = compute1.glsl; sourceTree = "<group>"; };
-		E65210941C400B8C004D14D3 /* metaball.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = metaball.frag; sourceTree = "<group>"; };
-		E65210951C400B8C004D14D3 /* metaball.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = metaball.vert; sourceTree = "<group>"; };
-		E65210961C400B8C004D14D3 /* poly.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = poly.frag; sourceTree = "<group>"; };
-		E65210971C400B8C004D14D3 /* poly.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = poly.geom; sourceTree = "<group>"; };
-		E65210981C400B8C004D14D3 /* poly.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = poly.vert; sourceTree = "<group>"; };
-		E65210991C400B8C004D14D3 /* spring.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spring.frag; sourceTree = "<group>"; };
-		E652109A1C400B8C004D14D3 /* spring.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spring.geom; sourceTree = "<group>"; };
-		E652109B1C400B8C004D14D3 /* spring.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = spring.vert; sourceTree = "<group>"; };
 		E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFirstPersonCamera.cpp; sourceTree = "<group>"; };
 		E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFirstPersonCamera.h; sourceTree = "<group>"; };
+		E6B635AC1C4315D80045B918 /* sphere.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.geom; sourceTree = "<group>"; };
+		E6B635AD1C4315D80045B918 /* sphere.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.frag; sourceTree = "<group>"; };
+		E6B635AE1C4315D80045B918 /* sphere.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.vert; sourceTree = "<group>"; };
 		E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSAObjCPointer.cpp; sourceTree = "<group>"; };
 		E6BCC4881BC7174200C17F42 /* MSAObjCPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAObjCPointer.h; sourceTree = "<group>"; };
 		E6DE392D1C42927D00EE613A /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
@@ -483,15 +477,9 @@
 		E62145961C39ED1B0058BEBD /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				E65210931C400B8C004D14D3 /* compute1.glsl */,
-				E65210941C400B8C004D14D3 /* metaball.frag */,
-				E65210951C400B8C004D14D3 /* metaball.vert */,
-				E65210961C400B8C004D14D3 /* poly.frag */,
-				E65210971C400B8C004D14D3 /* poly.geom */,
-				E65210981C400B8C004D14D3 /* poly.vert */,
-				E65210991C400B8C004D14D3 /* spring.frag */,
-				E652109A1C400B8C004D14D3 /* spring.geom */,
-				E652109B1C400B8C004D14D3 /* spring.vert */,
+				E6B635AC1C4315D80045B918 /* sphere.geom */,
+				E6B635AD1C4315D80045B918 /* sphere.frag */,
+				E6B635AE1C4315D80045B918 /* sphere.vert */,
 			);
 			name = shaders;
 			path = bin/data/shaders;
