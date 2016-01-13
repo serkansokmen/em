@@ -131,7 +131,6 @@ public:
 
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
-    ofImage              polyTextureImage;
     ofVboMesh            polyMesh, springMesh, nodeMesh;
     ofShader             polyShader, springShader;
     Particle3D           fixedParticle;

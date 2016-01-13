@@ -44,8 +44,6 @@ void ofApp::setup(){
     ofxLoadCamera(previewCam, "preview_cam_settings");
     previewCam.setFov(camFov);
     previewCam.lookAt(fixedParticle.getPosition());
-
-    polyTextureImage.load("1380489_10152539373427814_159706546_n.jpg");
 }
 
 //--------------------------------------------------------------
@@ -341,44 +339,25 @@ void ofApp::update(){
         
         float noiseScale = ofMap(mouseX, 0, ofGetWidth(), 0, 0.1);
         float noiseVel = ofGetElapsedTimef();
-        auto pixels = polyTextureImage.getPixels();
-        int tw = polyTextureImage.getWidth();
-        int th = polyTextureImage.getHeight();
-        for(int y=0; y<th; y++) {
-            for(int x=0; x<tw; x++) {
-                int i = y * tw + x;
-                float noiseVelue = ofNoise(x * noiseScale, y * noiseScale, noiseVel);
-                pixels[i] = 255 * noiseVelue;
-            }
-        }
-        polyTextureImage.update();
 
         
         polyMesh.clear();
         polyMesh.setMode(OF_PRIMITIVE_TRIANGLE_FAN);
-        int w = polyTextureImage.getWidth()/numParticles;
-        int h = polyTextureImage.getHeight()/numParticles;
         
         for(int i=0; i<numParticles; i++){
             auto p = physics.getParticle(i);
             polyMesh.addVertex(p->getPosition());
             polyMesh.addColor(polyMat.getDiffuseColor());
-            polyMesh.addTexCoord(ofVec2f(w*(i+0), h*(i+0)));
-            polyMesh.addVertex(p->getPosition());
-            polyMesh.addColor(polyMat.getDiffuseColor());
-            polyMesh.addTexCoord(ofVec2f(w*(i+1), h*(i+1)));
-            polyMesh.addVertex(p->getPosition());
-            polyMesh.addColor(polyMat.getDiffuseColor());
-            polyMesh.addTexCoord(ofVec2f(w*(i+2), h*(i+2)));
         }
 //        polyMesh.smoothNormals(1);
     } else {
         
         nodeMesh.clear();
-        nodeMesh.setMode(OF_PRIMITIVE_POINTS);
         for(int i=0; i<numParticles; i++){
             auto p = physics.getParticle(i);
             nodeMesh.addVertex(p->getPosition());
+//            nodeMesh.addTexCoord(p->getPosition());
+            nodeMesh.addColor(ofFloatColor(1,1,1,1));
         }
         
     }
@@ -505,10 +484,8 @@ void ofApp::renderScene(){
     if (drawUsingVboMesh) {
         // Draw polygon mesh
         polyMat.begin();
-        polyTextureImage.getTexture().bind();
         if (drawWireframe)  polyMesh.drawWireframe();
         else                polyMesh.draw();
-        polyTextureImage.getTexture().unbind();
         polyMat.end();
         
         if (drawSprings) {
