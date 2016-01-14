@@ -20,5 +20,7 @@
 	<string>1.0</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.graphics-design</string>
+	<key>NSHighResolutionCapable</key>
+	<false/>
 </dict>
 </plist>

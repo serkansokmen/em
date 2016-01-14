@@ -7,7 +7,10 @@
 #include "ofxCameraSaveLoad.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
+#include "ofxVideoRecorder.h"
 
+#define FBO_WIDTH       1920
+#define FBO_HEIGHT      1080
 
 #define PARTICLE_MIN_RADIUS 0.5
 #define PARTICLE_MAX_RADIUS 200
@@ -107,6 +110,18 @@ public:
     inline int getHexFromColorName(string colorName){
         return ofHexToInt(colorName.replace(0, 1, "0x"));
     };
+    
+    void audioIn(float * input, int bufferSize, int nChannels);
+    ofSoundStream       soundStream;
+    
+    ofxVideoRecorder     vidRecorder;
+    ofFbo                screenFbo;
+    string fileName;
+    string fileExt;
+    void recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args);
+    ofFbo recordFbo;
+    ofPixels recordPixels;
+    bool bRecording;
     
 
     World3D              physics;

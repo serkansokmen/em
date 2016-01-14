@@ -49,6 +49,26 @@ void ofApp::setup(){
     previewCam.lookAt(fixedParticle.getPosition());
     
     bgImage.load("bg-light-gradient.png");
+    soundStream.setup(this, 0, 2, 44100, 256, 4);
+    
+    // ffmpeg uses the extension to determine the container type. run 'ffmpeg -formats' to see supported formats
+    fileName = "recording";
+    fileExt = ".mov";
+    // override the default codecs if you like
+    // run 'ffmpeg -codecs' to find out what your implementation supports (or -formats on some older versions)
+    vidRecorder.setVideoCodec("mpeg4");
+    vidRecorder.setVideoBitrate("50000k");
+    vidRecorder.setFfmpegLocation("/usr/local/bin/ffmpeg");
+//    vidRecorder.setAudioCodec("mp3");
+//    vidRecorder.setAudioBitrate("192k");
+    bRecording = false;
+    
+    screenFbo.allocate(FBO_WIDTH, FBO_HEIGHT, GL_RGB16);
+    screenFbo.begin();
+    ofClear(0,0,0,0);
+    screenFbo.end();
+    ofAddListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
+    bRecording = false;
 }
 
 //--------------------------------------------------------------
@@ -300,6 +320,55 @@ void ofApp::update(){
         springMesh.addVertex(b->getPosition());
         springMesh.addColor(springMat.getDiffuseColor());
     }
+    
+    if (bRecording) {
+        ofPixels pixels;
+        screenFbo.readToPixels(pixels);
+        bool success = vidRecorder.addFrame(pixels);
+        if (!success) {
+            ofLogWarning("This frame was not added!");
+        }
+    }
+    
+    // Check if the video recorder encountered any error while writing video frame or audio smaples.
+    if (vidRecorder.hasVideoError()) {
+        ofLogWarning("The video recorder failed to write some frames!");
+    }
+    
+    if (vidRecorder.hasAudioError()) {
+        ofLogWarning("The video recorder failed to write some audio samples!");
+    }
+    
+    
+    // Render to Fbo
+    screenFbo.begin();
+    ofClear(0,0,0,0);
+    ofEnableDepthTest();
+    ofEnableAlphaBlending();
+    previewCam.begin();
+    if (enableLight0 || enableLight1) {
+        ofEnableLighting();
+        if (drawLights) {
+            if (enableLight0) pLight0.draw();
+            if (enableLight1) pLight1.draw();
+        }
+    }
+    renderScene();
+    previewCam.end();
+    ofDisableDepthTest();
+    ofDisableAlphaBlending();
+    screenFbo.end();
+}
+
+//--------------------------------------------------------------
+void ofApp::audioIn(float *input, int bufferSize, int nChannels){
+    if (bRecording)
+        vidRecorder.addAudioSamples(input, bufferSize, nChannels);
+}
+
+//--------------------------------------------------------------
+void ofApp::recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args){
+    cout << "The recoded video file is now complete." << endl;
 }
 
 //--------------------------------------------------------------
@@ -307,6 +376,7 @@ void ofApp::restoreParams(){
     gui.loadFromFile(settingsFileName);
 }
 
+//--------------------------------------------------------------
 void ofApp::saveParams(bool showDialog){
     if (showDialog) {
         ofFileDialogResult res;
@@ -320,6 +390,7 @@ void ofApp::saveParams(bool showDialog){
     }
 }
 
+//--------------------------------------------------------------
 void ofApp::setPhysicsBoxSize(double& s){
     
     springLength.setMax(s * 2);
@@ -334,6 +405,7 @@ void ofApp::setPhysicsBoxSize(double& s){
 //    pLight1.setPointLight();
 }
 
+//--------------------------------------------------------------
 void ofApp::randomiseParams(){
     radius.set(ofRandom(radius.getMin(), radius.getMax()));
     mass.set(ofRandom(mass.getMin(), mass.getMax()));
@@ -346,36 +418,22 @@ void ofApp::randomiseParams(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
+    ofSetColor(ofColor::white);
 //    ofBackgroundGradient(ofColor(28,28,28), ofColor::black, OF_GRADIENT_CIRCULAR);
     bgImage.draw(ofGetWindowRect());
     
-    float width = ofGetWidth();
-    float height = ofGetHeight();
-    
-    ofEnableDepthTest();
-    ofEnableAlphaBlending();
-    previewCam.begin();
-    
-    if (enableLight0 || enableLight1) {
-        ofEnableLighting();
-        if (drawLights) {
-            if (enableLight0) pLight0.draw();
-            if (enableLight1) pLight1.draw();
-        }
-    }
-    
-    renderScene();
-    
-    previewCam.end();
-    ofDisableDepthTest();
-    ofDisableAlphaBlending();
-    
     ofSetColor(ofColor::white);
+    screenFbo.draw(0, 0, FBO_WIDTH, FBO_HEIGHT);
     ofDrawBitmapString(currentGraphName, drawGui ? gui.getWidth() + 20 : 20, 20);
     
     if (drawGui) {
         ofEnableAlphaBlending();
         gui.draw();
+    }
+    
+    if (bRecording) {
+        ofSetColor(255, 0, 0);
+        ofDrawCircle(ofGetWidth() - 20, 20, 5);
     }
 }
 
@@ -431,6 +489,10 @@ void ofApp::renderScene(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
+    
+    ofRemoveListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
+    vidRecorder.close();
+    
     animateBoxSize.removeListener(this, &ofApp::toggleAnimBoxSize);
     zDepth.removeListener(this, &ofApp::setZDepth);
     fixedParticleMoveDuration.removeListener(this, &ofApp::setFixedParticleMoveDuration);
@@ -480,6 +542,9 @@ void ofApp::keyPressed(int key){
         case ' ': {
             physics.clear();
             physics.addParticle(&fixedParticle);
+            screenFbo.begin();
+            ofClear(0,0,0,0);
+            screenFbo.end();;
             break;
         }
         case '1':
@@ -492,6 +557,30 @@ void ofApp::keyPressed(int key){
         case '.':
             randomiseParams();
             break;
+        
+        case '0': {
+            bRecording = !bRecording;
+            if(bRecording && !vidRecorder.isInitialized()) {
+                vidRecorder.setup(fileName+ofGetTimestampString()+fileExt,
+                                  FBO_WIDTH, FBO_HEIGHT,
+                                  60, 44100, 2, false, false);
+                vidRecorder.start();
+            }
+            else if(!bRecording && vidRecorder.isInitialized()) {
+                vidRecorder.setPaused(true);
+            }
+            else if(bRecording && vidRecorder.isInitialized()) {
+                vidRecorder.setPaused(false);
+            }
+            
+            break;
+        }
+        case ')': {
+            bRecording = false;
+            vidRecorder.close();
+            break;
+        }
+            
     }
 }
 

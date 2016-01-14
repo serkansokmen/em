@@ -25,6 +25,7 @@
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 		E607F50E1C2A35F400712C72 /* ofxCameraSaveLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E607F50C1C2A35F400712C72 /* ofxCameraSaveLoad.cpp */; };
+		E60A51CA1C48384300A7D170 /* ofxVideoRecorder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60A51C81C48384300A7D170 /* ofxVideoRecorder.cpp */; };
 		E60B2B481C3EFD9500987819 /* ofxAnimatable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B401C3EFD9500987819 /* ofxAnimatable.cpp */; };
 		E60B2B491C3EFD9500987819 /* ofxAnimatableFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */; };
 		E60B2B4A1C3EFD9500987819 /* ofxAnimatableOfColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B441C3EFD9500987819 /* ofxAnimatableOfColor.cpp */; };
@@ -123,6 +124,8 @@
 		E4EB6923138AFD0F00A09F29 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E607F50C1C2A35F400712C72 /* ofxCameraSaveLoad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCameraSaveLoad.cpp; sourceTree = "<group>"; };
 		E607F50D1C2A35F400712C72 /* ofxCameraSaveLoad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCameraSaveLoad.h; sourceTree = "<group>"; };
+		E60A51C81C48384300A7D170 /* ofxVideoRecorder.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxVideoRecorder.cpp; sourceTree = "<group>"; };
+		E60A51C91C48384300A7D170 /* ofxVideoRecorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxVideoRecorder.h; sourceTree = "<group>"; };
 		E60B2B401C3EFD9500987819 /* ofxAnimatable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatable.cpp; sourceTree = "<group>"; };
 		E60B2B411C3EFD9500987819 /* ofxAnimatable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatable.h; sourceTree = "<group>"; };
 		E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatableFloat.cpp; sourceTree = "<group>"; };
@@ -296,6 +299,7 @@
 				E621457B1C39E8190058BEBD /* ofxLeapMotion2 */,
 				E60B2B3E1C3EFD9500987819 /* ofxAnimatable */,
 				E6DE392B1C42927D00EE613A /* ofxJSON */,
+				E60A51C61C48384300A7D170 /* ofxVideoRecorder */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -372,6 +376,24 @@
 			);
 			name = src;
 			path = ../../../addons/ofxCameraSaveLoad/src;
+			sourceTree = "<group>";
+		};
+		E60A51C61C48384300A7D170 /* ofxVideoRecorder */ = {
+			isa = PBXGroup;
+			children = (
+				E60A51C71C48384300A7D170 /* src */,
+			);
+			name = ofxVideoRecorder;
+			sourceTree = "<group>";
+		};
+		E60A51C71C48384300A7D170 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E60A51C81C48384300A7D170 /* ofxVideoRecorder.cpp */,
+				E60A51C91C48384300A7D170 /* ofxVideoRecorder.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxVideoRecorder/src;
 			sourceTree = "<group>";
 		};
 		E60B2B3E1C3EFD9500987819 /* ofxAnimatable */ = {
@@ -687,6 +709,7 @@
 				E6DE39391C42927D00EE613A /* jsoncpp.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */,
+				E60A51CA1C48384300A7D170 /* ofxVideoRecorder.cpp in Sources */,
 				E62145911C39E8190058BEBD /* ofxLeapMotion2.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
