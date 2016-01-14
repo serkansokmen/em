@@ -26,6 +26,10 @@ void ofApp::setup(){
     fixedParticlePos.setRepeatType(PLAY_ONCE);
     fixedParticlePos.setCurve(EXPONENTIAL_SIGMOID_PARAM);
     
+    boxSizeAnimate.setRepeatType(LOOP_BACK_AND_FORTH);
+    boxSizeAnimate.setCurve(LATE_EASE_IN_EASE_OUT);
+    boxSizeAnimate.setDuration(lightOrbitSpeed*4);
+    
 //    fixedParticlePos.setRepeatTimes(3);
     //pointAnim.setAutoFlipCurve(true);
     
@@ -126,12 +130,17 @@ void ofApp::setupGui(){
     physicsParams.add(radius.set("Radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
     physicsParams.add(mass.set("Mass", MIN_MASS, MIN_MASS, MAX_MASS));
     physicsParams.add(bounce.set("Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
+    physicsParams.add(drag.set("Drag", 0.97, 0.0, 1.0));
     physicsParams.add(springStrength.set("Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
     physicsParams.add(springLength.set("Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
     gui.add(physicsParams);
     
-    gui.add(boxSize.set("Box size", 100.f, 1.f, 2000.f));
-    gui.add(lightOrbitSpeed.set("Light orbit speed", 0.01, 0.01, 1.0f));
+    gui.add(boxSize.set("Box size", 100.0, 1.0, 2000.0));
+    gui.add(animateBoxSize.set("Animate box size", false));
+    
+    gui.add(lightOrbitSpeed.set("Light orbit speed", 0.01, 0.01, 1.0));
+    gui.add(lightOrbitRadius.set("Light orbit radius", 1.0, 0.1, 2.0));
+    
     gui.add(zDepth.set("Z depth", 50, 0, 400));
     gui.add(makeParticles.set("Make Particles", true));
     gui.add(makeSprings.set("Make Springs", true));
@@ -151,6 +160,7 @@ void ofApp::setupGui(){
     
     fixedParticleMoveDuration.addListener(this, &ofApp::setFixedParticleMoveDuration);
     
+    animateBoxSize.addListener(this, &ofApp::toggleAnimBoxSize);
     zDepth.addListener(this, &ofApp::setZDepth);
     useLeap.addListener(this, &ofApp::toggleLeap);
     boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
@@ -168,14 +178,11 @@ void ofApp::setupShading(){
     lights.push_back(pLight0);
     lights.push_back(pLight1);
     
-    shader.setGeometryInputType(GL_LINES);
-    shader.setGeometryOutputType(GL_TRIANGLE_STRIP);
-    shader.setGeometryOutputCount(4);
-    shader.load("shaders/sphere.vert", "shaders/sphere.frag");
-    
-//    polyMesh.setUsage(GL_STATIC_DRAW);
-//    springMesh.setUsage(GL_STATIC_DRAW);
-//    nodeMesh.setUsage(GL_STATIC_DRAW);
+//    shader.setGeometryInputType(GL_LINES);
+//    shader.setGeometryOutputType(GL_TRIANGLE_STRIP);
+//    shader.setGeometryOutputCount(4);
+//    shader.load("shaders/node.vert", "shaders/node.frag", "shaders/node.geom");
+    shader.load("shaders/node.vert", "shaders/node.frag");
 }
 
 //--------------------------------------------------------------
@@ -188,11 +195,13 @@ void ofApp::update(){
     int numSprings = physics.numberOfSprings();
     int numAttractions = physics.numberOfAttractions();
     
+    boxSizeAnimate.update(dt);
+    if (boxSizeAnimate.isAnimating()) {
+        boxSize.set(boxSizeAnimate.getCurrentValue());
+    }
+    
     fixedParticlePos.update(dt);
-//    if (!fixedParticlePos.isAnimating()) {
     fixedParticle.moveTo(fixedParticlePos.getCurrentPosition());
-//    }
-
     
     fps.set(ofGetFrameRate());
     particleCount.set(numParticles);
@@ -201,7 +210,7 @@ void ofApp::update(){
 
     if (orbitCamera) {
         float lng = time*10;
-        float lat = sin(time*boxSize/1000)*2;
+        float lat = sin(time/100);
         float radius = previewCam.getGlobalPosition().distance(previewCam.getTarget().getPosition());
         previewCam.orbit(lng, lat, radius);
     }
@@ -229,7 +238,7 @@ void ofApp::update(){
         float lng0 = cos(time*0.4*lightOrbitSpeed)*bs;
         float lat1 = cos(time*0.8*lightOrbitSpeed)*bs;
         float lng1 = sin(time*0.4*lightOrbitSpeed)*bs;
-        float radius = boxSize * 1.2;
+        float radius = boxSize * lightOrbitRadius;
         if (enableLight0 && orbitLight0)    pLight0.orbit(lng0, lat0, radius);
         if (enableLight1 && orbitLight1)    pLight1.orbit(lng1, lat1, radius);
     }
@@ -270,7 +279,7 @@ void ofApp::update(){
                         ->setBounce(bounce)
                         ->setRadius(radius)
                         ->enableCollision()
-                        ->makeFixed()
+                        ->makeFree()
                         ->moveTo(tipPos)
                         ->addVelocity(tipVel);
                         physics.addParticle(p);
@@ -419,14 +428,17 @@ void ofApp::toggleLeap(bool &v){
 }
 
 void ofApp::setPhysicsBoxSize(double& s){
-    springLength.setMax(s*2);
-//    physics.setWorldSize(ofVec3f(-s, -s, -s),
-//                         ofVec3f(s, s, s));
+    
+    springLength.setMax(s * 2);
+    
+    physics.setWorldSize(ofVec3f(-s, -s, -s),
+                         ofVec3f(s, s, s));
+    
 //    pLight0.setAreaLight(s/2, s/2);
 //    pLight1.setAreaLight(s/2, s/2);
+    
     pLight0.setPointLight();
     pLight1.setPointLight();
-//    physics.clearWorldSize();
 }
 
 void ofApp::randomiseParams(){
@@ -440,7 +452,9 @@ void ofApp::randomiseParams(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    
+    ofBackgroundGradient(ofColor(28,28,28), ofColor::black, OF_GRADIENT_CIRCULAR);
+    
     float width = ofGetWidth();
     float height = ofGetHeight();
     
@@ -498,12 +512,16 @@ void ofApp::renderScene(){
     } else {
         // Draw spheres mesh
         shader.begin();
-//        shader.setUniform3f("position", 0, 0, 0);
+        // set thickness of ribbons
+        shader.setUniform1f("thickness", 200);
+        // make light direction slowly rotate
+        shader.setUniform3f("lightDir", sin(ofGetElapsedTimef()/10), cos(ofGetElapsedTimef()/10), 0);
         nodeMesh.draw();
-        shader.end();
+        
         if (drawSprings) {
             springMesh.draw();
         }
+        shader.end();
     }
     
     if (drawLabels) {
@@ -559,6 +577,7 @@ void ofApp::renderScene(){
 
 //--------------------------------------------------------------
 void ofApp::exit(){
+    animateBoxSize.removeListener(this, &ofApp::toggleAnimBoxSize);
     zDepth.removeListener(this, &ofApp::setZDepth);
     fixedParticleMoveDuration.removeListener(this, &ofApp::setFixedParticleMoveDuration);
     useLeap.removeListener(this, &ofApp::toggleLeap);
@@ -592,6 +611,9 @@ void ofApp::keyPressed(int key){
             break;
         case 'F':
             ofToggleFullscreen();
+            break;
+        case 'g':
+            drawGrid = !drawGrid;
             break;
         case ',':
             drawGui = !drawGui;
@@ -847,7 +869,7 @@ void ofApp::loadJson(const string& url){
             edge.type_id = jsNode["type_id"].asString();            
             edges.push_back(edge);
             
-//            makeSpringForEdge(edge);
+            makeSpringForEdge(edge);
         }
         
     } else {
@@ -857,13 +879,14 @@ void ofApp::loadJson(const string& url){
 
 void ofApp::makeParticleForNode(const gcv::Node& node){
     auto a = new Particle3D;
+    ofLog() << ofToInt(node.type_id) << endl;
     a->setMass(mass)
+    ->setDrag(drag)
     ->setBounce(bounce)
     ->setRadius(radius)
     ->enableCollision()
     ->makeFree()
     ->moveTo(ofPoint(node.pos_x, node.pos_y, ofRandom(-zDepth, zDepth)));
-    //            a->node = node;
     for (auto nt : nodeTypes) {
         if (nt.id == node.type_id) {
             //                    a->color = ofColor(ofHexToInt(nt.color));
@@ -877,12 +900,12 @@ void ofApp::makeSpringForEdge(const gcv::Edge& edge) {
     Particle3D *b;
     for (int i=0; i<physics.numberOfParticles(); ++i) {
         auto p = physics.getParticle(i);
-//        if (p->node.id == edge.from) {
-//            a = p;
-//        }
-//        if (p->node.id == edge.to) {
-//            b = p;
-//        }
+        if (nodes[i].id == edge.from) {
+            a = p;
+        }
+        if (nodes[i].id == edge.to) {
+            b = p;
+        }
     }
 
     if (a != NULL && b != NULL) {
@@ -896,6 +919,6 @@ void ofApp::makeSpringForEdge(const gcv::Edge& edge) {
                 return;
             }
         }
-        if (!springExists) physics.makeSpring(a, b, 1.0, dist);
+        if (!springExists) physics.makeSpring(a, b, 0.1, 10.0);
     }
 }

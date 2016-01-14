@@ -139,9 +139,9 @@
 		E62A5B8E1C443CA5007D9CD6 /* GraphStructs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GraphStructs.h; sourceTree = "<group>"; };
 		E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFirstPersonCamera.cpp; sourceTree = "<group>"; };
 		E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFirstPersonCamera.h; sourceTree = "<group>"; };
-		E6B635AC1C4315D80045B918 /* sphere.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.geom; sourceTree = "<group>"; };
-		E6B635AD1C4315D80045B918 /* sphere.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.frag; sourceTree = "<group>"; };
-		E6B635AE1C4315D80045B918 /* sphere.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = sphere.vert; sourceTree = "<group>"; };
+		E6B635AC1C4315D80045B918 /* node.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.geom; sourceTree = "<group>"; };
+		E6B635AD1C4315D80045B918 /* node.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.frag; sourceTree = "<group>"; };
+		E6B635AE1C4315D80045B918 /* node.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.vert; sourceTree = "<group>"; };
 		E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSAObjCPointer.cpp; sourceTree = "<group>"; };
 		E6BCC4881BC7174200C17F42 /* MSAObjCPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAObjCPointer.h; sourceTree = "<group>"; };
 		E6DE392D1C42927D00EE613A /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
@@ -457,9 +457,9 @@
 		E62145961C39ED1B0058BEBD /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				E6B635AC1C4315D80045B918 /* sphere.geom */,
-				E6B635AD1C4315D80045B918 /* sphere.frag */,
-				E6B635AE1C4315D80045B918 /* sphere.vert */,
+				E6B635AC1C4315D80045B918 /* node.geom */,
+				E6B635AD1C4315D80045B918 /* node.frag */,
+				E6B635AE1C4315D80045B918 /* node.vert */,
 			);
 			name = shaders;
 			path = bin/data/shaders;

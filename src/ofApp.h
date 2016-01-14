@@ -5,6 +5,7 @@
 #include "ofxGui.h"
 #include "ofxJSON.h"
 #include "ofxCameraSaveLoad.h"
+#include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
 #include "GraphStructs.h"
 #include "Leap.h"
@@ -83,13 +84,20 @@ public:
     void saveParams(bool showDialog = false);
     
     
-    
+    inline void toggleAnimBoxSize(bool& val) {
+        if (val && !boxSizeAnimate.isAnimating()) {
+            boxSizeAnimate.animateFromTo(boxSize, boxSize*3.2);
+        } else {
+            boxSizeAnimate.reset();
+        }
+        
+    };
     inline void setGravityVec(ofPoint& g){
         physics.setGravity(g);
-    }
+    };
     inline void setCamFov(float& v) {
         previewCam.setFov(v);
-    }
+    };
     inline void setZDepth(float& v) {
         for (int i=0; i<physics.numberOfParticles(); i++) {
             auto p = physics.getParticle(i);
@@ -97,13 +105,13 @@ public:
             pos.z = ofRandom(-v, v);
             p->moveTo(pos);
         }
-    }
+    };
     inline void setCamNearClip(float& v) {
         previewCam.setNearClip(v);
-    }
+    };
     inline void setCamFarClip(float& v) {
         previewCam.setFarClip(v);
-    }
+    };
     inline void setFixedParticleMoveDuration(float& val) {
         fixedParticlePos.setDuration(val);
     };
@@ -116,6 +124,7 @@ public:
     ofEasyCam            previewCam;
     ofLight              pLight0, pLight1;
     vector<ofLight>      lights;
+    ofxAnimatableFloat   boxSizeAnimate;
 
     ofMaterial           polyMat, springMat;
     ofShader             shader;
@@ -143,6 +152,7 @@ public:
 //    Physics params
     ofParameter<bool>    makeParticles, makeSprings;
     ofParameter<double>  radius;
+    ofParameter<double>  drag;
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
     ofParameter<double>  attraction;
@@ -166,6 +176,7 @@ public:
 
 //     Render params
     ofParameter<float>   lightOrbitSpeed;
+    ofParameter<double>  lightOrbitRadius;
     ofParameter<bool>    enableLight0, enableLight1;
     ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawUsingVboMesh;
@@ -192,4 +203,5 @@ public:
     ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;
     ofParameter<bool>    drawGui;
+    ofParameter<bool>    animateBoxSize;
 };
