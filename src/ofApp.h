@@ -7,10 +7,6 @@
 #include "ofxCameraSaveLoad.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
-#include "GraphStructs.h"
-#include "Leap.h"
-
-// design a boxed thing in a way that it can interpret data in a visual way
 
 
 #define PARTICLE_MIN_RADIUS 0.5
@@ -65,16 +61,10 @@ public:
     void makeParticleAtCenter(float radius);
     void makeCluster();
     
-    void makeParticleForNode(const gcv::Node& node);
-    void makeSpringForEdge(const gcv::Edge& edge);
-    
-    void loadJson(const string& url);
-
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
 
     // Event Handlers
-    void toggleLeap(bool& v);
     void setPhysicsBoxSize(double& s);
     void setupShading();
     void setupGui();
@@ -82,7 +72,6 @@ public:
 
     void restoreParams();
     void saveParams(bool showDialog = false);
-    
     
     inline void toggleAnimBoxSize(bool& val) {
         if (val && !boxSizeAnimate.isAnimating()) {
@@ -129,18 +118,11 @@ public:
     ofMaterial           polyMat, springMat;
     ofShader             shader;
 
-    Leap::Controller     leap;
     ofxPanel             gui;
-    
-    ofxJSONElement          json;
-    vector<gcv::NodeType>   nodeTypes;
-    vector<gcv::EdgeType>   edgeTypes;
-    vector<gcv::Node>       nodes;
-    vector<gcv::Edge>       edges;
 
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
-    ofVboMesh            polyMesh, springMesh, nodeMesh;
+    ofVboMesh            polyMesh, springMesh;
     ofShader             polyShader, springShader;
     Particle3D           fixedParticle;
     ofxAnimatableOfPoint fixedParticlePos;
@@ -148,6 +130,8 @@ public:
 
     ofQuaternion         camQuat;
     ofPoint              camPos;
+    
+    ofImage              bgImage;
     
 //    Physics params
     ofParameter<bool>    makeParticles, makeSprings;
@@ -179,18 +163,19 @@ public:
     ofParameter<double>  lightOrbitRadius;
     ofParameter<bool>    enableLight0, enableLight1;
     ofParameter<bool>    drawWireframe;
-    ofParameter<bool>    drawUsingVboMesh;
+    ofParameter<bool>    drawPolyMesh,
+                         drawSpringMesh,
+                         drawLights,
+                         doNodeShader;
     ofParameter<bool>    orbitCamera;
     ofParameter<bool>    orbitLight0, orbitLight1;
-    ofParameter<bool>    drawLights;
-    ofParameter<bool>    drawSprings;
-    ofParameter<bool>    drawLabels;
 
 //      Material params
     ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0,
                                 lightAmbient1, lightDiffuse1, lightSpecular1;
     ofParameter<ofFloatColor>   polygonAmbient, polygonDiffuse, polygonSpecular;
     ofParameter<ofFloatColor>   springAmbient, springDiffuse, springSpecular;
+    ofParameter<ofFloatColor>   globalAmbient;
     ofParameter<float>          polygonShininess, springShininess;
     ofParameter<float>          lightAttenuation;
     ofParameter<float>          attConstant0, attLinear0, attQuadratic0,
@@ -199,8 +184,6 @@ public:
     string settingsFileName;
     string currentGraphName;
 
-
-    ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;
     ofParameter<bool>    drawGui;
     ofParameter<bool>    animateBoxSize;
