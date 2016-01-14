@@ -25,10 +25,16 @@
 		E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1D0A3A1BDC003C02F2 /* main.cpp */; };
 		E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */; };
 		E607F50E1C2A35F400712C72 /* ofxCameraSaveLoad.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E607F50C1C2A35F400712C72 /* ofxCameraSaveLoad.cpp */; };
+		E60B2B481C3EFD9500987819 /* ofxAnimatable.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B401C3EFD9500987819 /* ofxAnimatable.cpp */; };
+		E60B2B491C3EFD9500987819 /* ofxAnimatableFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */; };
+		E60B2B4A1C3EFD9500987819 /* ofxAnimatableOfColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B441C3EFD9500987819 /* ofxAnimatableOfColor.cpp */; };
+		E60B2B4B1C3EFD9500987819 /* ofxAnimatableOfPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B461C3EFD9500987819 /* ofxAnimatableOfPoint.cpp */; };
 		E62145911C39E8190058BEBD /* ofxLeapMotion2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E621457D1C39E8190058BEBD /* ofxLeapMotion2.cpp */; };
 		E62145921C39E8190058BEBD /* libLeap.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = E62145871C39E8190058BEBD /* libLeap.dylib */; };
 		E664537A1C39A0E5005591D8 /* ofxFirstPersonCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */; };
 		E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */; };
+		E6DE39381C42927D00EE613A /* ofxJSONElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6DE392E1C42927D00EE613A /* ofxJSONElement.cpp */; };
+		E6DE39391C42927D00EE613A /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6DE39371C42927D00EE613A /* jsoncpp.cpp */; };
 		F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */; };
 /* End PBXBuildFile section */
 
@@ -108,7 +114,7 @@
 		DDC4B8E536952A629F6C5206 /* MSAFluidDrawerGl-Cinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = "MSAFluidDrawerGl-Cinder.h"; path = "../../../addons/ofxMSAFluid/src/MSAFluidDrawerGl-Cinder.h"; sourceTree = SOURCE_ROOT; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
-		E4B69B5B0A3A1756003C02F2 /* emDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = emDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4B69B5B0A3A1756003C02F2 /* meltDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = meltDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4B69E1D0A3A1BDC003C02F2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = src/main.cpp; sourceTree = SOURCE_ROOT; };
 		E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofApp.cpp; path = src/ofApp.cpp; sourceTree = SOURCE_ROOT; };
 		E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.c.h; name = ofApp.h; path = src/ofApp.h; sourceTree = SOURCE_ROOT; };
@@ -117,21 +123,32 @@
 		E4EB6923138AFD0F00A09F29 /* Project.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Project.xcconfig; sourceTree = "<group>"; };
 		E607F50C1C2A35F400712C72 /* ofxCameraSaveLoad.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxCameraSaveLoad.cpp; sourceTree = "<group>"; };
 		E607F50D1C2A35F400712C72 /* ofxCameraSaveLoad.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxCameraSaveLoad.h; sourceTree = "<group>"; };
+		E60B2B401C3EFD9500987819 /* ofxAnimatable.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatable.cpp; sourceTree = "<group>"; };
+		E60B2B411C3EFD9500987819 /* ofxAnimatable.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatable.h; sourceTree = "<group>"; };
+		E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatableFloat.cpp; sourceTree = "<group>"; };
+		E60B2B431C3EFD9500987819 /* ofxAnimatableFloat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableFloat.h; sourceTree = "<group>"; };
+		E60B2B441C3EFD9500987819 /* ofxAnimatableOfColor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatableOfColor.cpp; sourceTree = "<group>"; };
+		E60B2B451C3EFD9500987819 /* ofxAnimatableOfColor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableOfColor.h; sourceTree = "<group>"; };
+		E60B2B461C3EFD9500987819 /* ofxAnimatableOfPoint.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAnimatableOfPoint.cpp; sourceTree = "<group>"; };
+		E60B2B471C3EFD9500987819 /* ofxAnimatableOfPoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxAnimatableOfPoint.h; sourceTree = "<group>"; };
 		E621457D1C39E8190058BEBD /* ofxLeapMotion2.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxLeapMotion2.cpp; sourceTree = "<group>"; };
 		E621457E1C39E8190058BEBD /* ofxLeapMotion2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxLeapMotion2.h; sourceTree = "<group>"; };
 		E62145811C39E8190058BEBD /* Leap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Leap.h; sourceTree = "<group>"; };
 		E62145821C39E8190058BEBD /* LeapMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeapMath.h; sourceTree = "<group>"; };
 		E62145871C39E8190058BEBD /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libLeap.dylib; sourceTree = "<group>"; };
-		E62145971C39ED1B0058BEBD /* poly_frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = poly_frag.glsl; sourceTree = "<group>"; };
-		E62145981C39ED1B0058BEBD /* poly_geom.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = poly_geom.glsl; sourceTree = "<group>"; };
-		E62145991C39ED1B0058BEBD /* poly_vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = poly_vert.glsl; sourceTree = "<group>"; };
-		E621459D1C39ED1B0058BEBD /* spring_frag.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = spring_frag.glsl; sourceTree = "<group>"; };
-		E621459E1C39ED1B0058BEBD /* spring_geom.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = spring_geom.glsl; sourceTree = "<group>"; };
-		E621459F1C39ED1B0058BEBD /* spring_vert.glsl */ = {isa = PBXFileReference; lastKnownFileType = text; path = spring_vert.glsl; sourceTree = "<group>"; };
 		E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFirstPersonCamera.cpp; sourceTree = "<group>"; };
 		E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFirstPersonCamera.h; sourceTree = "<group>"; };
+		E6B635AC1C4315D80045B918 /* node.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.geom; sourceTree = "<group>"; };
+		E6B635AD1C4315D80045B918 /* node.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.frag; sourceTree = "<group>"; };
+		E6B635AE1C4315D80045B918 /* node.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.vert; sourceTree = "<group>"; };
 		E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSAObjCPointer.cpp; sourceTree = "<group>"; };
 		E6BCC4881BC7174200C17F42 /* MSAObjCPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAObjCPointer.h; sourceTree = "<group>"; };
+		E6DE392D1C42927D00EE613A /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
+		E6DE392E1C42927D00EE613A /* ofxJSONElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxJSONElement.cpp; sourceTree = "<group>"; };
+		E6DE392F1C42927D00EE613A /* ofxJSONElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSONElement.h; sourceTree = "<group>"; };
+		E6DE39341C42927D00EE613A /* json-forwards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "json-forwards.h"; sourceTree = "<group>"; };
+		E6DE39351C42927D00EE613A /* json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
+		E6DE39371C42927D00EE613A /* jsoncpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = jsoncpp.cpp; sourceTree = "<group>"; };
 		ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxGuiGroup.cpp; path = ../../../addons/ofxGui/src/ofxGuiGroup.cpp; sourceTree = SOURCE_ROOT; };
 		EF872612718328680A4B9D64 /* MSACoreCommon.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSACoreCommon.h; path = ../../../addons/ofxMSACore/src/MSACoreCommon.h; sourceTree = SOURCE_ROOT; };
 		F0F5848741DBB0C8CCA7E1C0 /* MSAPhysics3D.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysics3D.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysics3D.h; sourceTree = SOURCE_ROOT; };
@@ -277,6 +294,8 @@
 				E607F50A1C2A35F400712C72 /* ofxCameraSaveLoad */,
 				E66453761C39A0E5005591D8 /* ofxFirstPersonCamera */,
 				E621457B1C39E8190058BEBD /* ofxLeapMotion2 */,
+				E60B2B3E1C3EFD9500987819 /* ofxAnimatable */,
+				E6DE392B1C42927D00EE613A /* ofxJSON */,
 			);
 			name = addons;
 			sourceTree = "<group>";
@@ -314,7 +333,7 @@
 				E62145961C39ED1B0058BEBD /* shaders */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
-				E4B69B5B0A3A1756003C02F2 /* emDebug.app */,
+				E4B69B5B0A3A1756003C02F2 /* meltDebug.app */,
 			);
 			sourceTree = "<group>";
 		};
@@ -353,6 +372,30 @@
 			);
 			name = src;
 			path = ../../../addons/ofxCameraSaveLoad/src;
+			sourceTree = "<group>";
+		};
+		E60B2B3E1C3EFD9500987819 /* ofxAnimatable */ = {
+			isa = PBXGroup;
+			children = (
+				E60B2B3F1C3EFD9500987819 /* src */,
+			);
+			name = ofxAnimatable;
+			sourceTree = "<group>";
+		};
+		E60B2B3F1C3EFD9500987819 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E60B2B401C3EFD9500987819 /* ofxAnimatable.cpp */,
+				E60B2B411C3EFD9500987819 /* ofxAnimatable.h */,
+				E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */,
+				E60B2B431C3EFD9500987819 /* ofxAnimatableFloat.h */,
+				E60B2B441C3EFD9500987819 /* ofxAnimatableOfColor.cpp */,
+				E60B2B451C3EFD9500987819 /* ofxAnimatableOfColor.h */,
+				E60B2B461C3EFD9500987819 /* ofxAnimatableOfPoint.cpp */,
+				E60B2B471C3EFD9500987819 /* ofxAnimatableOfPoint.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxAnimatable/src;
 			sourceTree = "<group>";
 		};
 		E621457B1C39E8190058BEBD /* ofxLeapMotion2 */ = {
@@ -412,12 +455,9 @@
 		E62145961C39ED1B0058BEBD /* shaders */ = {
 			isa = PBXGroup;
 			children = (
-				E62145971C39ED1B0058BEBD /* poly_frag.glsl */,
-				E62145981C39ED1B0058BEBD /* poly_geom.glsl */,
-				E62145991C39ED1B0058BEBD /* poly_vert.glsl */,
-				E621459D1C39ED1B0058BEBD /* spring_frag.glsl */,
-				E621459E1C39ED1B0058BEBD /* spring_geom.glsl */,
-				E621459F1C39ED1B0058BEBD /* spring_vert.glsl */,
+				E6B635AC1C4315D80045B918 /* node.geom */,
+				E6B635AD1C4315D80045B918 /* node.frag */,
+				E6B635AE1C4315D80045B918 /* node.vert */,
 			);
 			name = shaders;
 			path = bin/data/shaders;
@@ -459,6 +499,69 @@
 			path = ../../../addons/ofxMSAObjCPointer/src;
 			sourceTree = "<group>";
 		};
+		E6DE392B1C42927D00EE613A /* ofxJSON */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE392C1C42927D00EE613A /* src */,
+				E6DE39301C42927D00EE613A /* libs */,
+			);
+			name = ofxJSON;
+			sourceTree = "<group>";
+		};
+		E6DE392C1C42927D00EE613A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE392D1C42927D00EE613A /* ofxJSON.h */,
+				E6DE392E1C42927D00EE613A /* ofxJSONElement.cpp */,
+				E6DE392F1C42927D00EE613A /* ofxJSONElement.h */,
+			);
+			name = src;
+			path = ../../../addons/ofxJSON/src;
+			sourceTree = "<group>";
+		};
+		E6DE39301C42927D00EE613A /* libs */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE39311C42927D00EE613A /* jsoncpp */,
+			);
+			name = libs;
+			path = ../../../addons/ofxJSON/libs;
+			sourceTree = "<group>";
+		};
+		E6DE39311C42927D00EE613A /* jsoncpp */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE39321C42927D00EE613A /* include */,
+				E6DE39361C42927D00EE613A /* src */,
+			);
+			path = jsoncpp;
+			sourceTree = "<group>";
+		};
+		E6DE39321C42927D00EE613A /* include */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE39331C42927D00EE613A /* json */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		E6DE39331C42927D00EE613A /* json */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE39341C42927D00EE613A /* json-forwards.h */,
+				E6DE39351C42927D00EE613A /* json.h */,
+			);
+			path = json;
+			sourceTree = "<group>";
+		};
+		E6DE39361C42927D00EE613A /* src */ = {
+			isa = PBXGroup;
+			children = (
+				E6DE39371C42927D00EE613A /* jsoncpp.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		F8790DCD2E062DF9AA47E810 /* ofxMSACore */ = {
 			isa = PBXGroup;
 			children = (
@@ -470,9 +573,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E4B69B5A0A3A1756003C02F2 /* em */ = {
+		E4B69B5A0A3A1756003C02F2 /* melt */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "em" */;
+			buildConfigurationList = E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "melt" */;
 			buildPhases = (
 				E4B69B580A3A1756003C02F2 /* Sources */,
 				E4B69B590A3A1756003C02F2 /* Frameworks */,
@@ -485,9 +588,9 @@
 			dependencies = (
 				E4EEB9AC138B136A00A80321 /* PBXTargetDependency */,
 			);
-			name = em;
+			name = melt;
 			productName = myOFApp;
-			productReference = E4B69B5B0A3A1756003C02F2 /* emDebug.app */;
+			productReference = E4B69B5B0A3A1756003C02F2 /* meltDebug.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -498,7 +601,7 @@
 			attributes = {
 				LastUpgradeCheck = 0720;
 			};
-			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "em" */;
+			buildConfigurationList = E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "melt" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -520,7 +623,7 @@
 			);
 			projectRoot = "";
 			targets = (
-				E4B69B5A0A3A1756003C02F2 /* em */,
+				E4B69B5A0A3A1756003C02F2 /* melt */,
 			);
 		};
 /* End PBXProject section */
@@ -571,12 +674,17 @@
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
+				E60B2B4B1C3EFD9500987819 /* ofxAnimatableOfPoint.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
+				E6DE39381C42927D00EE613A /* ofxJSONElement.cpp in Sources */,
 				E607F50E1C2A35F400712C72 /* ofxCameraSaveLoad.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
 				483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */,
+				E60B2B481C3EFD9500987819 /* ofxAnimatable.cpp in Sources */,
+				E60B2B4A1C3EFD9500987819 /* ofxAnimatableOfColor.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
+				E6DE39391C42927D00EE613A /* jsoncpp.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */,
 				E62145911C39E8190058BEBD /* ofxLeapMotion2.cpp in Sources */,
@@ -587,6 +695,7 @@
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
+				E60B2B491C3EFD9500987819 /* ofxAnimatableFloat.cpp in Sources */,
 				A854A26C873CB7CB18844F73 /* MSACoreGL.cpp in Sources */,
 				825FA11382B216421AC896A6 /* MSAFluidDrawerBase.cpp in Sources */,
 				5EB9303FA9B240750638AE7C /* MSAFluidSolver.cpp in Sources */,
@@ -757,8 +866,8 @@
 					../../../addons/ofxLeapMotion2/libs/lib/osx/,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ofoto.osx.em;
-				PRODUCT_NAME = emDebug;
-				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxLeapMotion2/libs/include/;
+				PRODUCT_NAME = meltDebug;
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxLeapMotion2/libs/include/ ../../../addons/ofxJSON/libs/jsoncpp/include/";
 				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
@@ -808,8 +917,8 @@
 					../../../addons/ofxLeapMotion2/libs/lib/osx/,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.ofoto.osx.em;
-				PRODUCT_NAME = emDebug;
-				USER_HEADER_SEARCH_PATHS = ../../../addons/ofxLeapMotion2/libs/include/;
+				PRODUCT_NAME = meltDebug;
+				USER_HEADER_SEARCH_PATHS = "../../../addons/ofxLeapMotion2/libs/include/ ../../../addons/ofxJSON/libs/jsoncpp/include/";
 				WRAPPER_EXTENSION = app;
 				baseConfigurationReference = E4EB6923138AFD0F00A09F29;
 			};
@@ -818,7 +927,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "em" */ = {
+		E4B69B4D0A3A1720003C02F2 /* Build configuration list for PBXProject "melt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E4B69B4E0A3A1720003C02F2 /* Debug */,
@@ -827,7 +936,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "em" */ = {
+		E4B69B5F0A3A1757003C02F2 /* Build configuration list for PBXNativeTarget "melt" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E4B69B600A3A1757003C02F2 /* Debug */,

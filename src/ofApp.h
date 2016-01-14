@@ -1,11 +1,12 @@
 #pragma once
 
 #include "ofMain.h"
-#include "MSAPhysics2D.h"
 #include "MSAPhysics3D.h"
 #include "ofxGui.h"
+#include "ofxJSON.h"
 #include "ofxCameraSaveLoad.h"
-#include "Leap.h"
+#include "ofxAnimatableFloat.h"
+#include "ofxAnimatableOfPoint.h"
 
 
 #define PARTICLE_MIN_RADIUS 0.5
@@ -23,6 +24,8 @@
 #define MIN_ATTRACTION      0.0
 #define MAX_ATTRACTION      10.0
 
+#define MAX_PARTICLES       2000
+
 #define	SPRING_MIN_STRENGTH		0.00005
 #define SPRING_MAX_STRENGTH		0.05
 #define	SPRING_MIN_LENGTH		0.1
@@ -39,6 +42,7 @@ public:
     void setup();
     void update();
     void draw();
+    void renderScene();
     void exit();
 
     void keyPressed(int key);
@@ -56,60 +60,97 @@ public:
     void makeParticleAtPosition(const ofPoint& p);
     void makeParticleAtCenter(float radius);
     void makeCluster();
-
+    
     template <typename T>
     void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
 
     // Event Handlers
-    void toggleLeap(bool& v);
     void setPhysicsBoxSize(double& s);
-    void setGravityVec(ofPoint& g);
-    void setCamFov(float& v);
-    void setCamNearClip(float& v);
-    void setCamFarClip(float& v);
     void setupShading();
     void setupGui();
-    void resetCamera();
     void randomiseParams();
 
     void restoreParams();
     void saveParams(bool showDialog = false);
+    
+    inline void toggleAnimBoxSize(bool& val) {
+        if (val && !boxSizeAnimate.isAnimating()) {
+            boxSizeAnimate.animateFromTo(boxSize, boxSize*3.2);
+        } else {
+            boxSizeAnimate.reset();
+        }
+        
+    };
+    inline void setGravityVec(ofPoint& g){
+        physics.setGravity(g);
+    };
+    inline void setCamFov(float& v) {
+        previewCam.setFov(v);
+    };
+    inline void setZDepth(float& v) {
+        for (int i=0; i<physics.numberOfParticles(); i++) {
+            auto p = physics.getParticle(i);
+            ofPoint pos(p->getPosition());
+            pos.z = ofRandom(-v, v);
+            p->moveTo(pos);
+        }
+    };
+    inline void setCamNearClip(float& v) {
+        previewCam.setNearClip(v);
+    };
+    inline void setCamFarClip(float& v) {
+        previewCam.setFarClip(v);
+    };
+    inline void setFixedParticleMoveDuration(float& val) {
+        fixedParticlePos.setDuration(val);
+    };
+    inline int getHexFromColorName(string colorName){
+        return ofHexToInt(colorName.replace(0, 1, "0x"));
+    };
+    
 
     World3D              physics;
     ofEasyCam            previewCam;
     ofLight              pLight0, pLight1;
+    vector<ofLight>      lights;
+    ofxAnimatableFloat   boxSizeAnimate;
 
     ofMaterial           polyMat, springMat;
-
-    Leap::Controller     leap;
+    ofShader             shader;
 
     ofxPanel             gui;
 
     of3dPrimitive        polyPrimitive;
     of3dPrimitive        springPrimitive;
-    ofImage              polyTextureImage;
-    ofVboMesh            polyMesh;
-    ofVboMesh            springMesh;
+    ofVboMesh            polyMesh, springMesh;
+    ofShader             polyShader, springShader;
     Particle3D           fixedParticle;
+    ofxAnimatableOfPoint fixedParticlePos;
+    ofParameter<float>   fixedParticleMoveDuration;
 
     ofQuaternion         camQuat;
     ofPoint              camPos;
-
+    
+    ofImage              bgImage;
+    
 //    Physics params
     ofParameter<bool>    makeParticles, makeSprings;
     ofParameter<double>  radius;
+    ofParameter<double>  drag;
     ofParameter<double>  mass;
     ofParameter<double>  bounce;
     ofParameter<double>  attraction;
     ofParameter<double>  springStrength;
     ofParameter<double>  springLength;
     ofParameter<double>  boxSize;
+    ofParameter<float>   zDepth;
     ofParameter<int>     particleCount;
     ofParameter<int>     springCount;
     ofParameter<int>     attractionCount;
     ofParameter<float>   fps;
     ofParameter<ofPoint> gravity;
     ofParameter<bool>    bindToFixedParticle;
+    ofParameter<bool>    moveOnClick;
     ofParameter<bool>    physicsPaused;
 
 //    Camera params
@@ -118,28 +159,32 @@ public:
     ofParameter<float>   camFarClip;
 
 //     Render params
+    ofParameter<float>   lightOrbitSpeed;
+    ofParameter<double>  lightOrbitRadius;
     ofParameter<bool>    enableLight0, enableLight1;
     ofParameter<bool>    drawWireframe;
-    ofParameter<bool>    drawUsingVboMesh;
+    ofParameter<bool>    drawPolyMesh,
+                         drawSpringMesh,
+                         drawLights,
+                         doNodeShader;
     ofParameter<bool>    orbitCamera;
     ofParameter<bool>    orbitLight0, orbitLight1;
-    ofParameter<bool>    drawLights;
-    ofParameter<bool>    drawSprings;
 
 //      Material params
     ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0,
                                 lightAmbient1, lightDiffuse1, lightSpecular1;
     ofParameter<ofFloatColor>   polygonAmbient, polygonDiffuse, polygonSpecular;
     ofParameter<ofFloatColor>   springAmbient, springDiffuse, springSpecular;
+    ofParameter<ofFloatColor>   globalAmbient;
     ofParameter<float>          polygonShininess, springShininess;
     ofParameter<float>          lightAttenuation;
     ofParameter<float>          attConstant0, attLinear0, attQuadratic0,
                                 attConstant1, attLinear1, attQuadratic1;
     
     string settingsFileName;
+    string currentGraphName;
 
-
-    ofParameter<bool>    useLeap;
     ofParameter<bool>    drawGrid;
     ofParameter<bool>    drawGui;
+    ofParameter<bool>    animateBoxSize;
 };
