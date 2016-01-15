@@ -63,15 +63,15 @@ void ofApp::setup(){
 //    vidRecorder.setAudioBitrate("192k");
     bRecording = false;
     
-    screenFbo.allocate(FBO_WIDTH, FBO_HEIGHT, GL_RGB16);
-    screenFbo.begin();
-    ofClear(0,0,0,0);
-    screenFbo.end();
+    setupScreenFbo();
+    
     ofAddListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
     bRecording = false;
+    
+//    modelLoader.loadModel("bebe-1.3ds");
 }
 
-//--------------------------------------------------------------
+//-------------------------------------------------------------- 
 void ofApp::setupGui(){
     
     settingsFileName = "settings.xml";
@@ -343,6 +343,8 @@ void ofApp::update(){
     // Render to Fbo
     screenFbo.begin();
     ofClear(0,0,0,0);
+    ofSetColor(ofColor::white);
+    bgImage.draw(0, 0, FBO_WIDTH, FBO_HEIGHT);
     ofEnableDepthTest();
     ofEnableAlphaBlending();
     previewCam.begin();
@@ -372,6 +374,23 @@ void ofApp::recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args)
 }
 
 //--------------------------------------------------------------
+void ofApp::setupScreenFbo(){
+    if (!screenFbo.isAllocated()) {
+        ofFbo::Settings settings;
+        settings.numSamples = 4;
+        settings.width = FBO_WIDTH;
+        settings.height = FBO_HEIGHT;
+        settings.internalformat = GL_RGB32F_ARB;
+        settings.useDepth = true;
+        settings.useStencil = true;
+        screenFbo.allocate(settings);
+    }
+    screenFbo.begin();
+    ofClear(0,0,0,0);
+    screenFbo.end();
+}
+
+//--------------------------------------------------------------
 void ofApp::restoreParams(){
     gui.loadFromFile(settingsFileName);
 }
@@ -393,7 +412,7 @@ void ofApp::saveParams(bool showDialog){
 //--------------------------------------------------------------
 void ofApp::setPhysicsBoxSize(double& s){
     
-    springLength.setMax(s * 2);
+//    springLength.setMax(s * 2);
     
     physics.setWorldSize(ofVec3f(-s, -s, -s),
                          ofVec3f(s, s, s));
@@ -419,11 +438,8 @@ void ofApp::randomiseParams(){
 void ofApp::draw(){
     
     ofSetColor(ofColor::white);
-//    ofBackgroundGradient(ofColor(28,28,28), ofColor::black, OF_GRADIENT_CIRCULAR);
-    bgImage.draw(ofGetWindowRect());
     
-    ofSetColor(ofColor::white);
-    screenFbo.draw(0, 0, FBO_WIDTH, FBO_HEIGHT);
+    screenFbo.draw((ofGetWidth()-FBO_WIDTH/2)/2, (ofGetHeight()-FBO_HEIGHT/2)/2, FBO_WIDTH/2, FBO_HEIGHT/2);
     ofDrawBitmapString(currentGraphName, drawGui ? gui.getWidth() + 20 : 20, 20);
     
     if (drawGui) {
@@ -542,9 +558,7 @@ void ofApp::keyPressed(int key){
         case ' ': {
             physics.clear();
             physics.addParticle(&fixedParticle);
-            screenFbo.begin();
-            ofClear(0,0,0,0);
-            screenFbo.end();;
+            setupScreenFbo();
             break;
         }
         case '1':

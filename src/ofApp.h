@@ -8,6 +8,7 @@
 #include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
 #include "ofxVideoRecorder.h"
+#include "ofxAssimpModelLoader.h"
 
 #define FBO_WIDTH       1920
 #define FBO_HEIGHT      1080
@@ -78,6 +79,7 @@ public:
     
     inline void toggleAnimBoxSize(bool& val) {
         if (val && !boxSizeAnimate.isAnimating()) {
+            boxSizeAnimate.setDuration(boxSize/100.f);
             boxSizeAnimate.animateFromTo(boxSize, boxSize*3.2);
         } else {
             boxSizeAnimate.reset();
@@ -116,6 +118,7 @@ public:
     
     ofxVideoRecorder     vidRecorder;
     ofFbo                screenFbo;
+    void setupScreenFbo();
     string fileName;
     string fileExt;
     void recordingComplete(ofxVideoRecorderOutputFileCompleteEventArgs& args);
@@ -123,6 +126,8 @@ public:
     ofPixels recordPixels;
     bool bRecording;
     
+    ofxAssimpModelLoader modelLoader;
+    vector<ofVec3f> offsets;
 
     World3D              physics;
     ofEasyCam            previewCam;
