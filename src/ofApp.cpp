@@ -571,6 +571,11 @@ void ofApp::keyPressed(int key){
         case '.':
             randomiseParams();
             break;
+        case 'Q': {
+            polyMesh.save("polyMesh.ply");
+            springMesh.save("springMesh.ply");
+        }
+            break;
         
         case '0': {
             bRecording = !bRecording;
