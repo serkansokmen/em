@@ -77,6 +77,8 @@ public:
     void restoreParams();
     void saveParams(bool showDialog = false);
     
+    void audioOut(ofSoundBuffer &outBuffer);
+    
     inline void toggleAnimBoxSize(bool& val) {
         if (val && !boxSizeAnimate.isAnimating()) {
             boxSizeAnimate.setDuration(boxSize/100.f);
@@ -128,7 +130,7 @@ public:
     
     ofxAssimpModelLoader modelLoader;
     vector<ofVec3f> offsets;
-
+    
     World3D              physics;
     ofEasyCam            previewCam;
     ofLight              pLight0, pLight1;
@@ -137,7 +139,18 @@ public:
 
     ofMaterial           polyMat, springMat;
     ofShader             shader;
-
+    
+    // Sound
+    double sampleRate;
+    double wavePhase;
+    double pulsePhase;
+    
+    mutex audioMutex;
+    ofSoundBuffer lastBuffer;
+    ofPolyline waveform;
+    float rms;
+    
+    // Gui
     ofxPanel             gui;
 
     of3dPrimitive        polyPrimitive;

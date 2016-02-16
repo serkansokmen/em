@@ -29,6 +29,16 @@ void ofApp::setup(){
     boxSizeAnimate.setCurve(LATE_EASE_IN_EASE_OUT);
     boxSizeAnimate.setDuration(lightOrbitSpeed*4);
     
+    // Setup audio
+    sampleRate = 44100;
+    wavePhase = 0;
+    pulsePhase = 0;
+    
+    // start the sound stream with a sample rate of 44100 Hz, and a buffer
+    // size of 512 samples per audioOut() call
+    ofSoundStreamSetup(2, 0, sampleRate, 512, 3);
+    
+    
 //    fixedParticlePos.setRepeatTimes(3);
     //pointAnim.setAutoFlipCurve(true);
     
@@ -218,6 +228,19 @@ void ofApp::update(){
     int numSprings = physics.numberOfSprings();
     int numAttractions = physics.numberOfAttractions();
     
+    // Update audio
+    unique_lock<mutex> lock(audioMutex);
+    waveform.clear();
+    for(size_t i = 0; i < lastBuffer.getNumFrames(); i++) {
+        float sample = lastBuffer.getSample(i, 0);
+        float x = ofMap(i, 0, lastBuffer.getNumFrames(), 0, ofGetWidth());
+        float y = ofMap(sample, -1, 1, 0, ofGetHeight());
+        waveform.addVertex(x, y);
+    }
+    rms = lastBuffer.getRMSAmplitude();
+    
+    
+    
     boxSizeAnimate.update(dt);
     if (boxSizeAnimate.isAnimating()) {
         boxSize.set(boxSizeAnimate.getCurrentValue());
@@ -360,12 +383,60 @@ void ofApp::update(){
     ofDisableDepthTest();
     ofDisableAlphaBlending();
     screenFbo.end();
+    
+    ofSetColor(ofColor::white);
+    ofSetLineWidth(1 + (rms * 30.));
+    waveform.draw();
 }
 
 //--------------------------------------------------------------
 void ofApp::audioIn(float *input, int bufferSize, int nChannels){
-    if (bRecording)
+    if (bRecording) {
         vidRecorder.addAudioSamples(input, bufferSize, nChannels);
+    }
+}
+
+//--------------------------------------------------------------
+void ofApp::audioOut(ofSoundBuffer &outBuffer){
+    // base frequency of the lowest sine wave in cycles per second (hertz)
+    float frequency = 172.5;
+    
+    // mapping frequencies from Hz into full oscillations of sin() (two pi)
+    float wavePhaseStep = (frequency / sampleRate) * TWO_PI;
+    float pulsePhaseStep = (0.5 / sampleRate) * TWO_PI;
+    
+    // this loop builds a buffer of audio containing 3 sine waves at different
+    // frequencies, and pulses the volume of each sine wave individually. In
+    // other words, 3 oscillators and 3 LFOs.
+    
+    for(size_t i = 0; i < outBuffer.getNumFrames(); i++) {
+        
+        // build up a chord out of sine waves at 3 different frequencies
+        float sampleLow = sin(wavePhase);
+        float sampleMid = sin(wavePhase * 1.5);
+        float sampleHi = sin(wavePhase * 2.0);
+        
+        // pulse each sample's volume
+        sampleLow *= sin(pulsePhase);
+        sampleMid *= sin(pulsePhase * 1.04);
+        sampleHi *= sin(pulsePhase * 1.09);
+        
+        float fullSample = (sampleLow + sampleMid + sampleHi);
+        
+        // reduce the full sample's volume so it doesn't exceed 1
+        fullSample *= 0.3;
+        
+        // write the computed sample to the left and right channels
+        outBuffer.getSample(i, 0) = fullSample;
+        outBuffer.getSample(i, 1) = fullSample;
+        
+        // get the two phase variables ready for the next sample
+        wavePhase += wavePhaseStep;
+        pulsePhase += pulsePhaseStep;
+    }
+    
+    unique_lock<mutex> lock(audioMutex);
+    lastBuffer = outBuffer;
 }
 
 //--------------------------------------------------------------
@@ -577,7 +648,7 @@ void ofApp::keyPressed(int key){
         }
             break;
         
-        case '0': {
+        case 'r': {
             bRecording = !bRecording;
             if(bRecording && !vidRecorder.isInitialized()) {
                 vidRecorder.setup(fileName+ofGetTimestampString()+fileExt,
@@ -594,7 +665,7 @@ void ofApp::keyPressed(int key){
             
             break;
         }
-        case ')': {
+        case 'R': {
             bRecording = false;
             vidRecorder.close();
             break;
