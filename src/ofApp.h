@@ -149,6 +149,8 @@ public:
     ofSoundBuffer lastBuffer;
     ofPolyline waveform;
     float rms;
+    ofParameter<bool>    audioEnabled;
+    void toggleAudio(bool& isEnabled);
     
     // Gui
     ofxPanel             gui;

@@ -34,9 +34,6 @@ void ofApp::setup(){
     wavePhase = 0;
     pulsePhase = 0;
     
-    // start the sound stream with a sample rate of 44100 Hz, and a buffer
-    // size of 512 samples per audioOut() call
-    ofSoundStreamSetup(2, 0, sampleRate, 512, 3);
     
     
 //    fixedParticlePos.setRepeatTimes(3);
@@ -189,6 +186,7 @@ void ofApp::setupGui(){
     gui.add(drawLights.set("Draw lights", true));
     gui.add(drawGrid.set("Draw grid", true));
     gui.add(drawGui.set("Keep settings open", true));
+    gui.add(audioEnabled.set("Audio enabled", false));
     
     fixedParticleMoveDuration.addListener(this, &ofApp::setFixedParticleMoveDuration);
     
@@ -199,6 +197,7 @@ void ofApp::setupGui(){
     camFov.addListener(this, &ofApp::setCamFov);
     camNearClip.addListener(this, &ofApp::setCamNearClip);
     camFarClip.addListener(this, &ofApp::setCamFarClip);
+    audioEnabled.addListener(this, &ofApp::toggleAudio);
 }
 
 void ofApp::setupShading(){
@@ -387,6 +386,18 @@ void ofApp::update(){
     ofSetColor(ofColor::white);
     ofSetLineWidth(1 + (rms * 30.));
     waveform.draw();
+}
+
+//--------------------------------------------------------------
+void ofApp::toggleAudio(bool &isEnabled){
+    if (isEnabled) {
+        // start the sound stream with a sample rate of 44100 Hz, and a buffer
+        // size of 512 samples per audioOut() call
+        ofSoundStreamSetup(2, 0, sampleRate, 512, 3);
+//        ofSoundStreamClose();
+    } else {
+        ofSoundStreamClose();
+    }
 }
 
 //--------------------------------------------------------------
@@ -588,6 +599,7 @@ void ofApp::exit(){
     camFov.removeListener(this, &ofApp::setCamFov);
     camNearClip.removeListener(this, &ofApp::setCamNearClip);
     camFarClip.removeListener(this, &ofApp::setCamFarClip);
+    audioEnabled.removeListener(this, &ofApp::toggleAudio);
     ofxSaveCamera(previewCam, "preview_cam_settings");
 }
 
