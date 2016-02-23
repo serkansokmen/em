@@ -200,9 +200,6 @@
 		E6910FA61C48704A00433B80 /* version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = version.h; sourceTree = "<group>"; };
 		E6910FAB1C48704A00433B80 /* assimp.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = assimp.a; sourceTree = "<group>"; };
 		E6910FAD1C48704A00433B80 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
-		E6B635AC1C4315D80045B918 /* node.geom */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.geom; sourceTree = "<group>"; };
-		E6B635AD1C4315D80045B918 /* node.frag */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.frag; sourceTree = "<group>"; };
-		E6B635AE1C4315D80045B918 /* node.vert */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.glsl; path = node.vert; sourceTree = "<group>"; };
 		E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSAObjCPointer.cpp; sourceTree = "<group>"; };
 		E6BCC4881BC7174200C17F42 /* MSAObjCPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAObjCPointer.h; sourceTree = "<group>"; };
 		E6DE392D1C42927D00EE613A /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
@@ -395,7 +392,6 @@
 				E4B6FCAD0C3E899E008CF71C /* openFrameworks-Info.plist */,
 				E4EB6923138AFD0F00A09F29 /* Project.xcconfig */,
 				E4B69E1C0A3A1BDC003C02F2 /* src */,
-				E62145961C39ED1B0058BEBD /* shaders */,
 				E4EEC9E9138DF44700A80321 /* openFrameworks */,
 				BB4B014C10F69532006C3DED /* addons */,
 				E4B69B5B0A3A1756003C02F2 /* meltDebug.app */,
@@ -533,17 +529,6 @@
 				E62145871C39E8190058BEBD /* libLeap.dylib */,
 			);
 			path = osx;
-			sourceTree = "<group>";
-		};
-		E62145961C39ED1B0058BEBD /* shaders */ = {
-			isa = PBXGroup;
-			children = (
-				E6B635AC1C4315D80045B918 /* node.geom */,
-				E6B635AD1C4315D80045B918 /* node.frag */,
-				E6B635AE1C4315D80045B918 /* node.vert */,
-			);
-			name = shaders;
-			path = bin/data/shaders;
 			sourceTree = "<group>";
 		};
 		E66453761C39A0E5005591D8 /* ofxFirstPersonCamera */ = {

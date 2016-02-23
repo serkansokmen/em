@@ -8,7 +8,6 @@
 #include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
 #include "ofxVideoRecorder.h"
-#include "ofxAssimpModelLoader.h"
 
 #define FBO_WIDTH       1920
 #define FBO_HEIGHT      1080
@@ -108,6 +107,16 @@ public:
     inline void setCamFarClip(float& v) {
         previewCam.setFarClip(v);
     };
+    inline void toggleAudio(bool &isEnabled){
+        if (isEnabled) {
+            // start the sound stream with a sample rate of 44100 Hz, and a buffer
+            // size of 512 samples per audioOut() call
+            ofSoundStreamSetup(2, 0, this->sampleRate, 512, 3);
+            //        ofSoundStreamClose();
+        } else {
+            ofSoundStreamClose();
+        }
+    };
     inline void setFixedParticleMoveDuration(float& val) {
         fixedParticlePos.setDuration(val);
     };
@@ -128,9 +137,6 @@ public:
     ofPixels recordPixels;
     bool bRecording;
     
-    ofxAssimpModelLoader modelLoader;
-    vector<ofVec3f> offsets;
-    
     World3D              physics;
     ofEasyCam            previewCam;
     ofLight              pLight0, pLight1;
@@ -138,7 +144,6 @@ public:
     ofxAnimatableFloat   boxSizeAnimate;
 
     ofMaterial           polyMat, springMat;
-    ofShader             shader;
     
     // Sound
     double sampleRate;
@@ -150,7 +155,6 @@ public:
     ofPolyline waveform;
     float rms;
     ofParameter<bool>    audioEnabled;
-    void toggleAudio(bool& isEnabled);
     
     // Gui
     ofxPanel             gui;

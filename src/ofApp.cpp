@@ -74,8 +74,6 @@ void ofApp::setup(){
     
     ofAddListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
     bRecording = false;
-    
-//    modelLoader.loadModel("bebe-1.3ds");
 }
 
 //-------------------------------------------------------------- 
@@ -91,12 +89,6 @@ void ofApp::setupGui(){
     gui.setWidthElements(width);
     gui.setDefaultWidth(width);
     gui.setDefaultHeight(16);
-    
-//    gui.setDefaultBackgroundColor(guiColor);
-//    gui.setDefaultFillColor(fillColor);
-//    gui.setDefaultHeaderBackgroundColor(guiColor);
-//    gui.setDefaultBorderColor(guiColor);
-//    gui.setDefaultTextColor(ofColor::black);
     
     gui.add(fps.set("FPS", 0));
     
@@ -207,12 +199,6 @@ void ofApp::setupShading(){
     
     lights.push_back(pLight0);
     lights.push_back(pLight1);
-    
-//    shader.setGeometryInputType(GL_LINES);
-//    shader.setGeometryOutputType(GL_TRIANGLE_STRIP);
-//    shader.setGeometryOutputCount(4);
-//    shader.load("shaders/node.vert", "shaders/node.frag", "shaders/node.geom");
-    shader.load("shaders/node.vert", "shaders/node.frag");
 }
 
 //--------------------------------------------------------------
@@ -389,18 +375,6 @@ void ofApp::update(){
 }
 
 //--------------------------------------------------------------
-void ofApp::toggleAudio(bool &isEnabled){
-    if (isEnabled) {
-        // start the sound stream with a sample rate of 44100 Hz, and a buffer
-        // size of 512 samples per audioOut() call
-        ofSoundStreamSetup(2, 0, sampleRate, 512, 3);
-//        ofSoundStreamClose();
-    } else {
-        ofSoundStreamClose();
-    }
-}
-
-//--------------------------------------------------------------
 void ofApp::audioIn(float *input, int bufferSize, int nChannels){
     if (bRecording) {
         vidRecorder.addAudioSamples(input, bufferSize, nChannels);
@@ -553,14 +527,6 @@ void ofApp::renderScene(){
         polyMat.end();
         
     } else {
-        if (doNodeShader) {
-            shader.begin();
-            // set thickness of ribbons
-            shader.setUniform1f("thickness", 200);
-            // make light direction slowly rotate
-            shader.setUniform3f("lightDir", sin(ofGetElapsedTimef()/10), cos(ofGetElapsedTimef()/10), 0);
-        }
-        
         polyMat.begin();
         for (int i=0; i<physics.numberOfParticles(); i++) {
             auto p = physics.getParticle(i);
@@ -572,10 +538,6 @@ void ofApp::renderScene(){
             ofPopMatrix();
         }
         polyMat.end();
-        
-        if (doNodeShader) {
-            shader.end();
-        }
     }
     if (drawSpringMesh) {
         //            springMat.begin();
