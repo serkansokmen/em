@@ -144,6 +144,7 @@
 		E62145811C39E8190058BEBD /* Leap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Leap.h; sourceTree = "<group>"; };
 		E62145821C39E8190058BEBD /* LeapMath.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LeapMath.h; sourceTree = "<group>"; };
 		E62145871C39E8190058BEBD /* libLeap.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libLeap.dylib; sourceTree = "<group>"; };
+		E647C5321C7CCC4B00516BC0 /* SceneLight.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneLight.h; sourceTree = "<group>"; };
 		E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFirstPersonCamera.cpp; sourceTree = "<group>"; };
 		E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFirstPersonCamera.h; sourceTree = "<group>"; };
 		E6910F6E1C48704A00433B80 /* ofxAssimpAnimation.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxAssimpAnimation.cpp; sourceTree = "<group>"; };
@@ -401,6 +402,7 @@
 		E4B69E1C0A3A1BDC003C02F2 /* src */ = {
 			isa = PBXGroup;
 			children = (
+				E647C5311C7CCC1300516BC0 /* melt */,
 				E4B69E1D0A3A1BDC003C02F2 /* main.cpp */,
 				E4B69E1E0A3A1BDC003C02F2 /* ofApp.cpp */,
 				E4B69E1F0A3A1BDC003C02F2 /* ofApp.h */,
@@ -529,6 +531,14 @@
 				E62145871C39E8190058BEBD /* libLeap.dylib */,
 			);
 			path = osx;
+			sourceTree = "<group>";
+		};
+		E647C5311C7CCC1300516BC0 /* melt */ = {
+			isa = PBXGroup;
+			children = (
+				E647C5321C7CCC4B00516BC0 /* SceneLight.h */,
+			);
+			path = melt;
 			sourceTree = "<group>";
 		};
 		E66453761C39A0E5005591D8 /* ofxFirstPersonCamera */ = {

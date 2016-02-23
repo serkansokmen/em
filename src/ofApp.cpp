@@ -15,8 +15,14 @@ void ofApp::setup(){
 
     float width = ofGetWidth();
     float height = ofGetHeight();
-
-    setupShading();
+    
+    for (int i=0; i<LIGHT_COUNT; i++){
+        melt::SceneLight light;
+        light.setup(i);
+        lights.push_back(light);
+    }
+    
+    
     setupGui();
     gui.minimizeAll();
     restoreParams();
@@ -24,10 +30,6 @@ void ofApp::setup(){
     fixedParticlePos.setPosition(ofPoint(0,0,0));
     fixedParticlePos.setRepeatType(PLAY_ONCE);
     fixedParticlePos.setCurve(EXPONENTIAL_SIGMOID_PARAM);
-    
-    boxSizeAnimate.setRepeatType(LOOP_BACK_AND_FORTH);
-    boxSizeAnimate.setCurve(LATE_EASE_IN_EASE_OUT);
-    boxSizeAnimate.setDuration(lightOrbitSpeed*4);
     
     // Setup audio
     sampleRate = 44100;
@@ -100,29 +102,10 @@ void ofApp::setupGui(){
     cameraParams.add(camFarClip.set("Far clip", 5000.f, 20.f, 10000.f));
     gui.add(cameraParams);
     
-    ofParameterGroup    light0Params;
-    light0Params.setName("LIGHT 1");
-    light0Params.add(enableLight0.set("Enabled", true));
-    light0Params.add(orbitLight0.set("Orbit", true));
-    light0Params.add(attConstant0.set("Constant Attenuation", 1.0, 0.0, 1.0));
-    light0Params.add(attLinear0.set("Linear Attenuation", 0.0001, 0.0, 0.01));
-    light0Params.add(attQuadratic0.set("Quadratic Attenuation", 0.0001, 0.0, 0.001));
-    light0Params.add(lightAmbient0.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    lightDiffuse0.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
-    lightSpecular0.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
-    gui.add(light0Params);
+    for (auto & light : lights) {
+        gui.add(light.params);
+    }
     
-    ofParameterGroup    light1Params;
-    light1Params.setName("LIGHT 2");
-    light1Params.add(enableLight1.set("Enabled", true));
-    light1Params.add(orbitLight1.set("Orbit", true));
-    light1Params.add(attConstant1.set("Constant Attenuation", 1.0, 0.0, 1.0));
-    light1Params.add(attLinear1.set("Linear Attenuation", 0.001, 0.0, 0.01));
-    light1Params.add(attQuadratic1.set("Quadratic Attenuation", 0.0001, 0.0, 0.001));
-    light1Params.add(lightAmbient1.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-    lightDiffuse1.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
-    lightSpecular1.set("Specular", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
-    gui.add(light1Params);
     
     gui.add(globalAmbient.set("Global ambient", ofFloatColor(.1,.1,.1), ofFloatColor(0,0,0), ofFloatColor(1,1,1)));
     
@@ -160,9 +143,6 @@ void ofApp::setupGui(){
     gui.add(boxSize.set("Box size", 100.0, 1.0, 2000.0));
     gui.add(animateBoxSize.set("Animate box size", false));
     
-    gui.add(lightOrbitSpeed.set("Light orbit speed", 0.01, 0.01, 1.0));
-    gui.add(lightOrbitRadius.set("Light orbit radius", 1.0, 0.1, 2.0));
-    
     gui.add(zDepth.set("Z depth", 50, 0, 400));
     gui.add(makeParticles.set("Make Particles", true));
     gui.add(makeSprings.set("Make Springs", true));
@@ -182,7 +162,6 @@ void ofApp::setupGui(){
     
     fixedParticleMoveDuration.addListener(this, &ofApp::setFixedParticleMoveDuration);
     
-    animateBoxSize.addListener(this, &ofApp::toggleAnimBoxSize);
     zDepth.addListener(this, &ofApp::setZDepth);
     boxSize.addListener(this, &ofApp::setPhysicsBoxSize);
     gravity.addListener(this, &ofApp::setGravityVec);
@@ -190,15 +169,6 @@ void ofApp::setupGui(){
     camNearClip.addListener(this, &ofApp::setCamNearClip);
     camFarClip.addListener(this, &ofApp::setCamFarClip);
     audioEnabled.addListener(this, &ofApp::toggleAudio);
-}
-
-void ofApp::setupShading(){
-    
-    pLight0.setup();
-    pLight1.setup();
-    
-    lights.push_back(pLight0);
-    lights.push_back(pLight1);
 }
 
 //--------------------------------------------------------------
@@ -224,12 +194,10 @@ void ofApp::update(){
     }
     rms = lastBuffer.getRMSAmplitude();
     
-    
-    
-    boxSizeAnimate.update(dt);
-    if (boxSizeAnimate.isAnimating()) {
-        boxSize.set(boxSizeAnimate.getCurrentValue());
+    for (auto & light : lights) {
+        light.update(boxSize);
     }
+    
     
     fixedParticlePos.update(dt);
     fixedParticle.moveTo(fixedParticlePos.getCurrentPosition());
@@ -245,46 +213,16 @@ void ofApp::update(){
         float radius = previewCam.getGlobalPosition().distance(previewCam.getTarget().getPosition());
         previewCam.orbit(lng, lat, radius);
     }
+
+    polyMat.setAmbientColor(polygonAmbient);
+    polyMat.setDiffuseColor(polygonDiffuse);
+    polyMat.setSpecularColor(polygonSpecular);
+    polyMat.setShininess(polygonShininess);
     
-    if (enableLight0) {
-        pLight0.enable();
-        pLight0.setAttenuation(attConstant0, attLinear0, attQuadratic0);
-        pLight0.setAmbientColor(lightAmbient0);
-        pLight0.setDiffuseColor(lightDiffuse0);
-        pLight0.setSpecularColor(lightSpecular0);
-    } else {
-        pLight0.disable();
-    }
-    if (enableLight1) {
-        pLight1.enable();
-        pLight1.setAttenuation(attConstant1, attLinear1, attQuadratic1);
-        pLight1.setAmbientColor(lightAmbient1);
-        pLight1.setDiffuseColor(lightDiffuse1);
-        pLight1.setSpecularColor(lightSpecular1);
-    } else {
-        pLight1.disable();
-    }
-    if (orbitLight0 || orbitLight1) {
-        float lat0 = sin(time*0.8*lightOrbitSpeed)*bs;
-        float lng0 = cos(time*0.4*lightOrbitSpeed)*bs;
-        float lat1 = cos(time*0.8*lightOrbitSpeed)*bs;
-        float lng1 = sin(time*0.4*lightOrbitSpeed)*bs;
-        float radius = boxSize * lightOrbitRadius;
-        if (enableLight0 && orbitLight0)    pLight0.orbit(lng0, lat0, radius);
-        if (enableLight1 && orbitLight1)    pLight1.orbit(lng1, lat1, radius);
-    }
-    
-    if (enableLight0 || enableLight1) {
-        polyMat.setAmbientColor(polygonAmbient);
-        polyMat.setDiffuseColor(polygonDiffuse);
-        polyMat.setSpecularColor(polygonSpecular);
-        polyMat.setShininess(polygonShininess);
-        
-        springMat.setAmbientColor(springAmbient);
-        springMat.setDiffuseColor(springDiffuse);
-        springMat.setSpecularColor(springSpecular);
-        springMat.setShininess(springShininess);
-    }
+    springMat.setAmbientColor(springAmbient);
+    springMat.setDiffuseColor(springDiffuse);
+    springMat.setSpecularColor(springSpecular);
+    springMat.setShininess(springShininess);
 
     if (!physicsPaused) {
         physics.update();
@@ -355,18 +293,18 @@ void ofApp::update(){
     bgImage.draw(0, 0, FBO_WIDTH, FBO_HEIGHT);
     ofEnableDepthTest();
     ofEnableAlphaBlending();
+    ofEnableLighting();
     previewCam.begin();
-    if (enableLight0 || enableLight1) {
-        ofEnableLighting();
-        if (drawLights) {
-            if (enableLight0) pLight0.draw();
-            if (enableLight1) pLight1.draw();
+    if (drawLights) {
+        for (auto & light : lights) {
+            light.draw();
         }
     }
     renderScene();
     previewCam.end();
     ofDisableDepthTest();
     ofDisableAlphaBlending();
+    ofDisableLighting();
     screenFbo.end();
     
     ofSetColor(ofColor::white);
@@ -468,16 +406,8 @@ void ofApp::saveParams(bool showDialog){
 //--------------------------------------------------------------
 void ofApp::setPhysicsBoxSize(double& s){
     
-//    springLength.setMax(s * 2);
-    
     physics.setWorldSize(ofVec3f(-s, -s, -s),
                          ofVec3f(s, s, s));
-    
-    pLight0.setAreaLight(s/2, s/2);
-    pLight1.setAreaLight(s/2, s/2);
-    
-//    pLight0.setPointLight();
-//    pLight1.setPointLight();
 }
 
 //--------------------------------------------------------------
@@ -553,7 +483,6 @@ void ofApp::exit(){
     ofRemoveListener(vidRecorder.outputFileCompleteEvent, this, &ofApp::recordingComplete);
     vidRecorder.close();
     
-    animateBoxSize.removeListener(this, &ofApp::toggleAnimBoxSize);
     zDepth.removeListener(this, &ofApp::setZDepth);
     fixedParticleMoveDuration.removeListener(this, &ofApp::setFixedParticleMoveDuration);
     boxSize.removeListener(this, &ofApp::setPhysicsBoxSize);

@@ -8,6 +8,7 @@
 #include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
 #include "ofxVideoRecorder.h"
+#include "melt/SceneLight.h"
 
 #define FBO_WIDTH       1920
 #define FBO_HEIGHT      1080
@@ -26,7 +27,7 @@
 
 #define MIN_ATTRACTION      0.0
 #define MAX_ATTRACTION      10.0
-
+#define LIGHT_COUNT         4
 #define MAX_PARTICLES       2000
 
 #define	SPRING_MIN_STRENGTH		0.00005
@@ -69,7 +70,6 @@ public:
 
     // Event Handlers
     void setPhysicsBoxSize(double& s);
-    void setupShading();
     void setupGui();
     void randomiseParams();
 
@@ -78,15 +78,6 @@ public:
     
     void audioOut(ofSoundBuffer &outBuffer);
     
-    inline void toggleAnimBoxSize(bool& val) {
-        if (val && !boxSizeAnimate.isAnimating()) {
-            boxSizeAnimate.setDuration(boxSize/100.f);
-            boxSizeAnimate.animateFromTo(boxSize, boxSize*3.2);
-        } else {
-            boxSizeAnimate.reset();
-        }
-        
-    };
     inline void setGravityVec(ofPoint& g){
         physics.setGravity(g);
     };
@@ -139,11 +130,9 @@ public:
     
     World3D              physics;
     ofEasyCam            previewCam;
-    ofLight              pLight0, pLight1;
-    vector<ofLight>      lights;
-    ofxAnimatableFloat   boxSizeAnimate;
-
-    ofMaterial           polyMat, springMat;
+    
+    vector<melt::SceneLight>    lights;
+    ofMaterial                  polyMat, springMat;
     
     // Sound
     double sampleRate;
@@ -198,27 +187,18 @@ public:
     ofParameter<float>   camFarClip;
 
 //     Render params
-    ofParameter<float>   lightOrbitSpeed;
-    ofParameter<double>  lightOrbitRadius;
-    ofParameter<bool>    enableLight0, enableLight1;
     ofParameter<bool>    drawWireframe;
     ofParameter<bool>    drawPolyMesh,
                          drawSpringMesh,
                          drawLights,
                          doNodeShader;
     ofParameter<bool>    orbitCamera;
-    ofParameter<bool>    orbitLight0, orbitLight1;
 
 //      Material params
-    ofParameter<ofFloatColor>   lightAmbient0, lightDiffuse0, lightSpecular0,
-                                lightAmbient1, lightDiffuse1, lightSpecular1;
     ofParameter<ofFloatColor>   polygonAmbient, polygonDiffuse, polygonSpecular;
     ofParameter<ofFloatColor>   springAmbient, springDiffuse, springSpecular;
     ofParameter<ofFloatColor>   globalAmbient;
     ofParameter<float>          polygonShininess, springShininess;
-    ofParameter<float>          lightAttenuation;
-    ofParameter<float>          attConstant0, attLinear0, attQuadratic0,
-                                attConstant1, attLinear1, attQuadratic1;
     
     string settingsFileName;
     string currentGraphName;
