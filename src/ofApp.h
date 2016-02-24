@@ -1,37 +1,14 @@
 #pragma once
 
 #include "ofMain.h"
-#include "MSAPhysics2D.h"
-#include "MSAPhysics3D.h"
 #include "ofxGui.h"
-#include "ofxCameraSaveLoad.h"
-#include "Leap.h"
-#include "LeapMath.h"
-
-
-#define NODE_MIN_RADIUS     0.1
-#define NODE_MAX_RADIUS     10
-
-#define MIN_MASS            0.01
-#define MAX_MASS            1
-
-#define MIN_DISTANCE        0.1
-#define MAX_DISTANCE        500
-
-#define MIN_BOUNCE          0.0001
-#define MAX_BOUNCE          0.95
-
-#define MIN_ATTRACTION      -0.05
-#define MAX_ATTRACTION      0.05
-
-#define	SPRING_MIN_STRENGTH		0.00005
-#define SPRING_MAX_STRENGTH		0.05
-#define	SPRING_MIN_LENGTH		0.1
-#define SPRING_MAX_LENGTH		1200
-#define SECTOR_COUNT            1
-
-
-using namespace msa::physics;
+#include "ofxJSON.h"
+#include "ofxAnimatableFloat.h"
+#include "ofxAnimatableOfPoint.h"
+#include "em/SceneCamera.h"
+#include "em/SceneLight.h"
+#include "em/MeshGenerator.h"
+#include "em/Constants.h"
 
 
 class ofApp : public ofBaseApp {
@@ -53,79 +30,60 @@ public:
     void windowResized(int w, int h);
     void dragEvent(ofDragInfo dragInfo);
     void gotMessage(ofMessage msg);
-    
-    void makeParticleAtPosition(const ofPoint& p);
-    void makeParticleAtCenter(float radius);
-    void makeCluster();
-    
-    template <typename T>
-    void makeSpringBetweenParticles(ParticleT<T> *a, ParticleT<T> *b);
-    
-    // Event Handlers
-    void toggleLeap(bool& v);
-    void setPhysicsBoxSize(double& s);
-    void setGravityVec(ofPoint& g);
-    void setCamFov(float& v);
-    void setCamNearClip(float& v);
-    void setCamFarClip(float& v);
-    
-    void setupGui();
-    void resetCamera();
 
-    World3D              physics;
-    ofEasyCam            previewCam;
-    ofLight              pointLight;
-    ofMaterial           polyMat, springMat;
+    void setupGui();
+
+    void restoreParams();
+    void saveParams(bool showDialog = false);
     
-    ofBoxPrimitive       worldBox;
+    void audioOut(ofSoundBuffer &outBuffer);
     
-    Leap::Controller     leap;
+    inline void toggleAudio(bool &isEnabled){
+        if (isEnabled) {
+            // start the sound stream with a sample rate of 44100 Hz, and a buffer
+            // size of 512 samples per audioOut() call
+            ofSoundStreamSetup(2, 0, this->sampleRate, 512, 3);
+            //        ofSoundStreamClose();
+        } else {
+            ofSoundStreamClose();
+        }
+    }
     
+    inline void reset(){
+        meshGenerator.clear();
+//        sceneCam.setup(meshGenerator.getFixedParticlePosition(), "bg-light-gradient.png");
+    }
+    
+    void audioIn(float * input, int bufferSize, int nChannels);
+    ofSoundStream       soundStream;
+    
+    em::SceneCamera           sceneCam;
+    em::MeshGenerator         meshGenerator;
+    vector<em::SceneLight>    lights;
+    
+    // Sound
+    double sampleRate;
+    double wavePhase;
+    double pulsePhase;
+    
+    mutex audioMutex;
+    ofSoundBuffer lastBuffer;
+    ofPolyline waveform;
+    float rms;
+    ofParameter<bool>    audioEnabled;
+    
+    // Gui
     ofxPanel             gui;
 
-    ofVboMesh            polyMesh;
-    ofVboMesh            springMesh;
-    Particle3D           fixedParticle;
-
-    ofColor              lightColor;
-    ofFloatColor         polyMatDiffuseColor;
-    ofFloatColor         springMatDiffuseColor;
+    ofParameter<float>          fps;
+    ofParameter<ofFloatColor>   globalAmbient;
     
-    ofQuaternion         camQuat;
-    ofPoint              camPos;
+    string settingsFileName;
     
-//    Physics params
-    ofParameter<bool>    makeParticles;
-    ofParameter<bool>    makeSprings;
-    ofParameter<double>  radius;
-    ofParameter<double>  mass;
-    ofParameter<double>  bounce;
-    ofParameter<double>  attraction;
-    ofParameter<double>  spring_strength;
-    ofParameter<double>  spring_length;
-    ofParameter<double>  boxSize;
-    ofParameter<string>  particleCount;
-    ofParameter<string>  springCount;
-    ofParameter<string>  attractionCount;
-    ofParameter<ofPoint> gravity;
-    ofParameter<bool>    bindToFixedParticle;
-    ofParameter<bool>    physicsPaused;
-    
-//    Camera params
-    ofParameter<float>   camFov;
-    ofParameter<float>   camNearClip;
-    ofParameter<float>   camFarClip;
-    
-//     Render params
-    ofParameter<ofPoint> lightPos;
-    ofParameter<float>   lightHue;
-    ofParameter<float>   polyHue;
-    ofParameter<float>   springHue;
-    ofParameter<bool>    drawWireframe;
-    ofParameter<bool>    drawWorldBox;
-    ofParameter<bool>    drawUsingVboMesh;
-    
-    ofParameter<bool>    useLeap;
-    ofParameter<bool>    drawGrid;
-    ofParameter<bool>    drawGui;
+    ofParameter<bool>   drawLights;
+    ofParameter<bool>   drawGrid;
+    ofParameter<bool>   drawWireframe;
+    ofParameter<bool>   drawPolyMesh;
+    ofParameter<bool>   drawSpringMesh;
+    ofParameter<bool>   drawGui;
 };
