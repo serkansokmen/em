@@ -1,6 +1,8 @@
 #pragma once
 
 #include "ofMain.h"
+#include "Constants.h"
+
 
 namespace melt {
     class SceneLight {
@@ -24,8 +26,7 @@ namespace melt {
             params.add(attLinear.set("Linear Attenuation", 0.0001, 0.0, 0.01));
             params.add(attQuadratic.set("Quadratic Attenuation", 0.0001, 0.0, 0.001));
             params.add(ambient.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-            
-            params.add(orbitSpeed.set("Orbit Speed", 0.01, 0.01, 1.0));
+            params.add(orbitSpeed.set("Orbit Speed", 0.1, 0.01, 1.0));
             params.add(orbitRadius.set("Orbit Radius", 1.0, 0.1, 2.0));
             
             diffuse.set("Diffuse", ofFloatColor(1,1,1,1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
@@ -44,9 +45,10 @@ namespace melt {
                 if (orbit) {
                     float time = ofGetElapsedTimef();
                     float bs = boxSize / 2;
-                    
-                    float lat = sin(time*0.8*orbitSpeed)*bs;
-                    float lng = cos(time*0.4*orbitSpeed)*bs;
+                    double s = time * 0.8 * orbitSpeed;
+                    double c = time * 0.4 * orbitSpeed;
+                    float lat = sin(s) * bs;
+                    float lng = cos(c) * bs;
                     float rad = boxSize * orbitRadius;
                     light->orbit(lng, lat, rad);
                 }
