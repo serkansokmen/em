@@ -58,6 +58,7 @@ public:
     ofSoundStream       soundStream;
     
     em::SceneCamera           sceneCam;
+    ofImage                   bgImage;
     em::MeshGenerator         meshGenerator;
     vector<em::SceneLight>    lights;
     

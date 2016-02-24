@@ -35,7 +35,8 @@ void ofApp::setup(){
 //    soundPlayer.play();
     
     meshGenerator.setup();
-    sceneCam.setup(meshGenerator.getFixedParticlePosition(), "bg-light-gradient.png");
+    bgImage.load("bg-light-gradient.png");
+    sceneCam.setup(meshGenerator.getFixedParticlePosition());
     soundStream.setup(this, 0, 2, 44100, 256, 4);
 }
 
@@ -79,7 +80,9 @@ void ofApp::setupGui(){
 void ofApp::update(){
     
     ofSetGlobalAmbientColor(globalAmbient);
+    fps.set(ofGetFrameRate());
     
+    sceneCam.update();
     float bs = meshGenerator.boxSize / 2;
     meshGenerator.update();
     
@@ -97,8 +100,6 @@ void ofApp::update(){
     for (auto & light : lights) {
         light.update(bs);
     }
-    
-    fps.set(ofGetFrameRate());
     
     ofSetColor(ofColor::white);
     ofSetLineWidth(1 + (rms * 30.));
@@ -177,7 +178,9 @@ void ofApp::saveParams(bool showDialog){
 //--------------------------------------------------------------
 void ofApp::draw(){
     
-    sceneCam.begin();
+    sceneCam.beginScene();
+    bgImage.draw(0, 0, FBO_WIDTH, FBO_HEIGHT);
+    sceneCam.beginCamera();
     ofEnableDepthTest();
     ofEnableAlphaBlending();
     ofEnableLighting();
@@ -197,8 +200,8 @@ void ofApp::draw(){
     ofDisableDepthTest();
     ofDisableAlphaBlending();
     ofDisableLighting();
-    sceneCam.end();
-    
+    sceneCam.endCamera();
+    sceneCam.endScene();
     
     sceneCam.draw((ofGetWidth()-FBO_WIDTH/2)/2,
                   (ofGetHeight()-FBO_HEIGHT/2)/2,
