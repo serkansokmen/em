@@ -6,7 +6,7 @@
 #include "Constants.h"
 
 
-namespace melt {
+namespace em {
     class MeshGenerator {
         
     private:

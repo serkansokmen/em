@@ -4,7 +4,7 @@
 #include "Constants.h"
 
 
-namespace melt {
+namespace em {
     class SceneLight {
     protected:
         shared_ptr<ofLight> light;

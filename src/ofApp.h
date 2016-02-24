@@ -5,10 +5,10 @@
 #include "ofxJSON.h"
 #include "ofxAnimatableFloat.h"
 #include "ofxAnimatableOfPoint.h"
-#include "melt/SceneCamera.h"
-#include "melt/SceneLight.h"
-#include "melt/MeshGenerator.h"
-#include "melt/Constants.h"
+#include "em/SceneCamera.h"
+#include "em/SceneLight.h"
+#include "em/MeshGenerator.h"
+#include "em/Constants.h"
 
 
 class ofApp : public ofBaseApp {
@@ -57,9 +57,9 @@ public:
     void audioIn(float * input, int bufferSize, int nChannels);
     ofSoundStream       soundStream;
     
-    melt::SceneCamera           sceneCam;
-    melt::MeshGenerator         meshGenerator;
-    vector<melt::SceneLight>    lights;
+    em::SceneCamera           sceneCam;
+    em::MeshGenerator         meshGenerator;
+    vector<em::SceneLight>    lights;
     
     // Sound
     double sampleRate;

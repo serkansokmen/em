@@ -7,7 +7,7 @@
 #include "Constants.h"
 
 
-namespace melt {
+namespace em {
     class SceneCamera {
         void setupScreenFbo(){
             if (!screenFbo.isAllocated()) {

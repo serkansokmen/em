@@ -17,7 +17,7 @@ void ofApp::setup(){
     float height = ofGetHeight();
     
     for (int i=0; i<LIGHT_COUNT; i++){
-        melt::SceneLight light;
+        em::SceneLight light;
         light.setup(i);
         lights.push_back(light);
     }
