@@ -22,6 +22,9 @@ void ofApp::setup(){
         lights.push_back(light);
     }
     
+    bgImage.load("bg-light-gradient.png");
+    meshGenerator.setup();
+    sceneCam.setup(meshGenerator.getFixedParticlePosition());
     
     setupGui();
     gui.minimizeAll();
@@ -33,10 +36,6 @@ void ofApp::setup(){
     pulsePhase = 0;
 //    soundPlayer.load("08 Physics-Based Sound Synthesis for Games and Interactive Systems.mp3");
 //    soundPlayer.play();
-    
-    meshGenerator.setup();
-    bgImage.load("bg-light-gradient.png");
-    sceneCam.setup(meshGenerator.getFixedParticlePosition());
     soundStream.setup(this, 0, 2, 44100, 256, 4);
 }
 
@@ -258,10 +257,21 @@ void ofApp::keyPressed(int key){
             break;
             
         case '1':
-            meshGenerator.makeParticles = !meshGenerator.makeParticles;
+            lights[0].enabled = !lights[0].enabled;
             break;
         case '2':
-            meshGenerator.makeSprings = !meshGenerator.makeSprings;
+            lights[1].enabled = !lights[1].enabled;
+            break;
+        case '3':
+            lights[2].enabled = !lights[2].enabled;
+            break;
+        case '4':
+            lights[3].enabled = !lights[3].enabled;
+            break;
+        case '5':
+            for (auto & light : lights){
+                light.randomiseAmbientColor();
+            }
             break;
         
         case '.':

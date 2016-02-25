@@ -139,41 +139,32 @@ namespace em {
             params.setName("Mesh Generator");
             params.add(boxSize.set("Box size", 100.0, 1.0, 2000.0));
             
-            ofParameterGroup physicsParams;
-            physicsParams.setName("Physics");
-            physicsParams.add(physicsPaused.set("Paused", false));
-            physicsParams.add(gravity.set("Gravity", ofPoint(0, 0, 0), ofPoint(-1, -1, -1), ofPoint(1, 1, 1)));
-            physicsParams.add(attraction.set("Attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
-            physicsParams.add(bindToFixedParticle.set("Bind to center", true));
-            physicsParams.add(radius.set("Particle Radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
-            physicsParams.add(mass.set("Particle Mass", MIN_MASS, MIN_MASS, MAX_MASS));
-            physicsParams.add(bounce.set("Particle Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
-            physicsParams.add(drag.set("Drag", 0.97, 0.0, 1.0));
-            physicsParams.add(springStrength.set("Spring Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
-            physicsParams.add(springLength.set("Spring Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
-            physicsParams.add(zDepth.set("Z Depth", 50, 0, 400));
-            physicsParams.add(makeParticles.set("Make Particles", true));
-            physicsParams.add(makeSprings.set("Make Springs", true));
-            physicsParams.add(particleCount.set("Particle Count", 0));
-            physicsParams.add(springCount.set("Spring Count", 0));
-            physicsParams.add(attractionCount.set("Attraction Count", 0));
-            params.add(physicsParams);
+            params.add(physicsPaused.set("Paused", false));
+            params.add(gravity.set("Gravity", ofPoint(0, 0, 0), ofPoint(-1, -1, -1), ofPoint(1, 1, 1)));
+            params.add(attraction.set("Attraction", MIN_ATTRACTION, MIN_ATTRACTION, MAX_ATTRACTION));
+            params.add(bindToFixedParticle.set("Bind to center", true));
+            params.add(radius.set("Particle Radius", PARTICLE_MIN_RADIUS, PARTICLE_MIN_RADIUS, PARTICLE_MAX_RADIUS));
+            params.add(mass.set("Particle Mass", MIN_MASS, MIN_MASS, MAX_MASS));
+            params.add(bounce.set("Particle Bounce", MIN_BOUNCE, MIN_BOUNCE, MAX_BOUNCE));
+            params.add(drag.set("Drag", 0.97, 0.0, 1.0));
+            params.add(springStrength.set("Spring Strength", SPRING_MIN_STRENGTH, SPRING_MIN_STRENGTH, SPRING_MAX_STRENGTH));
+            params.add(springLength.set("Spring Length", SPRING_MIN_LENGTH, SPRING_MIN_LENGTH, SPRING_MAX_LENGTH));
+            params.add(zDepth.set("Z Depth", 50, 0, 400));
+            params.add(makeParticles.set("Make Particles", true));
+            params.add(makeSprings.set("Make Springs", true));
+            params.add(particleCount.set("Particle Count", 0));
+            params.add(springCount.set("Spring Count", 0));
+            params.add(attractionCount.set("Attraction Count", 0));
             
-            ofParameterGroup polygonParams;
-            polygonParams.setName("Polygon Shading");
-            polygonParams.add(polygonAmbient.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-            polygonParams.add(polygonDiffuse.set("Diffuse", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+            params.add(polygonAmbient.set("Polygon Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+            polygonDiffuse.set("Diffuse", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
             polygonSpecular.set("Specular", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
-            polygonParams.add(polygonShininess.set("Shininess", 10, 0, 255));
-            params.add(polygonParams);
+            params.add(polygonShininess.set("Polygon Shininess", 10, 0, 255));
             
-            ofParameterGroup springParams;
-            springParams.setName("Spring Shading");
-            springParams.add(springAmbient.set("Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
-            springParams.add(springDiffuse.set("Diffuse", ofFloatColor(1.0,1.0,1.0,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+            params.add(springAmbient.set("Spring Ambient", ofFloatColor(1,1,1,.1), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1)));
+            springDiffuse.set("Diffuse", ofFloatColor(1.0,1.0,1.0,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
             springSpecular.set("Specular", ofFloatColor(0.8,0.8,0.8,1.0), ofFloatColor(0,0,0,0), ofFloatColor(1,1,1,1));
-            springParams.add(springShininess.set("Shininess", 10, 0, 255));
-            params.add(springParams);
+            springShininess.set("Spring Shininess", 10, 0, 255);
             
             boxSize.addListener(this, &MeshGenerator::setPhysicsBoxSize);
             zDepth.addListener(this, &MeshGenerator::setZDepth);
@@ -181,7 +172,6 @@ namespace em {
         }
         
         void update(){
-            
             updateShading();
             updatePhysics();
         }

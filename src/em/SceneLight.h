@@ -62,6 +62,10 @@ namespace em {
             if (enabled) light->draw();
         }
         
+        void randomiseAmbientColor(){
+            ambient = ofFloatColor(ofRandomf(), ofRandomf(), ofRandomf());
+        }
+        
         ofParameterGroup            params;
         ofParameter<ofFloatColor>   ambient, diffuse, specular;
         ofParameter<float>          attConstant, attLinear, attQuadratic;
