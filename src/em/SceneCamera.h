@@ -38,7 +38,6 @@ namespace em {
         }
         
         ofxVideoRecorder    vidRecorder;
-        ofImage             bgImage;
         ofFbo               screenFbo;
         ofFbo               recordFbo;
         ofPixels            recordPixels;
@@ -58,7 +57,7 @@ namespace em {
             ofxSaveCamera(previewCam, "preview_cam_settings");
         }
         
-        void setup(const ofPoint& lookAt, const string& backgroundImagePath){
+        void setup(const ofPoint& lookAt){
             
             params.setName("Scene Camera View");
             params.add(orbitCamera.set("Orbit Camera", false));
@@ -90,10 +89,8 @@ namespace em {
             
             ofAddListener(vidRecorder.outputFileCompleteEvent, this, &SceneCamera::recordingComplete);
             bRecording = false;
-            
-            bgImage.load(backgroundImagePath);
         }
-        void begin(){
+        void update(){
             float time = ofGetElapsedTimef();
             if (orbitCamera) {
                 float lng = time*10;
@@ -113,21 +110,25 @@ namespace em {
             if (vidRecorder.hasVideoError()) {
                 ofLogWarning("The video recorder failed to write some frames!");
             }
-            
             if (vidRecorder.hasAudioError()) {
                 ofLogWarning("The video recorder failed to write some audio samples!");
             }
+        }
+        void beginScene(){
             // Render to Fbo
             screenFbo.begin();
             ofClear(0,0,0,0);
+        }
+        void beginCamera(){
             previewCam.begin();
         }
-        void end(){
+        void endCamera(){
             previewCam.end();
+        }
+        void endScene(){
             screenFbo.end();
         }
         void draw(float x=0, float y=0, float width=FBO_WIDTH, float height=FBO_HEIGHT){
-            bgImage.draw(x, y, width, height);
             screenFbo.draw(x, y, width, height);
             if (bRecording) {
                 ofSetColor(255, 0, 0);
