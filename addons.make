@@ -1,6 +1,8 @@
 ofxGui
 ofxXmlSettings
-ofxCv
 ofxMSACore
-ofxMSAFluid
 ofxMSAPhysics
+ofxMSAObjCPointer
+ofxCameraSaveLoad
+ofxAnimatable
+ofxVideoRecorder

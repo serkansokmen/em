@@ -11,9 +11,7 @@
 		483908258D00B98B4BE69F07 /* ofxLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 78D67A00EB899FAC09430597 /* ofxLabel.cpp */; };
 		5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */; };
 		5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C88333E71C9457E441C33474 /* ofxButton.cpp */; };
-		5EB9303FA9B240750638AE7C /* MSAFluidSolver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 5DAA01DF76EA921C7DA7405D /* MSAFluidSolver.cpp */; };
 		63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */; };
-		825FA11382B216421AC896A6 /* MSAFluidDrawerBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = A0E48FD05BDA9491DCA86AAA /* MSAFluidDrawerBase.cpp */; };
 		837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 15F2C6477A769C03A56D1401 /* ofxSlider.cpp */; };
 		856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9604B925D32EE39065747725 /* ofxBaseGui.cpp */; };
 		933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 2B40EDA85BEB63E46785BC29 /* tinyxml.cpp */; };
@@ -30,10 +28,7 @@
 		E60B2B491C3EFD9500987819 /* ofxAnimatableFloat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B421C3EFD9500987819 /* ofxAnimatableFloat.cpp */; };
 		E60B2B4A1C3EFD9500987819 /* ofxAnimatableOfColor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B441C3EFD9500987819 /* ofxAnimatableOfColor.cpp */; };
 		E60B2B4B1C3EFD9500987819 /* ofxAnimatableOfPoint.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E60B2B461C3EFD9500987819 /* ofxAnimatableOfPoint.cpp */; };
-		E664537A1C39A0E5005591D8 /* ofxFirstPersonCamera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */; };
 		E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */; };
-		E6DE39381C42927D00EE613A /* ofxJSONElement.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6DE392E1C42927D00EE613A /* ofxJSONElement.cpp */; };
-		E6DE39391C42927D00EE613A /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E6DE39371C42927D00EE613A /* jsoncpp.cpp */; };
 		F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */; };
 /* End PBXBuildFile section */
 
@@ -74,7 +69,6 @@
 		17E65988300FBD9AAA2CD0CA /* ofxGui.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGui.h; path = ../../../addons/ofxGui/src/ofxGui.h; sourceTree = SOURCE_ROOT; };
 		1B7394228935EC892B224435 /* MSAPhysicsParticle.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsParticle.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsParticle.h; sourceTree = SOURCE_ROOT; };
 		1C0DA2561397A7DE0246858B /* ofxGuiGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxGuiGroup.h; path = ../../../addons/ofxGui/src/ofxGuiGroup.h; sourceTree = SOURCE_ROOT; };
-		1F197522BC00AB72C1A74679 /* MSAFluidParticleUpdater.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAFluidParticleUpdater.h; path = ../../../addons/ofxMSAFluid/src/MSAFluidParticleUpdater.h; sourceTree = SOURCE_ROOT; };
 		273C939C5E97A162238A28DF /* MSAPhysicsCallbacks.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsCallbacks.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsCallbacks.h; sourceTree = SOURCE_ROOT; };
 		2834D88A62CD23F3DE2C47D1 /* ofxButton.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxButton.h; path = ../../../addons/ofxGui/src/ofxButton.h; sourceTree = SOURCE_ROOT; };
 		2ACD183BFDC92283ECCF27DA /* MSAPhysicsSpring.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsSpring.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsSpring.h; sourceTree = SOURCE_ROOT; };
@@ -86,8 +80,6 @@
 		4436D71CE6442E6E1C783A2E /* MSAPhysics2D.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysics2D.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysics2D.h; sourceTree = SOURCE_ROOT; };
 		50DF87D612C5AAE17AAFA6C0 /* ofxXmlSettings.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxXmlSettings.cpp; path = ../../../addons/ofxXmlSettings/src/ofxXmlSettings.cpp; sourceTree = SOURCE_ROOT; };
 		52AFA1F08C420992CAAAE648 /* ofxSlider.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSlider.h; path = ../../../addons/ofxGui/src/ofxSlider.h; sourceTree = SOURCE_ROOT; };
-		58B94FFF012004B3A4E58F32 /* MSAFluid.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAFluid.h; path = ../../../addons/ofxMSAFluid/src/MSAFluid.h; sourceTree = SOURCE_ROOT; };
-		5DAA01DF76EA921C7DA7405D /* MSAFluidSolver.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = MSAFluidSolver.cpp; path = ../../../addons/ofxMSAFluid/src/MSAFluidSolver.cpp; sourceTree = SOURCE_ROOT; };
 		742419098E2A7CC7A7F877BA /* MSACoreGL.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSACoreGL.h; path = ../../../addons/ofxMSACore/src/MSACoreGL.h; sourceTree = SOURCE_ROOT; };
 		779DD745A53BDF4B7E895832 /* MSACore-Cinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = "MSACore-Cinder.h"; path = "../../../addons/ofxMSACore/src/MSACore-Cinder.h"; sourceTree = SOURCE_ROOT; };
 		78D67A00EB899FAC09430597 /* ofxLabel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxLabel.cpp; path = ../../../addons/ofxGui/src/ofxLabel.cpp; sourceTree = SOURCE_ROOT; };
@@ -98,19 +90,15 @@
 		907C5B5E104864A2D3A25745 /* ofxToggle.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxToggle.cpp; path = ../../../addons/ofxGui/src/ofxToggle.cpp; sourceTree = SOURCE_ROOT; };
 		91B9946AD61CB2D7D94477D6 /* MSAPhysicsParams.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsParams.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsParams.h; sourceTree = SOURCE_ROOT; };
 		9604B925D32EE39065747725 /* ofxBaseGui.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxBaseGui.cpp; path = ../../../addons/ofxGui/src/ofxBaseGui.cpp; sourceTree = SOURCE_ROOT; };
-		A03B32B28652D6533C3A1C79 /* MSAFluidDrawerBase.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAFluidDrawerBase.h; path = ../../../addons/ofxMSAFluid/src/MSAFluidDrawerBase.h; sourceTree = SOURCE_ROOT; };
-		A0E48FD05BDA9491DCA86AAA /* MSAFluidDrawerBase.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = MSAFluidDrawerBase.cpp; path = ../../../addons/ofxMSAFluid/src/MSAFluidDrawerBase.cpp; sourceTree = SOURCE_ROOT; };
 		B21E7E5F548EEA92F368040B /* tinyxml.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = tinyxml.h; path = ../../../addons/ofxXmlSettings/libs/tinyxml.h; sourceTree = SOURCE_ROOT; };
 		B6A449D2EF649012F712E2A1 /* MSAPhysics.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysics.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysics.h; sourceTree = SOURCE_ROOT; };
 		B87C60311EC1FE841C1ECD89 /* ofxLabel.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxLabel.h; path = ../../../addons/ofxGui/src/ofxLabel.h; sourceTree = SOURCE_ROOT; };
 		B9D38288DA32DD412A477F7C /* MSAPhysicsAttraction.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsAttraction.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsAttraction.h; sourceTree = SOURCE_ROOT; };
 		BF409A6581828B276295569E /* MSACoreMath.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSACoreMath.h; path = ../../../addons/ofxMSACore/src/MSACoreMath.h; sourceTree = SOURCE_ROOT; };
-		C38BBF8F08AC5F3FFA91E78B /* MSAFluidDrawerGl-OF.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = "MSAFluidDrawerGl-OF.h"; path = "../../../addons/ofxMSAFluid/src/MSAFluidDrawerGl-OF.h"; sourceTree = SOURCE_ROOT; };
 		C70D8946940288799E82131E /* ofxSliderGroup.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = ofxSliderGroup.h; path = ../../../addons/ofxGui/src/ofxSliderGroup.h; sourceTree = SOURCE_ROOT; };
 		C88333E71C9457E441C33474 /* ofxButton.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxButton.cpp; path = ../../../addons/ofxGui/src/ofxButton.cpp; sourceTree = SOURCE_ROOT; };
 		CBA1268BC95928A23E347221 /* MSACoreGL.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = MSACoreGL.cpp; path = ../../../addons/ofxMSACore/src/MSACoreGL.cpp; sourceTree = SOURCE_ROOT; };
 		D0B839A50A622A8FB095A0D4 /* MSAPhysicsWorld.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsWorld.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsWorld.h; sourceTree = SOURCE_ROOT; };
-		DDC4B8E536952A629F6C5206 /* MSAFluidDrawerGl-Cinder.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = "MSAFluidDrawerGl-Cinder.h"; path = "../../../addons/ofxMSAFluid/src/MSAFluidDrawerGl-Cinder.h"; sourceTree = SOURCE_ROOT; };
 		E112B3AEBEA2C091BF2B40AE /* ofxPanel.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxPanel.cpp; path = ../../../addons/ofxGui/src/ofxPanel.cpp; sourceTree = SOURCE_ROOT; };
 		E4328143138ABC890047C5CB /* openFrameworksLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = openFrameworksLib.xcodeproj; path = ../../../libs/openFrameworksCompiled/project/osx/openFrameworksLib.xcodeproj; sourceTree = SOURCE_ROOT; };
 		E4B69B5B0A3A1756003C02F2 /* emDebug.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = emDebug.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -136,20 +124,11 @@
 		E647C5331C7CDB5400516BC0 /* MeshGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MeshGenerator.h; sourceTree = "<group>"; };
 		E647C5351C7D24F200516BC0 /* SceneCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneCamera.h; sourceTree = "<group>"; };
 		E647C5361C7D3B9600516BC0 /* Constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Constants.h; sourceTree = "<group>"; };
-		E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxFirstPersonCamera.cpp; sourceTree = "<group>"; };
-		E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxFirstPersonCamera.h; sourceTree = "<group>"; };
 		E6BCC4871BC7174200C17F42 /* MSAObjCPointer.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = MSAObjCPointer.cpp; sourceTree = "<group>"; };
 		E6BCC4881BC7174200C17F42 /* MSAObjCPointer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MSAObjCPointer.h; sourceTree = "<group>"; };
-		E6DE392D1C42927D00EE613A /* ofxJSON.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSON.h; sourceTree = "<group>"; };
-		E6DE392E1C42927D00EE613A /* ofxJSONElement.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ofxJSONElement.cpp; sourceTree = "<group>"; };
-		E6DE392F1C42927D00EE613A /* ofxJSONElement.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ofxJSONElement.h; sourceTree = "<group>"; };
-		E6DE39341C42927D00EE613A /* json-forwards.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "json-forwards.h"; sourceTree = "<group>"; };
-		E6DE39351C42927D00EE613A /* json.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = json.h; sourceTree = "<group>"; };
-		E6DE39371C42927D00EE613A /* jsoncpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = jsoncpp.cpp; sourceTree = "<group>"; };
 		ECF8674C7975F1063C5E30CA /* ofxGuiGroup.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = ofxGuiGroup.cpp; path = ../../../addons/ofxGui/src/ofxGuiGroup.cpp; sourceTree = SOURCE_ROOT; };
 		EF872612718328680A4B9D64 /* MSACoreCommon.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSACoreCommon.h; path = ../../../addons/ofxMSACore/src/MSACoreCommon.h; sourceTree = SOURCE_ROOT; };
 		F0F5848741DBB0C8CCA7E1C0 /* MSAPhysics3D.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysics3D.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysics3D.h; sourceTree = SOURCE_ROOT; };
-		F1AE3CD94973EF5B13267CA6 /* MSAFluidSolver.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAFluidSolver.h; path = ../../../addons/ofxMSAFluid/src/MSAFluidSolver.h; sourceTree = SOURCE_ROOT; };
 		F89CFA9BBD18E54CE8F75DFE /* MSACore.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSACore.h; path = ../../../addons/ofxMSACore/src/MSACore.h; sourceTree = SOURCE_ROOT; };
 		FB79F4F97B7801FF51F43733 /* MSAPhysicsSector.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 30; name = MSAPhysicsSector.h; path = ../../../addons/ofxMSAPhysics/src/MSAPhysicsSector.h; sourceTree = SOURCE_ROOT; };
 		FC5DA1C87211D4F6377DA719 /* tinyxmlparser.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 30; name = tinyxmlparser.cpp; path = ../../../addons/ofxXmlSettings/libs/tinyxmlparser.cpp; sourceTree = SOURCE_ROOT; };
@@ -207,21 +186,6 @@
 				CBA1268BC95928A23E347221 /* MSACoreGL.cpp */,
 				742419098E2A7CC7A7F877BA /* MSACoreGL.h */,
 				BF409A6581828B276295569E /* MSACoreMath.h */,
-			);
-			name = src;
-			sourceTree = "<group>";
-		};
-		4285052C1A445B625F6991C3 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				58B94FFF012004B3A4E58F32 /* MSAFluid.h */,
-				A0E48FD05BDA9491DCA86AAA /* MSAFluidDrawerBase.cpp */,
-				A03B32B28652D6533C3A1C79 /* MSAFluidDrawerBase.h */,
-				DDC4B8E536952A629F6C5206 /* MSAFluidDrawerGl-Cinder.h */,
-				C38BBF8F08AC5F3FFA91E78B /* MSAFluidDrawerGl-OF.h */,
-				1F197522BC00AB72C1A74679 /* MSAFluidParticleUpdater.h */,
-				5DAA01DF76EA921C7DA7405D /* MSAFluidSolver.cpp */,
-				F1AE3CD94973EF5B13267CA6 /* MSAFluidSolver.h */,
 			);
 			name = src;
 			sourceTree = "<group>";
@@ -284,13 +248,10 @@
 				480A780D8D0308AE4A368801 /* ofxGui */,
 				1F4FB5C423662B96ADFDCC0B /* ofxXmlSettings */,
 				F8790DCD2E062DF9AA47E810 /* ofxMSACore */,
-				D3F713A22A3C00BCDADCEBED /* ofxMSAFluid */,
 				BBB46ED124BAFF9F2EAD9484 /* ofxMSAPhysics */,
 				E6BCC4851BC7174200C17F42 /* ofxMSAObjCPointer */,
 				E607F50A1C2A35F400712C72 /* ofxCameraSaveLoad */,
-				E66453761C39A0E5005591D8 /* ofxFirstPersonCamera */,
 				E60B2B3E1C3EFD9500987819 /* ofxAnimatable */,
-				E6DE392B1C42927D00EE613A /* ofxJSON */,
 				E60A51C61C48384300A7D170 /* ofxVideoRecorder */,
 			);
 			name = addons;
@@ -302,14 +263,6 @@
 				22FA2197DD0EF6E7C3C497B7 /* src */,
 			);
 			name = ofxMSAPhysics;
-			sourceTree = "<group>";
-		};
-		D3F713A22A3C00BCDADCEBED /* ofxMSAFluid */ = {
-			isa = PBXGroup;
-			children = (
-				4285052C1A445B625F6991C3 /* src */,
-			);
-			name = ofxMSAFluid;
 			sourceTree = "<group>";
 		};
 		E4328144138ABC890047C5CB /* Products */ = {
@@ -423,24 +376,6 @@
 			path = em;
 			sourceTree = "<group>";
 		};
-		E66453761C39A0E5005591D8 /* ofxFirstPersonCamera */ = {
-			isa = PBXGroup;
-			children = (
-				E66453771C39A0E5005591D8 /* src */,
-			);
-			name = ofxFirstPersonCamera;
-			sourceTree = "<group>";
-		};
-		E66453771C39A0E5005591D8 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				E66453781C39A0E5005591D8 /* ofxFirstPersonCamera.cpp */,
-				E66453791C39A0E5005591D8 /* ofxFirstPersonCamera.h */,
-			);
-			name = src;
-			path = ../../../addons/ofxFirstPersonCamera/src;
-			sourceTree = "<group>";
-		};
 		E6BCC4851BC7174200C17F42 /* ofxMSAObjCPointer */ = {
 			isa = PBXGroup;
 			children = (
@@ -457,69 +392,6 @@
 			);
 			name = src;
 			path = ../../../addons/ofxMSAObjCPointer/src;
-			sourceTree = "<group>";
-		};
-		E6DE392B1C42927D00EE613A /* ofxJSON */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE392C1C42927D00EE613A /* src */,
-				E6DE39301C42927D00EE613A /* libs */,
-			);
-			name = ofxJSON;
-			sourceTree = "<group>";
-		};
-		E6DE392C1C42927D00EE613A /* src */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE392D1C42927D00EE613A /* ofxJSON.h */,
-				E6DE392E1C42927D00EE613A /* ofxJSONElement.cpp */,
-				E6DE392F1C42927D00EE613A /* ofxJSONElement.h */,
-			);
-			name = src;
-			path = ../../../addons/ofxJSON/src;
-			sourceTree = "<group>";
-		};
-		E6DE39301C42927D00EE613A /* libs */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE39311C42927D00EE613A /* jsoncpp */,
-			);
-			name = libs;
-			path = ../../../addons/ofxJSON/libs;
-			sourceTree = "<group>";
-		};
-		E6DE39311C42927D00EE613A /* jsoncpp */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE39321C42927D00EE613A /* include */,
-				E6DE39361C42927D00EE613A /* src */,
-			);
-			path = jsoncpp;
-			sourceTree = "<group>";
-		};
-		E6DE39321C42927D00EE613A /* include */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE39331C42927D00EE613A /* json */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		E6DE39331C42927D00EE613A /* json */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE39341C42927D00EE613A /* json-forwards.h */,
-				E6DE39351C42927D00EE613A /* json.h */,
-			);
-			path = json;
-			sourceTree = "<group>";
-		};
-		E6DE39361C42927D00EE613A /* src */ = {
-			isa = PBXGroup;
-			children = (
-				E6DE39371C42927D00EE613A /* jsoncpp.cpp */,
-			);
-			path = src;
 			sourceTree = "<group>";
 		};
 		F8790DCD2E062DF9AA47E810 /* ofxMSACore */ = {
@@ -636,7 +508,6 @@
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				E60B2B4B1C3EFD9500987819 /* ofxAnimatableOfPoint.cpp in Sources */,
 				856AA354D08AB4B323081444 /* ofxBaseGui.cpp in Sources */,
-				E6DE39381C42927D00EE613A /* ofxJSONElement.cpp in Sources */,
 				E607F50E1C2A35F400712C72 /* ofxCameraSaveLoad.cpp in Sources */,
 				5CBB2AB3A60F65431D7B555D /* ofxButton.cpp in Sources */,
 				B266578FC55D23BFEBC042E7 /* ofxGuiGroup.cpp in Sources */,
@@ -644,21 +515,17 @@
 				E60B2B481C3EFD9500987819 /* ofxAnimatable.cpp in Sources */,
 				E60B2B4A1C3EFD9500987819 /* ofxAnimatableOfColor.cpp in Sources */,
 				F285EB3169F1566CA3D93C20 /* ofxPanel.cpp in Sources */,
-				E6DE39391C42927D00EE613A /* jsoncpp.cpp in Sources */,
 				837220E80EB56CD44AD27F2A /* ofxSlider.cpp in Sources */,
 				E6BCC4891BC7174200C17F42 /* MSAObjCPointer.cpp in Sources */,
 				E60A51CA1C48384300A7D170 /* ofxVideoRecorder.cpp in Sources */,
 				B56FE57CC35806596D38118C /* ofxSliderGroup.cpp in Sources */,
 				1CD33E884D9E3358252E82A1 /* ofxToggle.cpp in Sources */,
 				63B57AC5BF4EF088491E0317 /* ofxXmlSettings.cpp in Sources */,
-				E664537A1C39A0E5005591D8 /* ofxFirstPersonCamera.cpp in Sources */,
 				933A2227713C720CEFF80FD9 /* tinyxml.cpp in Sources */,
 				9D44DC88EF9E7991B4A09951 /* tinyxmlerror.cpp in Sources */,
 				5A4349E9754D6FA14C0F2A3A /* tinyxmlparser.cpp in Sources */,
 				E60B2B491C3EFD9500987819 /* ofxAnimatableFloat.cpp in Sources */,
 				A854A26C873CB7CB18844F73 /* MSACoreGL.cpp in Sources */,
-				825FA11382B216421AC896A6 /* MSAFluidDrawerBase.cpp in Sources */,
-				5EB9303FA9B240750638AE7C /* MSAFluidSolver.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
